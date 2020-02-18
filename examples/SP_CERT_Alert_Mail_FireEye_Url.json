@@ -1,0 +1,100 @@
+{
+    "date": 1574975780821,
+    "severity": 2,
+    "_routing": "aedb6b5e220415b00a7ab93d82f9451d",
+    "customFields": {},
+    "caseTemplate": "FE_malicious_attachment",
+    "_type": "alert",
+    "description": "Alerts on FireEye blocked emails that has an attachment",
+    "lastSyncDate": 1574975780821,
+    "source": "splunk",
+    "title": "SP-CERT-Alert-Mail-FireEye-Attachment",
+    "type": "alert",
+    "follow": true,
+    "tags": [
+        "malware",
+        " email",
+        " attachment"
+    ],
+    "createdAt": 1574975780820,
+    "_parent": null,
+    "createdBy": "svcaccsplunk_to_thehive",
+    "tlp": 2,
+    "_id": "aedb6b5e220415b00a7ab93d82f9451d",
+    "id": "aedb6b5e220415b00a7ab93d82f9451d",
+    "sourceRef": "e5ded460-1de7-4134-a34b-c98df0c860ba",
+    "_version": 1,
+    "artifacts": [
+        {
+            "message": " - type: src_user",
+            "data": "kamervishi@gmail.com",
+            "dataType": "other"
+        },
+        {
+            "message": " - type: signature_type",
+            "data": "archive",
+            "dataType": "other"
+        },
+        {
+            "message": " - type: message_id",
+            "data": "199341",
+            "dataType": "other"
+        },
+        {
+            "message": " - type: recipient",
+            "data": "sturla.grelland@sykehuspartner.no",
+            "dataType": "other"
+        },
+        {
+            "message": " - type: original_malware",
+            "data": "Sykehuspartner_CERT_Oppgaver.pdf",
+            "dataType": "other"
+        },
+        {
+            "message": " - type: action",
+            "data": "blocked",
+            "dataType": "other"
+        },
+        {
+            "message": " - type: protocol",
+            "data": "attachment",
+            "dataType": "other"
+        },
+        {
+            "message": " - type: analysis_url",
+            "data": "https://SDS-FireEye-03/emps/eanalysis?e_id=81418&type=attch",
+            "dataType": "other"
+        },
+        {
+            "message": " - type: filetype",
+            "data": "pdf",
+            "dataType": "other"
+        },
+        {
+            "message": " - type: _time",
+            "data": "1574975687.901938",
+            "dataType": "other"
+        },
+        {
+            "message": " - type: signature",
+            "data": "Malware.archive",
+            "dataType": "other"
+        },
+        {
+            "message": " - type: alert",
+            "data": "malware-object",
+            "dataType": "other"
+        },
+        {
+            "message": " - type: subject",
+            "data": "Re: Stilling som sikkerhetsanalytiker - videre prosess",
+            "dataType": "other"
+        },
+        {
+            "message": " - type: url_to_event",
+            "data": "https://10.184.22.204/cms/ealerts/alerts/e5ded460-1de7-4134-a34b-c98df0c860ba",
+            "dataType": "other"
+        }
+    ],
+    "status": "New"
+}
