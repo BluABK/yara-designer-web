@@ -4,13 +4,14 @@
   "description": "Interactive YARA rule designer UI (depends on yara-designer-core backend).",
   "main": "index.js",
   "scripts": {
-    "yara-designer-web": "node yara-designer-web.js",
+    "start": "node yara-designer-web.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Aleksander Berge Kjellsen <aleksb@sp-cert.no>",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^8.2.0",
+    "ejs": "^3.1.2",
     "express": "^4.17.1"
   }
 }
