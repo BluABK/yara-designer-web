@@ -1,24 +1,9 @@
-# Python itself
-# PYC
-__pycache__/
-*/__pycache__/
-
 # IDEs
 # -- PyCharm
 .idea/
 
-# Virtual envs
-Pipfile.lock
-
-# Databases
-*.db
-
-# Configs
-config.json
+# Node
+node_modules/
 
 # Generated files
-## YARA rules and TheOracle Git.
-the-oracle/
-the-oracle/*
-the-oracle/rules/
-the-oracle/rules/*
+/package-lock.json

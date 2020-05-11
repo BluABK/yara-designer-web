@@ -1,12 +1,6 @@
 require('dotenv').config();
 
-function parseConfig() {
-    return document.getElementById("my-configuration-file")
-}
-
 // Read configuration
-const CONFIG = parseConfig();
-
 console.log("config file", CONFIG);
 
 
