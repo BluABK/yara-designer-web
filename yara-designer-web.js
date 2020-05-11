@@ -3,8 +3,6 @@ require("dotenv").config();
 const BIND_HOST = process.env.BIND_HOST;
 const BIND_PORT = process.env.BIND_PORT;
 
-console.log(process.env.BIND_HOST);
-
 const express = require('express');
 const app = express();
 
