@@ -5,6 +5,7 @@
 // var themeHandler = require('./themes');
 // import * as constants from '/static/scripts/modules/constants.js';
 // import {loadTheme} as constants from '/static/scripts/themes.js';
+import { md5 } from '/static/scripts/third-party/md5.js';
 // import 'modules/constants.js'
 // test();
 // console.log("const test", MODAL_DEFAULT_FOOTER);
