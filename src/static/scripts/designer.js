@@ -44,29 +44,14 @@ document.querySelector('#condition-keyword-rparen').addEventListener('click', fu
 // -- -- -- Encapsulators:
 document.querySelector('#condition-keyword-encapsulate-paren').addEventListener('click', function(){ addToEditor(event) });
 
-
-
-
-
-
-// IDs and ClassNames (Helps tremendously when renaming identifier strings at a later date):
-// Common values:
-const NONE = "none";
-const BLOCK = "block";
-const CLICK = "click";
-const AUX_CLICK = "auxclick";
-const ACTIVE = "active";
-const ID = "id";
-
 // MIME Types:
 const MIMETYPE_JSON = 'application/json';
-// const MIMETYPE_URL_ENCODED = 'application/x-www-form-urlencoded';
 
 // Root:
 const ROOT_CLASS = 'yara-rule-designer';
 
 // Modifying classes
-// const SIZE_WIDE_CLASS = "size-wide";
+const SIZE_WIDE_CLASS = "size-wide";
 const SIZE_FULLWIDTH_CLASS = "size-fullwidth";
 
 // Tables:
@@ -112,9 +97,9 @@ const TEXT_COLOR_RED_CLASS = "red-text";
 const YARA_VARIABLE_DENOMINATOR = "$";
 
 // Convenience/readability constants:
-// const MOUSECLICK_LEFT = 0;
-const MOUSECLICK_MIDDLE = 1;
-const MOUSECLICK_RIGHT = 2;
+const MOUSE_CLICK_LEFT = 0;
+const MOUSE_CLICK_MIDDLE = 1;
+const MOUSE_CLICK_RIGHT = 2;
 const ARTIFACT_CLASSES = ["condition-artifact", "condition-artifact-type"];
 const KEYWORD_CLASSES = ["condition-keyword"];
 const SYNTAX_ERROR = "syntax";
@@ -158,7 +143,7 @@ dragula([
  * Override default behaviour for mouse clicks in the editor div,
  * in order to support middle and right clicks.
  */
-document.getElementById(DESIGNER_EDITOR).addEventListener(AUX_CLICK, function(ev) {
+document.getElementById(DESIGNER_EDITOR).addEventListener("auxclick", function(ev) {
   // Prevent default action in order to implement our own.
   ev.preventDefault();
 
@@ -170,7 +155,7 @@ function addToEditor(clickEvent) {
     let editorDiv = document.getElementById(DESIGNER_EDITOR);
 
     // If target is already in the editor, ignore the click event.
-    if (clickEvent.target.parentNode.getAttribute(ID) === DESIGNER_EDITOR) {
+    if (clickEvent.target.parentNode.getAttribute("id") === DESIGNER_EDITOR) {
         console.log("Ignored click event (target is child of editor div)", clickEvent);
 
         return
@@ -184,7 +169,7 @@ function removeFromEditor(clickEvent) {
     let editorDiv = document.getElementById(DESIGNER_EDITOR);
 
     // Only perform remove action if target is a child of editor div.
-    if (clickEvent.target.parentNode.getAttribute(ID) === DESIGNER_EDITOR) {
+    if (clickEvent.target.parentNode.getAttribute("id") === DESIGNER_EDITOR) {
         console.log("removeFromEditor", clickEvent.target);
         editorDiv.removeChild(clickEvent.target);
     }
@@ -195,10 +180,10 @@ function onAuxClick(auxClickEvent) {
 
     // Check which mouse button was pressed and act accordingly.
     switch (auxClickEvent.button) {
-        case MOUSECLICK_MIDDLE:
+        case MOUSE_CLICK_MIDDLE:
             removeFromEditor(auxClickEvent);
             break;
-        case MOUSECLICK_RIGHT:
+        case MOUSE_CLICK_RIGHT:
             break;
     }
 }
@@ -317,13 +302,13 @@ function addCaseDetailsCollapsibleButtonLogic(className) {
     let i;
 
     for (i = 0; i < coll.length; i++) {
-      coll[i].addEventListener(CLICK, function() {
-        this.classList.toggle(ACTIVE);
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
         let content = this.nextElementSibling;
-        if (content.style.display === BLOCK) {
-          content.style.display = NONE;
+        if (content.style.display === "block") {
+          content.style.display = "none";
         } else {
-          content.style.display = BLOCK;
+          content.style.display = "block";
         }
       });
     }
@@ -527,7 +512,7 @@ function filterFetchedRules(inputId, tableId, filterRadioId, filterCountCallback
             if (txtValue.toUpperCase().indexOf(filter) > -1) {
                 tr[i].style.display = "";
             } else {
-                tr[i].style.display = NONE;
+                tr[i].style.display = "none";
                 filterCount++;
             }
         }
@@ -954,7 +939,7 @@ function handlePostRuleResponse(json) {
         postCommit(jsonToCommit);
 
         // Close modal after handling button action.
-        document.getElementById(modals.CONFIRMATION_MODAL).style.display = NONE;
+        document.getElementById(modals.CONFIRMATION_MODAL).style.display = "none";
     };
 
     // Make the JSON detailsCollapsible element actually collapsible.
@@ -1107,9 +1092,9 @@ function postCommit(json) {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             // Make sure to close any open modals.
             for ( let modalElement of document.getElementsByClassName(modals.MODAL_CLASS) ) {
-                if (modalElement.style.display !== NONE) {
+                if (modalElement.style.display !== "none") {
                     console.log("[postCommit] xhr.onreadystatechange: Closed open modal: " + modalElement.id);
-                    modalElement.style.display = NONE;
+                    modalElement.style.display = "none";
                 }
             }
 
@@ -1148,7 +1133,7 @@ function makeClone(node) {
 }
 
 // Global code
-let idParm = getParameterByName(ID);
+let idParm = getParameterByName("id");
 
 if (idParm !== null && idParm !== "") {
     console.log("Load rule: " + idParm);
