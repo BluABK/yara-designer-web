@@ -519,6 +519,7 @@ function filterFetchedRules(inputId, tableId, filterRadioId, filterCountCallback
     filterCountCallback && filterCountCallback(filterCount);
 }
 
+// noinspection JSUnusedLocalSymbols
 /**
  * Takes a string and returns a boolean of whether it's a HTML comment.
  *
@@ -657,8 +658,8 @@ function printRulesTable(rules, defaultCheckedRadio = TABLE_FILTER_CHECKED_RADIO
 
             radioHTML +=
                 `<input type="radio" name="${filterRadioClassName}" class="form-check-input" ` +
-                `id="${filterRadioId}-${i}" title="${column}"${checked}${style}>\n` +
-                `<label class="form-check-label" for="${filterRadioId}-${i}"${style}>${column}</label>\n`;
+                `id="${filterRadioId}-${i}" title="${column}" ${checked}${style}>\n` +
+                `<label class="form-check-label" for="${filterRadioId}-${i}" ${style}>${column}</label>\n`;
         }
     }
 
@@ -696,7 +697,9 @@ function printRulesTable(rules, defaultCheckedRadio = TABLE_FILTER_CHECKED_RADIO
             while(table.tagName.toUpperCase() !== 'TABLE') table = table.parentNode;
             Array.prototype.slice.call(table.querySelectorAll('tr:nth-child(n+2)'))
                 .sort(comparer(Array.prototype.slice.call(headerElem.parentNode.children).indexOf(headerElem), this.asc = !this.asc))
-                .forEach(function(tr) { table.appendChild(tr) });
+                .forEach(function(tr) {
+                    // noinspection JSCheckFunctionSignatures
+                    table.appendChild(tr) });
         }
     }
 
