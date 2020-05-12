@@ -23,7 +23,7 @@
     "--modal-background-warning": "#c2a632",
     "--modal-collapsible-content-details-color": "white",
     "--modal-collapsible-content-details-background": "#191c1f",
-    "--numbered-lines-background": "#191c1f",
+    "--numbered-lines-background": "#2a2a2e",
     "--numbered-lines-color": "white",
     "--mark-green-text-color": "#78c46a",
     "--mark-red-text-color": "#bf3535",
