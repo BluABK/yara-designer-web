@@ -14,7 +14,7 @@ const baseUrl = process.env.BACKEND_HOST;
 
 // Send in JavaScript vars from dotenv.
 var ejsRenderedHtmlIndex;
-ejs.renderFile(__dirname + '/src/static/index.html',
+ejs.renderFile(__dirname + '/static/index.html',
     {
         POST_RULE_ROUTE: `'${baseUrl}${process.env.POST_RULE_ROUTE}'`,
         POST_COMMIT_ROUTE: `'${baseUrl}${process.env.POST_COMMIT_ROUTE}'`,
@@ -28,10 +28,10 @@ ejs.renderFile(__dirname + '/src/static/index.html',
 
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '/src/static'));
+app.set('views', path.join(__dirname, '/static'));
 
-app.use('/static', express.static(path.join(__dirname, '/src/static')));
-app.use(express.static('/src/static/scripts/designer.js'), );
+app.use('/static', express.static(path.join(__dirname, '/static')));
+app.use(express.static('/static/scripts/designer.js'), );
 
 
 app.get('/', function(req, res){
