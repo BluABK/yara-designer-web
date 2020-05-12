@@ -22,10 +22,10 @@
     /* Draggables. */
     --condition-keyword-color: white;
     --condition-keyword-background: #8a3ab9;
-    --draggable-artifact-color: white;
-    --draggable-artifact-background: #2879af;
-    --draggable-artifact-type-color: white;
-    --draggable-artifact-type-background: #509316;
+    --draggable-observable-data-color: white;
+    --draggable-observable-data-background: #2879af;
+    --draggable-observable-type-color: white;
+    --draggable-observable-type-background: #509316;
 
     /* Buttons. */
     --button-submit-color: white;
@@ -231,7 +231,7 @@ tr:nth-child(even):hover td {
     border-bottom-color: var(--yara-rule-designer-border-color);
 }
 
-#yara-rule-designer-artifacts {
+#yara-rule-designer-observables {
     /* Bootstrap: If you actually remove this border, the contents flee out of bounds. */
     border-top-color: var(--yara-rule-designer-border-color);
 }
@@ -246,14 +246,14 @@ tr:nth-child(even):hover td {
     background: var(--condition-keyword-background);
 }
 
-.condition-artifact {
-    color: var(--draggable-artifact-color);
-    background-color: var(--draggable-artifact-background);
+.condition-observable-data {
+    color: var(--draggable-observable-data-color);
+    background-color: var(--draggable-observable-data-background);
 }
 
-.condition-artifact-type {
-    color: var(--draggable-artifact-type-color);
-    background-color: var(--draggable-artifact-type-background);
+.condition-observable-type {
+    color: var(--draggable-observable-type-color);
+    background-color: var(--draggable-observable-type-background);
 }
 
  /* Modal Header */

@@ -14,7 +14,7 @@ def strip_trailing_comment(s):
 if __name__ == "__main__":
     styleLines = []
     rootVars = []
-    with open('../styles/yara_rule_designer.css', 'r') as f:
+    with open('../styles/theme.css', 'r') as f:
         root_var_segment = False
         for line in f:
             styleLines.append(line)

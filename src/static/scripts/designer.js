@@ -37,13 +37,13 @@ const DESIGNER_HEADER_CONTENT_DESCRIPTION = `${DESIGNER_HEADER_CONTENT}-descript
 const DESIGNER_TAGS = `${ROOT_CLASS}-tags`;
 const DESIGNER_TAGS_CHECKBOX_CLASS = "yara-tag-checkbox";
 const OPERATOR_CONTAINER = `${ROOT_CLASS}-operators`;
-const ARTIFACT = `artifact`;
-const ARTIFACT_CLASS = `condition-artifact`;
-const ARTIFACT_CONTAINER = `${ROOT_CLASS}-artifacts`;
-const ARTIFACT_TYPE = `artifact-type`;
-const ARTIFACT_TYPE_CLASS = `condition-artifact-type`;
-const ARTIFACT_TYPE_CONTAINER = `${ROOT_CLASS}-artifact-types`;
-const LEFTPANE_DRAGGABLES = [OPERATOR_CONTAINER, ARTIFACT_TYPE_CONTAINER, ARTIFACT_CONTAINER];
+const OBSERVABLE_DATA = `observable-data`;
+const OBSERVABLE_DATA_CLASS = `condition-observable-data`;
+const OBSERVABLE_DATA_CONTAINER = `${ROOT_CLASS}-observable-data`;
+const OBSERVABLE_TYPE = `observable-type`;
+const OBSERVABLE_TYPE_CLASS = `condition-observable-type`;
+const OBSERVABLE_TYPE_CONTAINER = `${ROOT_CLASS}-observable-types`;
+const LEFTPANE_DRAGGABLES = [OPERATOR_CONTAINER, OBSERVABLE_TYPE_CONTAINER, OBSERVABLE_DATA_CONTAINER];
 
 const DESIGNER_EDITOR = `${ROOT_CLASS}-editor`;
 
@@ -60,7 +60,7 @@ const YARA_VARIABLE_DENOMINATOR = "$";
 const MOUSE_CLICK_LEFT = 0;
 const MOUSE_CLICK_MIDDLE = 1;
 const MOUSE_CLICK_RIGHT = 2;
-const ARTIFACT_CLASSES = ["condition-artifact", "condition-artifact-type"];
+const OBSERVABLE_CLASSES = ["condition-observable-data", "condition-observable-type"];
 const KEYWORD_CLASSES = ["condition-keyword"];
 const SYNTAX_ERROR = "syntax";
 
@@ -120,8 +120,8 @@ var currentlyLoadedRule = null;
 dragula([
     // Enable drag and drop for these DIVs:
     document.getElementById(OPERATOR_CONTAINER),
-    document.getElementById(ARTIFACT_TYPE_CONTAINER),
-    document.getElementById(ARTIFACT_CONTAINER),
+    document.getElementById(OBSERVABLE_TYPE_CONTAINER),
+    document.getElementById(OBSERVABLE_DATA_CONTAINER),
     document.getElementById(DESIGNER_EDITOR)
 ], { // Apply logic.
     copy: function (el, source) {
@@ -190,30 +190,30 @@ function getEditorContents() {
     return document.getElementById(DESIGNER_EDITOR).children;
 }
 
-function getEditorArtifactsAndTypes(unique=true) {
-    let artifacts = [];
+function getEditorObservables(unique=true) {
+    let observables = [];
     let children = getEditorContents();
     if (children.length === 0) {
         throw new NoContentsException("Editor had no contents");
     }
 
     for (let i = 0; i < children.length; i++) {
-        if ( ARTIFACT_CLASSES.includes(children[i].className) ) {
+        if ( OBSERVABLE_CLASSES.includes(children[i].className) ) {
             if (unique === true) {
                 // If unique is specified, omit duplicate entries.
-                if ( !artifacts.some(child => child.id === children[i].id) ) {
-                    artifacts.push(children[i]);
+                if ( !observables.some(child => child.id === children[i].id) ) {
+                    observables.push(children[i]);
                 }
             } else {
-                artifacts.push(children[i]);
+                observables.push(children[i]);
             }
         }
     }
 
-    return artifacts;
+    return observables;
 }
 
-function getEditorElementArtifactText(element) {
+function getEditorElementObservableText(element) {
     // Get text string.
     return $(element).text();
 }
@@ -235,8 +235,8 @@ function getEditorConditionString() {
             preSpacing = " ";
         }
 
-        // If child is of the artifact family.
-        if ( ARTIFACT_CLASSES.includes(children[i].className) ) {
+        // If child is of the observable family.
+        if ( OBSERVABLE_CLASSES.includes(children[i].className) ) {
             // Prepend with a YARA variable denominator.
             conditionString += preSpacing + YARA_VARIABLE_DENOMINATOR + children[i].id;
         } else if (KEYWORD_CLASSES.includes(children[i].className)) {
@@ -279,13 +279,13 @@ function getRuleJsonFromEditorElements() {
     // Set tags.
     json["tags"] = getEnabledTags();
 
-    // Get list of artifacts currently residing in editor DIV.
-    json["artifacts"] = {};
+    // Get list of observables currently residing in editor DIV.
+    json["observables"] = {};
 
-    let artifactElements = getEditorArtifactsAndTypes();
-    for (let i = 0; i < artifactElements.length; i++) {
-        json["artifacts"][YARA_VARIABLE_DENOMINATOR + artifactElements[i].id] = {
-            "artifact": getEditorElementArtifactText(artifactElements[i])
+    let observables = getEditorObservables();
+    for (let i = 0; i < observables.length; i++) {
+        json["observables"][YARA_VARIABLE_DENOMINATOR + observables[i].id] = {
+            "observable": getEditorElementObservableText(observables[i])
         }
     }
 
@@ -756,15 +756,15 @@ function setObservableTypes(types) {
 
     for (let i = 0; i < types.length; i++) {
         html +=
-            `<span id='${ARTIFACT_TYPE}-${types[i].md5sum()}' class='${ARTIFACT_TYPE_CLASS}'>${types[i]}</span>`;
+            `<span id='${OBSERVABLE_TYPE}-${types[i].md5sum()}' class='${OBSERVABLE_TYPE_CLASS}'>${types[i]}</span>`;
     }
 
     // Spawn the HTML.
-    document.getElementById(ARTIFACT_TYPE_CONTAINER).innerHTML = html;
+    document.getElementById(OBSERVABLE_TYPE_CONTAINER).innerHTML = html;
 
     // Add event listeners to spawned HTML.
     for (let i = 0; i < types.length; i++) {
-        document.querySelector(`#${ARTIFACT_TYPE}-${types[i].md5sum()}`).addEventListener('click', function(){ addToEditor(event) });
+        document.querySelector(`#${OBSERVABLE_TYPE}-${types[i].md5sum()}`).addEventListener('click', function(){ addToEditor(event) });
     }
 }
 
@@ -773,15 +773,15 @@ function setObservableData(data) {
 
     for (let i = 0; i < data.length; i++) {
         html +=
-            `<span id='${ARTIFACT}-${data[i].md5sum()}' class='${ARTIFACT_CLASS}'>${data[i]}</span>`;
+            `<span id='${OBSERVABLE_DATA}-${data[i].md5sum()}' class='${OBSERVABLE_DATA_CLASS}'>${data[i]}</span>`;
     }
 
     // Spawn the HTML.
-    document.getElementById(ARTIFACT_CONTAINER).innerHTML = html;
+    document.getElementById(OBSERVABLE_DATA_CONTAINER).innerHTML = html;
 
     // Add event listeners to spawned HTML.
     for (let i = 0; i < data.length; i++) {
-        document.querySelector(`#${ARTIFACT}-${data[i].md5sum()}`).addEventListener('click', function(){ addToEditor(event) });
+        document.querySelector(`#${OBSERVABLE_DATA}-${data[i].md5sum()}`).addEventListener('click', function(){ addToEditor(event) });
     }
 }
 

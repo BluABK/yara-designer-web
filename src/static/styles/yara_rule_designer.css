@@ -172,13 +172,13 @@ tr {
     background: transparent;
 }
 
-#yara-rule-designer-artifact-types {
+#yara-rule-designer-observable-types {
     /* Bootstrap: If you actually remove this border, the contents flee out of bounds. */
     border-right:1px solid transparent;
     background: transparent;
 }
 
-#yara-rule-designer-artifacts {
+#yara-rule-designer-observable-data {
     /* Bootstrap: If you actually remove this border, the contents flee out of bounds. */
     border-right:1px solid transparent;
     border-top: 1px solid;
@@ -210,12 +210,12 @@ tr {
     cursor: pointer;
 }
 
-.condition-artifact {
+.condition-observable-data {
     display: inline-table;
     cursor: pointer;
 }
 
-.condition-artifact-type {
+.condition-observable-type {
     display: inline-table;
     cursor: pointer;
 }

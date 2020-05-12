@@ -11,10 +11,10 @@
 
     "--condition-keyword-color": "white",
     "--condition-keyword-background": "#77209b",
-    "--draggable-artifact-color": "white",
-    "--draggable-artifact-background": "#1d365d",
-    "--draggable-artifact-type-color": "white",
-    "--draggable-artifact-type-background": "#63ab26",
+    "--draggable-observable-data-color": "white",
+    "--draggable-observable-data-background": "#1d365d",
+    "--draggable-observable-type-color": "white",
+    "--draggable-observable-type-background": "#63ab26",
 
     "--modal-background": "#2a2a2e",
     "--modal-color": "white",
