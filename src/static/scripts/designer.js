@@ -1,6 +1,7 @@
 import { md5 } from './third-party/md5.js';
 import * as levels from "./modules/levels.js";
 import { NoContentsException, NO_CONTENTS_EXCEPTION } from "./modules/exceptions.js";
+import { getParameterByName } from "./modules/utils.js";
 import * as modals from "./modules/modals.js";
 
 // Add event listeners.
@@ -1144,17 +1145,6 @@ function makeClone(node) {
     node.parentNode.insertBefore(clone, node);
 
     return clone;
-}
-
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, '\\$&');
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
 // Global code

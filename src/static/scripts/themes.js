@@ -1,3 +1,5 @@
+import { getParameterByName } from "./modules/utils.js";
+
 // Global code
 let themeParm = getParameterByName('theme');
 const DEFAULT_THEME_PATH = "/static/themes/";
@@ -24,17 +26,6 @@ function loadTheme(themeName, themePath=DEFAULT_THEME_PATH) {
         }
 
     });
-}
-
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, '\\$&');
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
 // Global code
