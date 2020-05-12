@@ -1,18 +1,5 @@
-// const CONFIG = require('dotenv').config();
-
-// const constants = require('./modules/constants');
-// const exc = require('./modules/exceptions');
-// var themeHandler = require('./themes');
-// import * as constants from '/static/scripts/modules/constants.js';
-// import {loadTheme} as constants from '/static/scripts/themes.js';
 import { md5 } from '/static/scripts/third-party/md5.js';
-// import 'modules/constants.js'
-// test();
-// console.log("const test", MODAL_DEFAULT_FOOTER);
-
-// Read configuration
-// console.log("config file", CONFIG);
-// console.log("testing", testan);
+import { NoContentsException, NO_CONTENTS_EXCEPTION } from "/static/scripts/modules/exceptions.js";
 
 // Add event listeners.
 // -- Buttons:
