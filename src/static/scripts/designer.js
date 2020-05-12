@@ -405,7 +405,6 @@ function popupHelpModal() {
  * in order to support middle and right clicks.
  */
 document.getElementById(DESIGNER_EDITOR).addEventListener(AUX_CLICK, function(ev) {
-  console.log(ev.button);
   // Prevent default action in order to implement our own.
   ev.preventDefault();
 
@@ -418,12 +417,12 @@ function addToEditor(clickEvent) {
 
     // If target is already in the editor, ignore the click event.
     if (clickEvent.target.parentNode.getAttribute(ID) === DESIGNER_EDITOR) {
-        console.log("Ignored click event (target is child of editor div):");
-        console.log(clickEvent);
+        console.log("Ignored click event (target is child of editor div)", clickEvent);
+
         return
     }
 
-    console.log('addToEditor: ' + $(clickEvent.target).text());
+    console.log('addToEditor', clickEvent.target);
     editorDiv.appendChild(makeClone(clickEvent.target));
 }
 
@@ -432,14 +431,13 @@ function removeFromEditor(clickEvent) {
 
     // Only perform remove action if target is a child of editor div.
     if (clickEvent.target.parentNode.getAttribute(ID) === DESIGNER_EDITOR) {
-        console.log("removeFromEditor: " + $(clickEvent.target).text());
+        console.log("removeFromEditor", clickEvent.target);
         editorDiv.removeChild(clickEvent.target);
     }
 }
 
 function onAuxClick(auxClickEvent) {
-    console.log("onAuxClick:");
-    console.log(auxClickEvent);
+    console.log("onAuxClick", auxClickEvent);
 
     // Check which mouse button was pressed and act accordingly.
     switch (auxClickEvent.button) {
@@ -1384,7 +1382,7 @@ function clearRule() {
 }
 
 function makeClone(node) {
-    console.log(node);
+    console.log("makeClone", node);
     let clone;
 
     // Returns a copy of node. If deep is true, the copy also includes the node's descendants.
