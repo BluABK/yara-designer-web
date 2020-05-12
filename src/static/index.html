@@ -29,8 +29,8 @@
                 <div class="w-100"></div>
                 <div id="yara-rule-designer-header" class="col yara-rule-designer">
                     <div id="yara-rule-designer-theme-selector" class="btn-group btn-group-toggle yara-rule-designer">
-                        <button id="load-theme-light-button" class="fas fa-sun btn btn-light" onclick="loadTheme('light')" title="Toggle Light Mode"></button>
-                        <button id="load-theme-dark-button" class="fas fa-moon btn btn-dark" onclick="loadTheme('dark')" title="Toggle Dark Mode"></button>
+                        <button id="load-theme-light-button" class="fas fa-sun btn btn-light" title="Toggle Light Mode"></button>
+                        <button id="load-theme-dark-button" class="fas fa-moon btn btn-dark" title="Toggle Dark Mode"></button>
                     </div>
                     <div id="yara-rule-designer-header-content">
                         <div id="yara-rule-designer-header-content-spacer-top"></div>
@@ -48,17 +48,17 @@
                 <div id="yara-rule-designer-leftpane-container" class="col-2 yara-rule-designer">
                     <div class="row">
                         <div class="row m-row yara-rule-designer" id="yara-rule-designer-buttons">
-                            <button id="load-rule-button" class="col" onclick="loadRuleDialog()" title="Open YARA rule...">
+                            <button id="load-rule-button" class="col" title="Open YARA rule...">
                                 <i class="fas fa-folder-open fa-lg"></i>
                             </button>
-                            <button id="show-help-button" class="col" onclick="popupHelpModal()" title="Info">
+                            <button id="show-help-button" class="col" title="Info">
                                 <i class="fas fa-info-circle fa-lg"></i>
                             </button>
-                            <button id="clear-rule-button" class="col" onclick="clearRule()" title="Clear editor">
+                            <button id="clear-rule-button" class="col" title="Clear editor">
                                 <i class="fas fa-broom fa-lg"></i>
                             </button>
                             <div class="w-100"></div>
-                            <button id="submit-rule-button" class="col" onclick="postRule()" title="Submit">
+                            <button id="submit-rule-button" class="col" title="Submit">
                                 <h4>Submit&nbsp;<i class="fas fa-arrow-right"></i></h4>
                             </button>
                         </div>
@@ -72,34 +72,35 @@
                         <div class="yara-rule-designer" id="yara-rule-designer-operators">
                             <!--    Add conditional keywords-->
                             <!--    Boolean-->
-                            <span id="condition-keyword-and" class="condition-keyword" onclick="addToEditor(event)">AND</span>
-                            <span id="condition-keyword-or" class="condition-keyword" onclick="addToEditor(event)">OR</span>
-                            <span id="condition-keyword-not" class="condition-keyword" onclick="addToEditor(event)">NOT</span>
+                            <span id="condition-keyword-and" class="condition-keyword">AND</span>
+                            <span id="condition-keyword-or" class="condition-keyword">OR</span>
+                            <span id="condition-keyword-not" class="condition-keyword">NOT</span>
                             <!--    Arithmetic-->
-                            <span id="condition-keyword-equal" class="condition-keyword" onclick="addToEditor(event)">==</span>
-                            <span id="condition-keyword-lt" class="condition-keyword" onclick="addToEditor(event)"><</span>
-                            <span id="condition-keyword-gt" class="condition-keyword" onclick="addToEditor(event)">></span>
-                            <span id="condition-keyword-leq" class="condition-keyword" onclick="addToEditor(event)"><=</span>
-                            <span id="condition-keyword-geq" class="condition-keyword" onclick="addToEditor(event)">>=</span>
-                            <span id="condition-keyword-neq" class="condition-keyword" onclick="addToEditor(event)">!=</span>
+                            <span id="condition-keyword-equal" class="condition-keyword">==</span>
+                            <span id="condition-keyword-lt" class="condition-keyword"><</span>
+                            <span id="condition-keyword-gt" class="condition-keyword">></span>
+                            <span id="condition-keyword-leq" class="condition-keyword"><=</span>
+                            <span id="condition-keyword-geq" class="condition-keyword">>=</span>
+                            <span id="condition-keyword-neq" class="condition-keyword">!=</span>
                             <!--    Relational-->
-                            <span id="condition-keyword-add" class="condition-keyword" onclick="addToEditor(event)">+</span>
-                            <span id="condition-keyword-sub" class="condition-keyword" onclick="addToEditor(event)">-</span>
-                            <span id="condition-keyword-mul" class="condition-keyword" onclick="addToEditor(event)">*</span>
-                            <span id="condition-keyword-div" class="condition-keyword" onclick="addToEditor(event)">/</span>
-                            <span id="condition-keyword-pct" class="condition-keyword" onclick="addToEditor(event)">%</span>
-                            <span id="condition-keyword-setminus" class="condition-keyword" onclick="addToEditor(event)">\</span>
+                            <span id="condition-keyword-add" class="condition-keyword">+</span>
+                            <span id="condition-keyword-sub" class="condition-keyword">-</span>
+                            <span id="condition-keyword-mul" class="condition-keyword">*</span>
+                            <span id="condition-keyword-div" class="condition-keyword">/</span>
+                            <span id="condition-keyword-pct" class="condition-keyword">%</span>
+                            <span id="condition-keyword-setminus" class="condition-keyword">\</span>
                             <!--    Bitwise-->
-                            <span id="condition-keyword-bitwise-and" class="condition-keyword" onclick="addToEditor(event)">&</span>
-                            <span id="condition-keyword-bitwise-or" class="condition-keyword" onclick="addToEditor(event)">|</span>
-                            <span id="condition-keyword-bitwise-not" class="condition-keyword" onclick="addToEditor(event)">~</span>
-                            <span id="condition-keyword-bitwise-xor" class="condition-keyword" onclick="addToEditor(event)">^</span>
-                            <span id="condition-keyword-bitwise-lshift" class="condition-keyword" onclick="addToEditor(event)"><<</span>
-                            <span id="condition-keyword-bitwise-rshift" class="condition-keyword" onclick="addToEditor(event)">>></span>
-                            <!-- Parenthesis and wrappers       -->
-                            <span id="condition-keyword-lparen" class="condition-keyword" onclick="addToEditor(event)">(</span>
-                            <span id="condition-keyword-rparen" class="condition-keyword" onclick="addToEditor(event)">)</span>
-                            <span id="condition-keyword-encapsulate-paren" class="condition-encapsulator" onclick="addToEditor(event)">()</span>
+                            <span id="condition-keyword-bitwise-and" class="condition-keyword">&</span>
+                            <span id="condition-keyword-bitwise-or" class="condition-keyword">|</span>
+                            <span id="condition-keyword-bitwise-not" class="condition-keyword">~</span>
+                            <span id="condition-keyword-bitwise-xor" class="condition-keyword">^</span>
+                            <span id="condition-keyword-bitwise-lshift" class="condition-keyword"><<</span>
+                            <span id="condition-keyword-bitwise-rshift" class="condition-keyword">>></span>
+                            <!-- Parenthesis and wrappers -->
+                            <span id="condition-keyword-lparen" class="condition-keyword">(</span>
+                            <span id="condition-keyword-rparen" class="condition-keyword">)</span>
+                            <!-- Encapsulators -->
+                            <span id="condition-keyword-encapsulate-paren" class="condition-encapsulator">()</span>
                         </div>
 
                         <div class="w-100"></div>
@@ -180,13 +181,13 @@
         </script>
 
         <!-- Theme handler -->
-        <script src="/static/scripts/themes.js"></script>
+        <script src="/static/scripts/themes.js" type="module"></script>
 
         <!-- Core Designer script block -->
         <script src="/static/scripts/modules/exceptions.js"></script>
 <!--        <script src="/static/scripts/modules/constants.js"></script>-->
 
         <!--Finally load the main script which depends on all of the above modules -->
-        <script src="/static/scripts/designer.js"></script>
+        <script src="/static/scripts/designer.js" type="module"></script>
     </body>
 </html>

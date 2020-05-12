@@ -16,7 +16,6 @@ const baseUrl = process.env.BACKEND_HOST;
 var ejsRenderedHtmlIndex;
 ejs.renderFile(__dirname + '/src/static/index.html',
     {
-        thisIsATest: "'" + process.env.BIND_HOST + "'",
         POST_RULE_ROUTE: `'${baseUrl}${process.env.POST_RULE_ROUTE}'`,
         POST_COMMIT_ROUTE: `'${baseUrl}${process.env.POST_COMMIT_ROUTE}'`,
         GET_RULES_ROUTE: `'${baseUrl}${process.env.GET_RULES_ROUTE}'`,
