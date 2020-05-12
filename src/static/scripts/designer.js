@@ -118,7 +118,6 @@ Object.defineProperty(String.prototype, 'md5sum', {
 var currentlyLoadedRule = null;
 
 /////////////////////////////////// Dragula - drag 'n Drop //////////////////////////////////////////
-
 dragula([
     // Enable drag and drop for these DIVs:
     document.getElementById(OPERATOR_CONTAINER),
@@ -353,7 +352,7 @@ async function fetchPostRequest(url = '', data = {}, callback) {
     }
 
     // Default options are marked with *
-    const response = await fetch(url, {
+    await fetch(url, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -374,12 +373,11 @@ async function fetchPostRequest(url = '', data = {}, callback) {
           }).catch(function(error) {
             console.log('Request failed', error);
           });
-
-    // return response.json(); // parses JSON response into native JavaScript objects
 }
 
 
 function getRule(ruleId, callback=printRulesTable) {
+    // noinspection JSIgnoredPromiseFromCall
     fetchPostRequest(GET_RULE_ROUTE, { id:  ruleId}, callback);
 }
 
@@ -474,7 +472,7 @@ function makeRuleTableRows(rules) {
             "Sev": rule.data.severity,
             "<!--Observables--><img src='/static/images/searchicon.png' title='Observables'>": rule.data.observables.length,
             "Added": rule.added_on !== null ? humanizeISODate(rule.added_on) : "N/A",
-            "YARA File": rule.yara_filename !== undefined ? rule.yara_filename : "N/A",
+            "YARA File": rule["yara_filename"] !== undefined ? rule["yara_filename"] : "N/A",
             "Modified": rule.last_modified !== null ? humanizeISODate(rule.last_modified): "N/A",
             "ID": rule.data.id
         });
@@ -495,7 +493,6 @@ function filterFetchedRules(inputId, tableId, filterRadioId, filterCountCallback
     // Get the currently checked radio button.
     let enabledTd = 0;
     for (let idx = 0; idx < filterRadios.length; idx++) {
-        console.log(`filterCheckboxes[${idx}]`, filterRadios[idx]);
         if (filterRadios[idx].checked) {
             enabledTd = idx;
         }
@@ -621,9 +618,8 @@ function printRulesTable(rules, defaultCheckedRadio = TABLE_FILTER_CHECKED_RADIO
     let filterRadioClassName = `${tableId}-${TABLE_FILTER_RADIO_CLASS_SUFFIX}`;
     let filterRadioId = filterRadioClassName;
     let filterInputId = `${tableId}-${TABLE_FILTER_INPUT_SUFFIX}`;
-    bodyTop +=
-        `<input type="text" id="${filterInputId}" onkeyup="filterFetchedRules('${filterInputId}', ` +
-        `'${tableId}', '${filterRadioId}', filterCountCallback)" placeholder="Filter table..">`;
+
+    bodyTop += `<input type="text" id="${filterInputId}" placeholder="Filter table..">`;
 
     // Checkboxes:
     let radioHTML = "";
@@ -667,7 +663,8 @@ function printRulesTable(rules, defaultCheckedRadio = TABLE_FILTER_CHECKED_RADIO
     }
 
     // Assemble checkboxes HTML.
-    bodyTop += `<div class="${filterRadioClassName} form-check form-check-inline" id="${filterRadioId}">\n` +
+    bodyTop +=
+        `<div class="${filterRadioClassName} form-check form-check-inline" id="${filterRadioId}">\n` +
         `${radioHTML}\n</div>`;
     bodyTop += "<br>";
 
@@ -686,6 +683,11 @@ function printRulesTable(rules, defaultCheckedRadio = TABLE_FILTER_CHECKED_RADIO
 
     // Set size to fullwidth due to the amount of columns of this particular table.
     modal.getElementsByClassName(modals.MODAL_CONTENT_CLASS)[0].classList.add(SIZE_FULLWIDTH_CLASS);
+
+    // Add onkeyup action for filtering results.
+    document.getElementById(filterInputId).addEventListener('keyup', function() {
+        filterFetchedRules(filterInputId, tableId, filterRadioId, filterCountCallback);
+    });
 
     // Add onclick action for sorting headers.
     for ( let headerElem of document.getElementById(`${tableId}-headers`).children ) {
