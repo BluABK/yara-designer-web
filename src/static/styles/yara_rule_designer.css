@@ -121,7 +121,7 @@ tr {
 #yara-rule-designer-buttons {
     /* Bootstrap: If you actually remove this border, the contents flee out of bounds. */
     border-right:1px solid transparent;
-    border-bottom:1px solid;
+    border-bottom: none; /* was: 1px solid; */
     padding: 0;
 }
 
@@ -157,19 +157,51 @@ tr {
     font-size: 16px;
 }
 
+.button-collapsible-tags {
+    cursor: pointer;
+    /*padding: 18px;*/
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+}
+
 #yara-rule-designer-tags {
     margin-left: 10px;
     margin-top: 10px;
     background: transparent;
 }
 
+.button-collapsible-operators {
+    cursor: pointer;
+    /*padding: 18px;*/
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+}
+
 #yara-rule-designer-operators {
     overflow: auto;
     /* Bootstrap: If you actually remove this border, the contents flee out of bounds. */
-    border-top: 1px solid;
+    /*border-top: 1px solid;*/
+    border-top: none;
     border-right:1px solid transparent;
-    border-bottom:1px solid;
+    /*border-bottom:1px solid;*/
+    border-bottom: none;
     background: transparent;
+}
+
+.button-collapsible-observable-types {
+    cursor: pointer;
+    /*padding: 18px;*/
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
 }
 
 #yara-rule-designer-observable-types {
@@ -178,11 +210,23 @@ tr {
     background: transparent;
 }
 
+.button-collapsible-observable-data {
+    cursor: pointer;
+    /*padding: 18px;*/
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+}
+
 #yara-rule-designer-observable-data {
     /* Bootstrap: If you actually remove this border, the contents flee out of bounds. */
     border-right:1px solid transparent;
-    border-top: 1px solid;
-    border-bottom:1px solid transparent;
+    /*border-top: 1px solid;*/
+    border-top: none;
+    /*border-bottom:1px solid transparent;*/
+    border-bottom: none;
     background: transparent;
 }
 

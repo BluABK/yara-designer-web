@@ -41,6 +41,27 @@
     --button-help-color-hover: white;
     --button-help-background-hover: #2e4053;
 
+    --button-collapsible-tags-color: white;
+    --button-collapsible-tags-background: #213d88;
+    --button-collapsible-tags-color-hover: white;
+    --button-collapsible-tags-background-hover: #132549;
+
+    --button-collapsible-operators-color: white;
+    --button-collapsible-operators-background: #8a3ab9;
+    --button-collapsible-operators-color-hover: white;
+    --button-collapsible-operators-background-hover: #55337d;
+
+    --button-collapsible-observable-types-color: white;
+    --button-collapsible-observable-types-background: #509316;
+    --button-collapsible-observable-types-color-hover: white;
+    --button-collapsible-observable-types-background-hover: #336615;
+
+    --button-collapsible-observable-data-color: white;
+    --button-collapsible-observable-data-background: #2879af;
+    --button-collapsible-observable-data-color-hover: white;
+    --button-collapsible-observable-data-background-hover: #315595;
+
+
     --button-yes-color: white;
     --button-yes-background: #5cb85c;
     --button-yes-color-hover: white;
@@ -179,7 +200,7 @@ tr:nth-child(even):hover td {
 }
 
 #yara-rule-designer-buttons {
-    border-bottom-color:1px solid var(--yara-rule-designer-border-color);
+    border-bottom-color: var(--yara-rule-designer-border-color);
 }
 
 #load-rule-button {
@@ -224,6 +245,46 @@ tr:nth-child(even):hover td {
 
 #yara-rule-designer-tags {
     color: var(--yara-rule-designer-tags-color);
+}
+
+.button-collapsible-tags {
+    color: var(--button-collapsible-tags-color);
+    background: var(--button-collapsible-tags-background);
+}
+
+.button-collapsible-tags:hover {
+    color: var(--button-collapsible-tags-color-hover);
+    background: var(--button-collapsible-tags-background-hover);
+}
+
+.button-collapsible-operators {
+    color: var(--button-collapsible-operators-color);
+    background: var(--button-collapsible-operators-background);
+}
+
+.button-collapsible-operators:hover {
+    color: var(--button-collapsible-operators-color-hover);
+    background: var(--button-collapsible-operators-background-hover);
+}
+
+.button-collapsible-observable-types {
+    color: var(--button-collapsible-observable-types-color);
+    background: var(--button-collapsible-observable-types-background);
+}
+
+.button-collapsible-observable-types:hover {
+    color: var(--button-collapsible-observable-types-color-hover);
+    background: var(--button-collapsible-observable-types-background-hover);
+}
+
+.button-collapsible-observable-data {
+    color: var(--button-collapsible-observable-data-color);
+    background: var(--button-collapsible-observable-data-background);
+}
+
+.button-collapsible-observable-data:hover {
+    color: var(--button-collapsible-observable-data-color-hover);
+    background: var(--button-collapsible-observable-data-background-hover);
 }
 
 #yara-rule-designer-operators {
