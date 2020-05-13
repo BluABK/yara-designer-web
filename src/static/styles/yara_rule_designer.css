@@ -115,7 +115,18 @@ tr {
        needs their own (transparent) border to stay in-bounds. */
     border-right:1px solid;
     border-bottom: 1px solid;
-    overflow-x: hidden;
+    max-height: 90.75vh; /* Don't expand past viewport height (using exact number for screen edge) */
+    overflow-x: hidden; /* Fixes issue with bootstrap elements bleeding out of bounds a bit */
+    overflow-y: hidden; /* Overflow is passed off to bottom container */
+}
+
+/*#yara-rule-designer-leftpane-container-top {*/
+/*    !*min-height: 10vh;*!*/
+/*}*/
+
+#yara-rule-designer-leftpane-container-bottom {
+    max-height: 78vh; /* 80-2 to not bleed items out of bounds */
+    overflow-y: auto;
 }
 
 #yara-rule-designer-buttons {
