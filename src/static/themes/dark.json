@@ -17,9 +17,9 @@
     "--draggable-observable-type-background": "#63ab26",
 
     "--button-collapsible-tags-color": "white",
-    "--button-collapsible-tags-background": "#213d88",
+    "--button-collapsible-tags-background": "#f48d00",
     "--button-collapsible-tags-color-hover": "white",
-    "--button-collapsible-tags-background-hover": "#132549",
+    "--button-collapsible-tags-background-hover": "#bd5f00",
     "--button-collapsible-operators-color": "white",
     "--button-collapsible-operators-background": "#77209b",
     "--button-collapsible-operators-color-hover": "white",

@@ -72,11 +72,6 @@ document.querySelector('#clear-rule-button').addEventListener('click', clearRule
 document.querySelector('#submit-rule-button').addEventListener('click', postRule);
 
 // -- Draggables:
-// FIXME: Why is this a class not an ID?
-addCaseDetailsCollapsibleButtonLogic('button-collapsible-tags');
-addCaseDetailsCollapsibleButtonLogic('button-collapsible-operators');
-addCaseDetailsCollapsibleButtonLogic('button-collapsible-observable-types');
-addCaseDetailsCollapsibleButtonLogic('button-collapsible-observable-data');
 // -- -- Operators
 // -- -- -- Boolean:
 document.querySelector('#condition-keyword-and').addEventListener('click', function(){ addToEditor(event) });

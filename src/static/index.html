@@ -23,6 +23,7 @@
         <link rel="stylesheet" type="text/css" href="/static/styles/yara_rule_designer.css">
         <link rel="stylesheet" type="text/css" href="/static/styles/theme.css">
     </head>
+
     <body>
         <div class="container mh-100 h-100 mw-100 w-100 yara-rule-designer" id="yara-rule-designer-container">
             <div class="row align-items-start">
@@ -64,54 +65,78 @@
                         </div>
 
                         <div class="w-100"></div>
-                        <button type='button' class='button-collapsible-tags'>Tags</button>
-                        <div id="yara-rule-designer-tags" class="yara-rule-designer"></div>
+                        <button type="button" class="button-collapsible-tags" data-toggle="collapse"
+                                data-target="#yara-rule-designer-tags-collapsible" aria-expanded="true"
+                                aria-controls="yara-rule-designer-tags-collapsible">
+                            Tags
+                        </button>
+                        <div class="collapse show" id="yara-rule-designer-tags-collapsible">
+                            <div id="yara-rule-designer-tags" class="yara-rule-designer"></div>
+                        </div>
 
                         <div class="w-100"></div>
-                        <button type='button' class='button-collapsible-operators'>Conditional operators</button>
-                        <div class="yara-rule-designer" id="yara-rule-designer-operators">
-                            <!--    Add conditional keywords-->
-                            <!--    Boolean-->
-                            <span id="condition-keyword-and" class="condition-keyword">AND</span>
-                            <span id="condition-keyword-or" class="condition-keyword">OR</span>
-                            <span id="condition-keyword-not" class="condition-keyword">NOT</span>
-                            <!--    Arithmetic-->
-                            <span id="condition-keyword-equal" class="condition-keyword">==</span>
-                            <span id="condition-keyword-lt" class="condition-keyword"><</span>
-                            <span id="condition-keyword-gt" class="condition-keyword">></span>
-                            <span id="condition-keyword-leq" class="condition-keyword"><=</span>
-                            <span id="condition-keyword-geq" class="condition-keyword">>=</span>
-                            <span id="condition-keyword-neq" class="condition-keyword">!=</span>
-                            <!--    Relational-->
-                            <span id="condition-keyword-add" class="condition-keyword">+</span>
-                            <span id="condition-keyword-sub" class="condition-keyword">-</span>
-                            <span id="condition-keyword-mul" class="condition-keyword">*</span>
-                            <span id="condition-keyword-div" class="condition-keyword">/</span>
-                            <span id="condition-keyword-pct" class="condition-keyword">%</span>
-                            <span id="condition-keyword-setminus" class="condition-keyword">\</span>
-                            <!--    Bitwise-->
-                            <span id="condition-keyword-bitwise-and" class="condition-keyword">&</span>
-                            <span id="condition-keyword-bitwise-or" class="condition-keyword">|</span>
-                            <span id="condition-keyword-bitwise-not" class="condition-keyword">~</span>
-                            <span id="condition-keyword-bitwise-xor" class="condition-keyword">^</span>
-                            <span id="condition-keyword-bitwise-lshift" class="condition-keyword"><<</span>
-                            <span id="condition-keyword-bitwise-rshift" class="condition-keyword">>></span>
-                            <!-- Parenthesis and wrappers -->
-                            <span id="condition-keyword-lparen" class="condition-keyword">(</span>
-                            <span id="condition-keyword-rparen" class="condition-keyword">)</span>
-                            <!-- Encapsulators -->
-                            <span id="condition-keyword-encapsulate-paren" class="condition-encapsulator">()</span>
+                        <button type="button" class="button-collapsible-operators" data-toggle="collapse"
+                                data-target="#yara-rule-designer-operators-collapsible" aria-expanded="true"
+                                aria-controls="yara-rule-designer-operators-collapsible">
+                            Conditional operators
+                        </button>
+                        <div class="collapse show" id="yara-rule-designer-operators-collapsible">
+                            <div class="yara-rule-designer" id="yara-rule-designer-operators">
+                                <!--    Add conditional keywords-->
+                                <!--    Boolean-->
+                                <span id="condition-keyword-and" class="condition-keyword">AND</span>
+                                <span id="condition-keyword-or" class="condition-keyword">OR</span>
+                                <span id="condition-keyword-not" class="condition-keyword">NOT</span>
+                                <!--    Arithmetic-->
+                                <span id="condition-keyword-equal" class="condition-keyword">==</span>
+                                <span id="condition-keyword-lt" class="condition-keyword"><</span>
+                                <span id="condition-keyword-gt" class="condition-keyword">></span>
+                                <span id="condition-keyword-leq" class="condition-keyword"><=</span>
+                                <span id="condition-keyword-geq" class="condition-keyword">>=</span>
+                                <span id="condition-keyword-neq" class="condition-keyword">!=</span>
+                                <!--    Relational-->
+                                <span id="condition-keyword-add" class="condition-keyword">+</span>
+                                <span id="condition-keyword-sub" class="condition-keyword">-</span>
+                                <span id="condition-keyword-mul" class="condition-keyword">*</span>
+                                <span id="condition-keyword-div" class="condition-keyword">/</span>
+                                <span id="condition-keyword-pct" class="condition-keyword">%</span>
+                                <span id="condition-keyword-setminus" class="condition-keyword">\</span>
+                                <!--    Bitwise-->
+                                <span id="condition-keyword-bitwise-and" class="condition-keyword">&</span>
+                                <span id="condition-keyword-bitwise-or" class="condition-keyword">|</span>
+                                <span id="condition-keyword-bitwise-not" class="condition-keyword">~</span>
+                                <span id="condition-keyword-bitwise-xor" class="condition-keyword">^</span>
+                                <span id="condition-keyword-bitwise-lshift" class="condition-keyword"><<</span>
+                                <span id="condition-keyword-bitwise-rshift" class="condition-keyword">>></span>
+                                <!-- Parenthesis and wrappers -->
+                                <span id="condition-keyword-lparen" class="condition-keyword">(</span>
+                                <span id="condition-keyword-rparen" class="condition-keyword">)</span>
+                                <!-- Encapsulators -->
+                                <span id="condition-keyword-encapsulate-paren" class="condition-encapsulator">()</span>
+                            </div>
                         </div>
 
                         <div class="w-100"></div>
 
-                        <button type='button' class='button-collapsible-observable-types'>Observable types</button>
-                        <div class="yara-rule-designer" id="yara-rule-designer-observable-types"></div>
+                        <button type="button" class="button-collapsible-observable-types" data-toggle="collapse"
+                                data-target="#yara-rule-designer-observable-types-collapsible" aria-expanded="true"
+                                aria-controls="yara-rule-designer-observable-types-collapsible">
+                            Observable types
+                        </button>
+                        <div class="collapse show" id="yara-rule-designer-observable-types-collapsible">
+                            <div class="yara-rule-designer" id="yara-rule-designer-observable-types"></div>
+                        </div>
 
                         <div class="w-100"></div>
 
-                        <button type='button' class='button-collapsible-observable-data'>Observable data</button>
-                        <div class="yara-rule-designer" id="yara-rule-designer-observable-data"></div>
+                        <button type="button" class="button-collapsible-observable-data" data-toggle="collapse"
+                                data-target="#yara-rule-designer-observable-data-collapsible" aria-expanded="true"
+                                aria-controls="yara-rule-designer-observable-data-collapsible">
+                            Observable data
+                        </button>
+                        <div class="collapse show" id="yara-rule-designer-observable-data-collapsible">
+                            <div class="yara-rule-designer" id="yara-rule-designer-observable-data"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -159,16 +184,16 @@
 
         <!-- 3rd party scripts.-->
         <!-- JQuery ( required for Bootstrap and $() ). -->
-        <script src="/static/scripts/third-party/jquery-3.5.0.min.js" integrity="sha384-LVoNJ6yst/aLxKvxwp6s2GAabqPczfWh6xzm38S/YtjUyZ+3aTKOnD/OJVGYLZDl" crossorigin="anonymous"></script>
+        <script src="/static/scripts/third-party/jquery-3.5.1.min.js"></script>
 
         <!-- Popper ( required for Bootstrap ). -->
-        <script src="/static/scripts/third-party/popper-1.14.6.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+        <script src="/static/scripts/third-party/popper-1.14.6.min.js"></script>
 
         <!-- Bootstrap -->
-        <script src="/static/scripts/third-party/bootstrap-4.4.1.bundle.min.js" integrity="sha384-6khuMg9gaYr5AxOqhkVIODVIvm9ynTT5J4V1cfthmT+emCG6yVmEZsRHdxlotUnm" crossorigin="anonymous"></script>
+        <script src="/static/scripts/third-party/bootstrap-4.4.1.bundle.min.js"></script>
 
         <!-- Dragula - Drag 'n Drop   -->
-        <script src="/static/scripts/third-party/dragula-3.7.2.min.js" integrity="sha384-BCXeg8w0rlmhmi8L/zjAIsj0b66prXjptd1vMdGJbEVJH5aBJYDjzfdTmWBzcCXG" crossorigin="anonymous"></script>
+        <script src="/static/scripts/third-party/dragula-3.7.2.min.js"></script>
 
         <!--1st party scripts.        -->
         <!-- JavaScript vars sent in from EJS template engine.       -->
