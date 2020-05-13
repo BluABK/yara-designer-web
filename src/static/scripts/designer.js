@@ -295,24 +295,6 @@ function getRuleJsonFromEditorElements() {
     return json;
 }
 
-function addCaseDetailsCollapsibleButtonLogic(className) {
-    let coll = document.getElementsByClassName(className);
-    let i;
-
-    for (i = 0; i < coll.length; i++) {
-      coll[i].addEventListener("click", function() {
-        this.classList.toggle("active");
-        let content = this.nextElementSibling;
-        if (content.style.display === "block") {
-          content.style.display = "none";
-        } else {
-          content.style.display = "block";
-        }
-      });
-    }
-}
-
-
 function fetchGetRequest(url, callback) {
     function status(response) {
         if (response.status >= 200 && response.status < 300) {
@@ -827,6 +809,23 @@ function loadRule(ruleId) {
     getRule(ruleId, loadRuleCallback);
 }
 
+function makeCollapsibleJSONDetails(json, id) {
+    return `<button type="button" class="${modals.RESPONSE_MODAL_BUTTON_JSON_COLLAPSIBLE_CLASS}"\n` +
+           `                      data-toggle="collapse" data-target="#${id}"\n` +
+           `                      aria-expanded="false" aria-controls="${id}">\n` +
+           `     Show JSON\n` +
+           `</button>` +
+
+           `<div id="${id}" class="collapse">` +
+           `   <div class='${modals.RESPONSE_MODAL_JSON_COLLAPSIBLE_CONTENT_CLASS}'>` +
+           // `<div>` +
+           `       <pre>` +
+           `           ${JSON.stringify(json, undefined, 4)}` +
+           `       </pre>` +
+           `   </div>` +
+           `</div>`;
+}
+
 function handlePostRuleResponse(json) {
     let errorType = "";
     let errorMessage = "";
@@ -918,13 +917,7 @@ function handlePostRuleResponse(json) {
     }
 
     // Collapsible raw JSON details.
-    body +=
-        `<button type='button' class='${modals.RESPONSE_MODAL_BUTTON_JSON_COLLAPSIBLE_CLASS}'>Show JSON</button>\n` +
-        `<div class='${modals.RESPONSE_MODAL_JSON_COLLAPSIBLE_CONTENT_CLASS}'>\n` +
-        `    <pre>\n` +
-        `        ${JSON.stringify(json, undefined, 4)}\n` +
-        `    </pre>\n` +
-        `</div>`;
+    body += makeCollapsibleJSONDetails(json, 'collapsible-json-details-post-rule');
 
     // Spawn modal.
     modals.popupModal(modals.RESPONSE_MODAL, header, null, body, null, modals.MODAL_DEFAULT_FOOTER, level);
@@ -945,9 +938,6 @@ function handlePostRuleResponse(json) {
         // Close modal after handling button action.
         document.getElementById(modals.CONFIRMATION_MODAL).style.display = "none";
     };
-
-    // Make the JSON detailsCollapsible element actually collapsible.
-    addCaseDetailsCollapsibleButtonLogic(modals.RESPONSE_MODAL_BUTTON_JSON_COLLAPSIBLE_CLASS);
 }
 
 /**
@@ -1064,20 +1054,10 @@ function handlePostCommitResponse(json) {
     }
 
     // Collapsible raw JSON details.
-    body +=
-        `<button type='button' class='${modals.RESPONSE_MODAL_BUTTON_JSON_COLLAPSIBLE_CLASS}'>Show JSON</button>` +
-        `<div class='${modals.RESPONSE_MODAL_JSON_COLLAPSIBLE_CONTENT_CLASS}'>` +
-        `    <pre>` +
-        `        ${JSON.stringify(json, undefined, 4)}` +
-        `    </pre>` +
-        `</div>`;
+    body += makeCollapsibleJSONDetails(json, 'collapsible-json-details-post-commit-response');
 
     // Spawn modal.
     modals.popupModal(modals.RESPONSE_MODAL, header, null, body, null, modals.MODAL_DEFAULT_FOOTER, level);
-
-    // Perform changes that requires a spawned modal:
-    // Make the JSON detailsCollapsible element actually collapsible.
-    addCaseDetailsCollapsibleButtonLogic(modals.RESPONSE_MODAL_BUTTON_JSON_COLLAPSIBLE_CLASS);
 }
 
 /**
