@@ -841,7 +841,7 @@ function handlePostRuleResponse(json) {
     let compilable = outJson["compilable"];
     let success = outJson["success"];
 
-    let sourcePreprocessed = outJson["source (preprocessed)"]; // FIXME: Fix JSON key naming convention.
+    let source = outJson["source"]; // FIXME: Fix JSON key naming convention.
 
     let yaraRuleSourceFile = outJson["generated_yara_source_file"]; // FIXME: Fix JSON key naming convention.
 
@@ -885,7 +885,7 @@ function handlePostRuleResponse(json) {
     body += "<br/>Generated YARA rule:<br/>";
 
     // Loop through lines to add line numbering support via CSS counter.
-    let lines = String(sourcePreprocessed).split('\n');
+    let lines = String(source).split('\n');
     body += `<pre class='${NUMBERED_TEXTBOX_CLASS}'>`;
     for (let i = 0; i < lines.length; i++) {
         if (!success) {
