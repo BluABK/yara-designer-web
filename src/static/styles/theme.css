@@ -117,6 +117,12 @@
     --table-row-background-alt-hover: #e2e2e2;
     --table-row-color-hover: black;
     --table-row-color-alt-hover: black;
+
+    /* Custom context menu */
+    --context-menu-background: #2879af;
+    --context-menu-color: #ffffff;
+    --context-menu-background-hover: #3ca5e6;
+    --context-menu-color-hover: #ffffff;
 }
 
 html, body {
@@ -434,4 +440,29 @@ mark.green-bg {
 #fetched-rules-input-filter {
     background-color: var(--modal-background);
     color: var(--modal-color);
+}
+
+/* Custom context menu */
+#custom-context-menu {
+    background-color: var(--context-menu-background);
+    color: var(--context-menu-color);
+}
+
+#custom-context-menu a, #custom-context-menu p  {
+    background-color: var(--context-menu-background);
+    color: var(--context-menu-color);
+}
+
+#custom-context-menu a span p {
+  color: #BCB1B3;
+}
+
+#custom-context-menu a:hover,
+#custom-context-menu p:hover {
+    background-color: var(--context-menu-background-hover);
+    color: var(--context-menu-color-hover);
+}
+
+#custom-context-menu hr {
+  border-color: #EBEBEB;
 }

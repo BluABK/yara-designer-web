@@ -136,7 +136,111 @@ dragula([
 });
 
 ///////////////////////////////////// Core (designer) code ///////////////////////////////////
+/**
+ * Logs the selected item and pops up a modal with the inner HTML.
+ * @param target
+ */
+function debugSelectedTarget(target) {
+    console.log("debugSelectedTarget", target);
+    modals.popupModal(modals.RESPONSE_MODAL, target, target.innerHTML);
+}
 
+/**
+ * Disable default context menu.
+ *
+ * @returns {boolean}
+ */
+if (document.addEventListener) {
+    document.addEventListener('contextmenu', function(mouseEvent) {
+        console.log('contextmenu', mouseEvent);
+
+        let posX = mouseEvent.clientX;
+        let posY = mouseEvent.clientY;
+        customContextMenuShow(mouseEvent, posX, posY);
+        mouseEvent.preventDefault();
+    }, false);
+    document.addEventListener('click', function(mouseEvent) {
+        // console.log('click', mouseEvent);
+
+        let customContextMenuElement = document.getElementById("custom-context-menu");
+        customContextMenuElement.style.opacity = "0";
+        setTimeout(function() {
+            customContextMenuElement.style.visibility = "hidden";
+        }, 501);
+    }, false);
+} else {
+    document.attachEvent('oncontextmenu', function(e) {
+        console.log('oncontextmenu', e);
+
+        let posX = e.clientX;
+        let posY = e.clientY;
+        customContextMenuShow(e, posX, posY);
+        e.preventDefault();
+    });
+    document.attachEvent('onclick', function(e) {
+        console.log('onclick', e);
+
+        let customContextMenuElement = document.getElementById("custom-context-menu");
+        customContextMenuElement.style.opacity = "0";
+        setTimeout(function() {
+            customContextMenuElement.style.visibility = "hidden";
+        }, 501);
+    });
+}
+
+function clearContextMenu() {
+    let customContextMenuElement = document.getElementById("custom-context-menu");
+    customContextMenuElement.innerHTML = "";
+}
+
+function editorContextMenu() {
+    let customContextMenuElement = document.getElementById("custom-context-menu");
+
+}
+
+function LeftpaneContextMenu() {
+    let customContextMenuElement = document.getElementById("custom-context-menu");
+
+}
+
+function defaultContextMenu(e) {
+    console.log("defaultContextMenu", e);
+
+    let customContextMenuElement = document.getElementById("custom-context-menu");
+    customContextMenuElement.innerHTML =
+        `<p id="debug-selected-item-option">Debug target: ${e.target.localName}#${e.target.id}.${e.target.className}</p>` +
+        `<a href="#" id="debug-selected-item-option">Debug target a</a>`;
+
+    document.querySelector('#debug-selected-item-option').addEventListener('click', function(){ debugSelectedTarget(e.target) });
+}
+
+function customContextMenuShow(e, x, y) {
+    console.log("customContextMenuShow", e, x, y);
+
+    let customContextMenuElement = document.getElementById("custom-context-menu");
+
+    clearContextMenu();
+
+    defaultContextMenu(e);
+
+    // Show the context menu.
+    customContextMenuElement.style.top = y + "px";
+    customContextMenuElement.style.left = x + "px";
+    customContextMenuElement.style.visibility = "visible";
+    customContextMenuElement.style.opacity = "1";
+}
+
+
+// function customContextMenu(clickEvent) {
+//     let editorDiv = document.getElementById(DESIGNER_EDITOR);
+//
+//     // Only perform remove action if target is a child of editor div.
+//     if (clickEvent.target.parentNode.getAttribute("id") === DESIGNER_EDITOR) {
+//         editorContextMenu();
+//         // console.log("removeFromEditor", clickEvent.target);
+//         // editorDiv.removeChild(clickEvent.target);
+//     }
+// }
 /**
  * Override default behaviour for mouse clicks in the editor div,
  * in order to support middle and right clicks.
@@ -172,6 +276,7 @@ function removeFromEditor(clickEvent) {
         editorDiv.removeChild(clickEvent.target);
     }
 }
+
 
 function onAuxClick(auxClickEvent) {
     console.log("onAuxClick", auxClickEvent);
