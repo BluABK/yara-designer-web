@@ -689,10 +689,10 @@ function mockRules(num) { // FIXME: Remove this debug/testing function.
 function printRulesTable(rules, defaultCheckedRadio = TABLE_FILTER_CHECKED_RADIO,
                          hideRadios = TABLE_FILTER_HIDDEN_RADIOS, modalId = modals.RESPONSE_MODAL) {
     console.log("rules", rules);
-    console.log("mock rules", mockRules(5));
-    for ( let mockRule of mockRules(50) ) {
-        rules.push(mockRule);
-    }
+    // console.log("mock rules", mockRules(5));
+    // for ( let mockRule of mockRules(50) ) {
+    //     rules.push(mockRule);
+    // }
 
     let header = `<h3>Fetched rules <span id='${modalId}-header-${TABLE_FILTER_COUNT}'</span></h3>`;
     let bodyTop = "";
