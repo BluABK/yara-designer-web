@@ -464,7 +464,7 @@ async function fetchPostRequest(url = '', data = {}, callback) {
 
 function getRule(ruleId, callback=printRulesTable) {
     // noinspection JSIgnoredPromiseFromCall
-    fetchPostRequest(GET_RULE_ROUTE, { id:  ruleId}, callback);
+    fetchGetRequest(`${GET_RULE_ROUTE}/${ruleId}`, callback);
 }
 
 function getRules(callback=printRulesTable) {
