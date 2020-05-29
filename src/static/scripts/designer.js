@@ -368,6 +368,8 @@ function getEnabledTags() {
 
 /**
  * Generate a JSON of varname and vardata to send in POST request.
+ *
+ * JSON template: { "meta": {...}, "rule": str, "tags": list, "observables": {...}, "condition": str }
  */
 function getRuleJsonFromEditorElements() {
     let json = {};
@@ -946,9 +948,9 @@ function handlePostRuleResponse(json) {
     let compilable = outJson["compilable"];
     let success = outJson["success"];
 
-    let source = outJson["source"]; // FIXME: Fix JSON key naming convention.
+    let source = outJson["source"];
 
-    let yaraRuleSourceFile = outJson["generated_yara_source_file"]; // FIXME: Fix JSON key naming convention.
+    let yaraRuleSourceFile = outJson["generated_yara_source_file"];
 
     if (!compilable) {
         level = "warning";
