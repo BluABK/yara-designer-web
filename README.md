@@ -1,36 +1,26 @@
-# Yara Whitelist Rule Creator
+# YARA-Designer GUI (Web Frontend)
 
-## Requirements
-### Other repositories
-- TheOracle
+## Dependencies
+### Git repository
+The following Git repository must be set up and available.
+- TheOracle (YARA rules git repository)
+### Projects
+The following projects must be running and available over network.
+- yara-designer-core (backend/API)
 
-## TheHive/Cortex Responder
+### Frameworks
+- Node.js (node/npm)
 
-This responder sends a `thehive:case` to a listener which then creates
-a Yara rule based on it.
+## Setup
+1. Copy `dotenv.sample` to `.env` and configure it.
+2. Install packages: `$ npm install`.
 
-#### Set up on thehive and cortex host:
+## Usage
+1. Start the web server: `$ npm start`
+2. Open the YARA-Designer web page.
 
-NB: The system needs to have cortexutils installed!
-Install it using pip (both py2 and py3, to be sure):
-```
-pip install cortexutils
-pip3 install cortexutils
-```
-
-#### Setup
-1. Upload the `responder/` directory as `/opt/Cortex-Analyzers/responders/` on the remote host.
-2. Restart cortex and thehive.
-3. Enable the responder in cortex.
-
-#### Usage
-1. Start the listener.
-2. Use the responder on a case.
-
-## Workflow
-![responder-workflow](markdown_assets/responder_workflow_diagram.png)
-
-
-## YARA Rule Designer
-
-## Workflow
+## Optional URL parameters
+| Parameter | Description                                               |
+|-----------|-----------------------------------------------------------|
+| id        | Loads case with the given case ID                         |
+| theme     | Use custom theme (currently only supports `light`/`dark`) |
