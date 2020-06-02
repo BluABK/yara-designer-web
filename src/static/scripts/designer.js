@@ -9,17 +9,20 @@ import * as yara from "./modules/yara.js";
 console.log(yara);
 
 try {
-    let ys1 = yara.YARAString('my_Identifier5', "This is a string", yara.YARA_TYPE_TEXT, [yara.YARA_MODIFIER_WIDE, yara.YARA_MODIFIER_NO_CASE]);
+    let ys1 = yara.createYARAString('my_Identifier5', "This is a string", yara.YARA_TYPE_TEXT, [yara.YARA_MODIFIER_WIDE, yara.YARA_MODIFIER_NO_CASE]);
 
     console.log("ys1", ys1);
 } catch (e) {
     console.error(e)
 }
 
-// console.log("YARAString.YARA_MODIFIER.VALID_MODIFIERS", YARA.YARAString.YARA_MODIFIER.VALID_MODIFIERS);
-//
-// console.log("YARAString.YARA_MODIFIER.MODIFIER_RESTRICTIONS[YARAString.YARA_MODIFIER.NO_CASE])",
-//     YARA.YARAString.YARA_MODIFIER.MODIFIER_RESTRICTIONS[YARA.YARAString.YARA_MODIFIER.NO_CASE]);
+try {
+    let ys2 = yara.createYARAString('my_Identifier5', "This is a string", yara.YARA_TYPE_TEXT, [yara.YARA_MODIFIER_WIDE, yara.YARA_MODIFIER_NO_CASE, yara.YARA_MODIFIER_BASE64]);
+
+    console.log("ys2", ys2);
+} catch (e) {
+    console.error(e)
+}
 
 // MIME Types:
 const MIMETYPE_JSON = 'application/json';

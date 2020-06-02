@@ -31,10 +31,10 @@ export function InvalidIdentifierException(message, identifier) {
     this.identifier = identifier;
 }
 
-export function InvalidStringTypeException(message, sType) {
+export function InvalidStringTypeException(message, stringType) {
     this.name = "InvalidStringTypeException";
-    this.message = message || `Invalid YARA String type '${sType}'!`;
-    this.sType = sType;
+    this.message = message || `Invalid YARA String type '${stringType}'!`;
+    this.stringType = stringType;
 }
 
 export function InvalidStringModifierException(message, modifier) {
@@ -43,10 +43,11 @@ export function InvalidStringModifierException(message, modifier) {
     this.modifier = modifier;
 }
 
-export function IllegalStringModifierCombinationException(message, modifier, illegalMatch) {
-    this.name = "InvalidStringTypeException";
-    this.message = message || `Invalid YARA String modifier '${modifier}'!`;
+export function IllegalStringModifierCombinationException(message, modifier, matchedRestrictions) {
+    this.name = "IllegalStringModifierCombinationException";
+    this.message = message || `Illegal YARA String modifier combination! '${modifier}' is in restriction list: [${matchedRestrictions}].`;
     this.modifier = modifier;
+    this.matchedRestrictions = matchedRestrictions;
 }
 
 function isAlphaNumeric(str) {
@@ -106,107 +107,167 @@ export function validateIdentifier(identifier) {
                 `Invalid YARA Identifier '${identifier}', '${identifier[i]}' is not an alphanumeric or underscore character!`, identifier)
         }
     }
+
+    return identifier;
 }
 
-export function YARAString(t_sIdentifier, t_value, t_sType=YARA_TYPE_TEXT, t_modifiers=[]) {
-    // this.modifiers = [];
+function isValidType(stringType) {
+    return (YARA_TYPES.includes(stringType));
+}
 
-     /**
-     * YARA String modifier restrictions dict.
-     *
-     * Each key contains a list of values which it is not allowed to be used in combination with.
-     *
-     * @type {{YARA_MODIFIER_ASCII: [], YARA_MODIFIER_XOR: [string, string, string], YARA_MODIFIER_PRIVATE: [],
-      * YARA_MODIFIER_FULL_WORD: [string, string], YARA_MODIFIER_NO_CASE: [string, string, string],
-      * YARA_MODIFIER_BASE64_WIDE: [string, string, string], YARA_MODIFIER_WIDE: [],
-      * YARA_MODIFIER_BASE64: [string, string, string]}}
-     */
-     const MODIFIER_RESTRICTIONS = {
-            YARA_MODIFIER_NO_CASE: [YARA_MODIFIER_XOR, YARA_MODIFIER_BASE64, YARA_MODIFIER_BASE64_WIDE],
-            YARA_MODIFIER_WIDE: [],
-            YARA_MODIFIER_ASCII: [],
-            YARA_MODIFIER_XOR: [YARA_MODIFIER_NO_CASE, YARA_MODIFIER_BASE64, YARA_MODIFIER_BASE64_WIDE],
-            YARA_MODIFIER_BASE64: [YARA_MODIFIER_NO_CASE, YARA_MODIFIER_XOR, YARA_MODIFIER_FULL_WORD],
-            YARA_MODIFIER_BASE64_WIDE: [YARA_MODIFIER_NO_CASE, YARA_MODIFIER_XOR, YARA_MODIFIER_FULL_WORD],
-            YARA_MODIFIER_FULL_WORD: [YARA_MODIFIER_BASE64, YARA_MODIFIER_BASE64_WIDE],
-            YARA_MODIFIER_PRIVATE: []
-        };
+function isValidModifier(modifier) {
+    return (YARA_MODIFIERS.includes(modifier));
+}
 
-    function isValidType(sType) {
-        return (YARA_TYPES.includes(sType));
-    }
-
-    function isValidModifier(modifier) {
-        return (YARA_MODIFIERS.includes(modifier));
-    }
-
-    function isValidModifiers(modifiers) {
-        for (let modifier of modifiers) {
-           if (isValidModifier(modifier) !== true) {
-               return false;
-           }
-        }
-
-        return true;
-    }
-
-    // function addModifier(newModifier) {
-    //     // Get restrictions that apply to currently set modifiers.
-    //     let existingRestrictions = [];
-    //     for (let existingModifier of YARAString.modifiers) {
-    //         existingRestrictions.push(...MODIFIER_RESTRICTIONS[existingModifier])
-    //     }
-    //
-    //     // Check that modifier is not listed in the existing restrictions list.
-    //     if (existingRestrictions.includes(newModifier) !== true) {
-    //         // Add the modifier.
-    //         YARAString.modifiers.push(newModifier);
-    //     } else {
-    //         throw new IllegalStringModifierCombinationException(null, newModifier, null);
-    //     }
-    // }
-
-    // function text() {
-    //     return `${YARA_STRING_SYMBOL}${YARAString.identifier} = ${this.value}${YARAString.modifiers}`;
-    // }
-
-    // Check that constructor input is valid according to the YARA spec:
-    // Check that identifier is valid (throws exception if not).
-    validateIdentifier(t_sIdentifier);
-    this.sIdentifier = t_sIdentifier;
-
-    // Check that the given YARA String type is valid:
-    if (isValidType(t_sType) !== true) {
-        throw new InvalidStringTypeException(null, sType);
-    }
-    this.sType = t_sType;
-
-    // Apply operations to modifiers:
-    let existingRestrictions = [];
-    for (let modifier of t_modifiers) {
-        // Check that all modifiers are of valid type.
-       if (isValidModifier(modifier) === true) {
-           // Add modifier (if invalid combination, throws exception).
-           // addModifier(modifier);
-           // Get restrictions that apply to currently set modifiers.
-           //  for (let existingModifier of this.modifiers) {
-           //      existingRestrictions.push(...MODIFIER_RESTRICTIONS[existingModifier])
-           //  }
-            existingRestrictions.push(...MODIFIER_RESTRICTIONS[modifier]);
-
-            // Check that modifier is not listed in the existing restrictions list.
-            if (existingRestrictions.includes(modifier) !== true) {
-                // Add the modifier.
-                this.modifiers.push(modifier);
-            } else {
-                throw new IllegalStringModifierCombinationException(null, modifier, null);
-            }
-       } else {
-           throw new InvalidStringModifierException(null, modifier);
+function isValidModifiers(modifiers) {
+    for (let modifier of modifiers) {
+       if (isValidModifier(modifier) !== true) {
+           return false;
        }
     }
 
-    console.log(`Spawned YARA String object: '${this.text()}'`, this)
+    return true;
 }
 
-// export { YARAString };
+ /**
+ * YARA String modifier restrictions dict.
+ *
+ * Each key contains a list of values which it is not allowed to be used in combination with.
+ *
+ * @type {{YARA_MODIFIER_ASCII: [], YARA_MODIFIER_XOR: [string, string, string], YARA_MODIFIER_PRIVATE: [],
+  * YARA_MODIFIER_FULL_WORD: [string, string], YARA_MODIFIER_NO_CASE: [string, string, string],
+  * YARA_MODIFIER_BASE64_WIDE: [string, string, string], YARA_MODIFIER_WIDE: [],
+  * YARA_MODIFIER_BASE64: [string, string, string]}}
+ */
+export const YARA_STRING_MODIFIER_RESTRICTIONS = {
+    YARA_MODIFIER_NO_CASE: [YARA_MODIFIER_XOR, YARA_MODIFIER_BASE64, YARA_MODIFIER_BASE64_WIDE],
+    YARA_MODIFIER_WIDE: [],
+    YARA_MODIFIER_ASCII: [],
+    YARA_MODIFIER_XOR: [YARA_MODIFIER_NO_CASE, YARA_MODIFIER_BASE64, YARA_MODIFIER_BASE64_WIDE],
+    YARA_MODIFIER_BASE64: [YARA_MODIFIER_NO_CASE, YARA_MODIFIER_XOR, YARA_MODIFIER_FULL_WORD],
+    YARA_MODIFIER_BASE64_WIDE: [YARA_MODIFIER_NO_CASE, YARA_MODIFIER_XOR, YARA_MODIFIER_FULL_WORD],
+    YARA_MODIFIER_FULL_WORD: [YARA_MODIFIER_BASE64, YARA_MODIFIER_BASE64_WIDE],
+    YARA_MODIFIER_PRIVATE: []
+};
+
+export var YARAString = {
+    stringIdentifier: null,
+    stringType: YARA_TYPE_TEXT,
+    stringModifiers: [],
+    stringValue: null,
+
+    // Check that identifier is valid (throws exception if not).
+    setIdentifier: function(t_stringIdentifier) {
+        validateIdentifier(t_stringIdentifier);
+        this.stringIdentifier = t_stringIdentifier;
+    },
+
+    getIdentifier: function() { return this.stringIdentifier },
+    
+    setValue: function(t_value) {
+        this.stringValue = t_value;
+    },
+
+    getValue: function() { return this.stringValue },
+
+    setType: function(t_stringType) {
+        // Check that the given YARA String type is valid.
+        if (isValidType(t_stringType) === true) {
+            this.stringType = t_stringType;
+        } else {
+            throw new InvalidStringTypeException(null, t_stringType);
+        }
+
+    },
+
+    getType: function() { return this.stringType },
+
+    setModifier: function (t_modifier) {
+        if (isValidModifier(t_modifier) === true) {
+            // Get restrictions that apply to currently set modifiers.
+            let existingRestrictions = [];
+            for (let existingModifier of this.stringModifiers) {
+                // NOTE: Apparently can't access JSON object values from a prototype,
+                // so uses switch-case to get the job done.
+                 let restrictions = [];
+                switch(existingModifier) {
+                    case YARA_MODIFIER_NO_CASE:
+                        restrictions = [YARA_MODIFIER_XOR, YARA_MODIFIER_BASE64, YARA_MODIFIER_BASE64_WIDE];
+                        break;
+                    case YARA_MODIFIER_WIDE:
+                        break;
+                    case YARA_MODIFIER_ASCII:
+                        break;
+                    case YARA_MODIFIER_XOR:
+                        restrictions = [YARA_MODIFIER_NO_CASE, YARA_MODIFIER_BASE64, YARA_MODIFIER_BASE64_WIDE];
+                        break;
+                    case YARA_MODIFIER_BASE64:
+                        restrictions = [YARA_MODIFIER_NO_CASE, YARA_MODIFIER_XOR, YARA_MODIFIER_FULL_WORD];
+                        break;
+                    case YARA_MODIFIER_BASE64_WIDE:
+                        restrictions = [YARA_MODIFIER_NO_CASE, YARA_MODIFIER_XOR, YARA_MODIFIER_FULL_WORD];
+                        break;
+                    case YARA_MODIFIER_FULL_WORD:
+                        restrictions = [YARA_MODIFIER_BASE64, YARA_MODIFIER_BASE64_WIDE];
+                        break;
+                    case YARA_MODIFIER_PRIVATE:
+                        break;
+                    default:
+                        console.error(
+                            "existingModifier switch case should not have reached default!", existingModifier);
+                        break;
+                }
+
+                // Make sure not to add duplicate entries to the restrictions list.
+                let restrictionsAlreadyInList = false;
+                for (let restriction of restrictions) {
+                    if (existingRestrictions.includes(restriction)) {
+                        restrictionsAlreadyInList = true;
+                    }
+                }
+
+                // Update restrictions list, if the restrictions were new.
+                if (!restrictionsAlreadyInList) {
+                    existingRestrictions.push(...restrictions);
+                }
+            }
+
+            // Check that modifier is not listed in the existing restrictions list.
+            if (existingRestrictions.includes(t_modifier) !== true) {
+                // Add the modifier.
+                this.stringModifiers.push(t_modifier);
+            } else {
+                throw new IllegalStringModifierCombinationException(null, t_modifier, existingRestrictions);
+            }
+        } else {
+           throw new InvalidStringModifierException(null, t_modifier);
+       }
+    },
+
+    setModifiers: function(t_modifiers) {
+        for (let modifier of t_modifiers) {
+            this.setModifier(modifier)
+        }
+    },
+
+    getModifiers: function() { return this.stringModifiers },
+    
+    text: function() {
+        if (this.stringType === YARA_TYPE_TEXT) {
+            return `${YARA_STRING_SYMBOL}${this.stringIdentifier} = "${this.stringValue}" ${this.stringModifiers.join(' ')}`;
+        }
+    }
+};
+
+export function createYARAString(t_stringIdentifier, t_value, t_stringType=YARA_TYPE_TEXT, t_modifiers=[]) {
+    let ys = Object.create(YARAString);
+
+    ys.setIdentifier(t_stringIdentifier);
+    ys.setValue(t_value);
+    ys.setType(t_stringType);
+    ys.setModifiers(t_modifiers);
+
+    console.log(`Spawned YARA String object: '${ys.text()}'`, ys);
+
+    return ys;
+}
