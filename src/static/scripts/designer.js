@@ -3,6 +3,23 @@ import * as levels from "./modules/levels.js";
 import { NoContentsException, NO_CONTENTS_EXCEPTION } from "./modules/exceptions.js";
 import { getParameterByName } from "./modules/utils.js";
 import * as modals from "./modules/modals.js";
+// import { YARAString } from "./modules/yara.js";
+import * as yara from "./modules/yara.js";
+
+console.log(yara);
+
+try {
+    let ys1 = yara.YARAString('my_Identifier5', "This is a string", yara.YARA_TYPE_TEXT, [yara.YARA_MODIFIER_WIDE, yara.YARA_MODIFIER_NO_CASE]);
+
+    console.log("ys1", ys1);
+} catch (e) {
+    console.error(e)
+}
+
+// console.log("YARAString.YARA_MODIFIER.VALID_MODIFIERS", YARA.YARAString.YARA_MODIFIER.VALID_MODIFIERS);
+//
+// console.log("YARAString.YARA_MODIFIER.MODIFIER_RESTRICTIONS[YARAString.YARA_MODIFIER.NO_CASE])",
+//     YARA.YARAString.YARA_MODIFIER.MODIFIER_RESTRICTIONS[YARA.YARAString.YARA_MODIFIER.NO_CASE]);
 
 // MIME Types:
 const MIMETYPE_JSON = 'application/json';
@@ -321,6 +338,11 @@ function getEditorObservables(unique=true) {
 function getEditorElementObservableText(element) {
     // Get text string.
     return $(element).text();
+}
+
+function getEditorElementObservableType(element) {
+    // Get text string.
+    return $(element).getAttribute(YARA_STRING_TYPE_ATTR);
 }
 
 function getEditorElementKeywordText(element) {
