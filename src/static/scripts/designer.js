@@ -3,7 +3,6 @@ import * as levels from "./modules/levels.js";
 import { NoContentsException, NO_CONTENTS_EXCEPTION } from "./modules/exceptions.js";
 import { getParameterByName } from "./modules/utils.js";
 import * as modals from "./modules/modals.js";
-// import { YARAString } from "./modules/yara.js";
 import * as yara from "./modules/yara.js";
 
 console.log(yara);
@@ -13,7 +12,7 @@ try {
 
     console.log("ys1", ys1);
 } catch (e) {
-    console.error(e)
+    console.error(e);
 }
 
 try {
@@ -21,7 +20,7 @@ try {
 
     console.log("ys2", ys2);
 } catch (e) {
-    console.error(e)
+    console.log("Caught Expected YS2 Exception ", e);
 }
 
 // MIME Types:
@@ -64,6 +63,7 @@ const OBSERVABLE_TYPE = `observable-type`;
 const OBSERVABLE_TYPE_CLASS = `condition-observable-type`;
 const OBSERVABLE_TYPE_CONTAINER = `${ROOT_CLASS}-observable-types`;
 const LEFTPANE_DRAGGABLES = [OPERATOR_CONTAINER, OBSERVABLE_TYPE_CONTAINER, OBSERVABLE_DATA_CONTAINER];
+const OBSERVABLE_YARA_DATA_JSON = "data-yara-string-json";
 
 const DESIGNER_EDITOR = `${ROOT_CLASS}-editor`;
 
@@ -882,20 +882,62 @@ function setObservableTypes(types) {
     }
 }
 
-function setObservableData(data) {
-    let html = "";
+/**
+ * Takes a list of observable data entries.
+ *
+ * @param dataList list of observable data entries.
+ * @param stringType
+ */
+function setObservableData(dataList, stringType = yara.YARA_TYPE_TEXT) { // FIXME: YS Type hardcoded as text!
+    for (let i = 0; i < dataList.length; i++) {
+        let identifier = yara.sanitizeIdentifier(`${OBSERVABLE_DATA}-${dataList[i].md5sum()}`);
+        let observable = document.createElement("span") ;
 
-    for (let i = 0; i < data.length; i++) {
-        html +=
-            `<span id='${OBSERVABLE_DATA}-${data[i].md5sum()}' class='${OBSERVABLE_DATA_CLASS}'>${data[i]}</span>`;
-    }
+        try {
+            // Make sure data can be transformed into a valid YARA String (throws exception if not).
+            let ys = yara.createYARAString(identifier, dataList[i], stringType, []);
 
-    // Spawn the HTML.
-    document.getElementById(OBSERVABLE_DATA_CONTAINER).innerHTML = html;
+            // Set necessary attributes.
+            observable.setAttribute("id", identifier);
+            observable.setAttribute("class", OBSERVABLE_DATA_CLASS);
 
-    // Add event listeners to spawned HTML.
-    for (let i = 0; i < data.length; i++) {
-        document.querySelector(`#${OBSERVABLE_DATA}-${data[i].md5sum()}`).addEventListener('click', function(){ addToEditor(event) });
+            // Set representative text (what user sees).
+            observable.textContent = `${stringType}: ${dataList[i]}`;
+
+            // Set YARA specific properties (for use in computation):
+
+            // observable.setAttribute("yara-identifier", ys.getIdentifier());
+            // // Set actual text data as-is (what the code actually uses).
+            // observable.setAttribute("yara-value", ys.getValue());
+            // observable.setAttribute("yara-string-type", ys.getType());
+            //
+            // let ysModifiers = ys.getModifiers();
+            // if (ysModifiers.length > 0) {
+            //     observable.setAttribute("yara-has-modifiers", 'true');
+            // } else {
+            //     observable.setAttribute("yara-has-modifiers", 'false');
+            // }
+            let yaraJSON = {
+                "identifier": ys.getIdentifier(),
+                "value": ys.getValue(),
+                "type": ys.getType(),
+                "modifiers": ys.getModifiers(),
+                "text": ys.text()
+            };
+
+            observable.setAttribute(OBSERVABLE_YARA_DATA_JSON, JSON.stringify(yaraJSON));
+
+            // Make observable element clickable.
+            observable.addEventListener('click', function(){ addToEditor(event) });
+
+            console.log("observable SPAN", observable);
+
+            // Append observable (DOM Element) to observables container (DOM element).
+            document.getElementById(OBSERVABLE_DATA_CONTAINER).appendChild(observable);
+        } catch (e) {
+            console.exception(
+                `Caught exception while attempting to create YARA String from '${dataList[i]}', skipping!`, e);
+        }
     }
 }
 
