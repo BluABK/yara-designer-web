@@ -885,24 +885,43 @@ function setObservableTypes(types) {
 /**
  * Takes a list of observable data entries.
  *
- * @param dataList list of observable data entries.
- * @param stringType
+ * @param observables list of observables.
+ * @param idPrefix
+ * @param className
+ * @param observableContainer
+ * @param defaultStringType default string type.
+ * @param forceDefaultStringType
  */
-function setObservableData(dataList, stringType = yara.YARA_TYPE_TEXT) { // FIXME: YS Type hardcoded as text!
-    for (let i = 0; i < dataList.length; i++) {
-        let identifier = yara.sanitizeIdentifier(`${OBSERVABLE_DATA}-${dataList[i].md5sum()}`);
+function setObservables(observables, idPrefix, className, observableContainer, defaultStringType = yara.YARA_TYPE_TEXT, forceDefaultStringType = false) { // FIXME: YS Type hardcoded as text!
+    for (let i = 0; i < observables.length; i++) {
         let observable = document.createElement("span") ;
+
+        let data = observables[i].data;
+        let dataType = observables[i].dataType;
+
+        let identifier = yara.sanitizeIdentifier(`${idPrefix}-${data.md5sum()}`);
+        let stringType = defaultStringType;
+
+        // Determine string type based on observable's dataType property.
+        if (dataType === "regexp") {
+            stringType = yara.YARA_TYPE_REGEX;
+        } else {
+            // Try to determine data type based on data string.
+            if ( data.match(yara.YARA_HEX_REGEX) ) {
+                stringType = yara.YARA_TYPE_HEX;
+            }
+        }
 
         try {
             // Make sure data can be transformed into a valid YARA String (throws exception if not).
-            let ys = yara.createYARAString(identifier, dataList[i], stringType, []);
+            let ys = yara.createYARAString(identifier, data, stringType, []);
 
             // Set necessary attributes.
             observable.setAttribute("id", identifier);
-            observable.setAttribute("class", OBSERVABLE_DATA_CLASS);
+            observable.setAttribute("class", className);
 
             // Set representative text (what user sees).
-            observable.textContent = `${stringType}: ${dataList[i]}`;
+            observable.textContent = `${stringType}: ${data}`;
 
             // Set YARA specific properties (for use in computation):
             let yaraJSON = {
@@ -921,17 +940,17 @@ function setObservableData(dataList, stringType = yara.YARA_TYPE_TEXT) { // FIXM
             console.log("observable SPAN", observable);
 
             // Append observable (DOM Element) to observables container (DOM element).
-            document.getElementById(OBSERVABLE_DATA_CONTAINER).appendChild(observable);
+            document.getElementById(observableContainer).appendChild(observable);
         } catch (e) {
             console.exception(
-                `Caught exception while attempting to create YARA String from '${dataList[i]}', skipping!`, e);
+                `Caught exception while attempting to create YARA String from '${data}', skipping!`, e);
         }
     }
 }
 
 function setAllObservables(observables) {
     let uniqueTypes = [];
-    let uniqueData = [];
+    let uniqueObservables = [];
 
     for (let observable of observables) {
         if (observable.hasOwnProperty("dataType")) {
@@ -940,14 +959,15 @@ function setAllObservables(observables) {
             }
         }
         if (observable.hasOwnProperty("data")) {
-            if (observable.data !== null && !uniqueData.includes(observable.data)) {
-                uniqueData.push(observable.data);
+            if (observable.data !== null && !uniqueObservables.includes(observable.data)) {
+                uniqueObservables.push(observable);
             }
         }
     }
 
     setObservableTypes(uniqueTypes);
-    setObservableData(uniqueData);
+    // setObservables(uniqueTypes, OBSERVABLE_TYPE, OBSERVABLE_TYPE_CLASS, OBSERVABLE_TYPE_CONTAINER);
+    setObservables(uniqueObservables, OBSERVABLE_DATA, OBSERVABLE_DATA_CLASS, OBSERVABLE_DATA_CONTAINER)
 }
 
 function loadRuleCallback(rule) {

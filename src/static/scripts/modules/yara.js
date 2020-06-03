@@ -19,6 +19,8 @@ export const YARA_MODIFIERS =
      YARA_MODIFIER_XOR, YARA_MODIFIER_BASE64, YARA_MODIFIER_BASE64_WIDE,
      YARA_MODIFIER_FULL_WORD, YARA_MODIFIER_PRIVATE];
 
+export const YARA_HEX_REGEX = /^(\{\s*)?\(*(\[*[0-9a-fA-F\?\|\-\(\)\[\]]{1,3}\]*)(\s\[*[0-9a-fA-F\?\|\-\(\)\[\]]{1,3}\]*)*\)*\s*(\}\s*)?$/;
+
 var YARAStringSpec = {
     TYPE_ATTR:      "YARAStringType",
     MODIFIER_ATTR:  "YARAStringModifiers",
