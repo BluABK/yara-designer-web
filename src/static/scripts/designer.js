@@ -905,18 +905,6 @@ function setObservableData(dataList, stringType = yara.YARA_TYPE_TEXT) { // FIXM
             observable.textContent = `${stringType}: ${dataList[i]}`;
 
             // Set YARA specific properties (for use in computation):
-
-            // observable.setAttribute("yara-identifier", ys.getIdentifier());
-            // // Set actual text data as-is (what the code actually uses).
-            // observable.setAttribute("yara-value", ys.getValue());
-            // observable.setAttribute("yara-string-type", ys.getType());
-            //
-            // let ysModifiers = ys.getModifiers();
-            // if (ysModifiers.length > 0) {
-            //     observable.setAttribute("yara-has-modifiers", 'true');
-            // } else {
-            //     observable.setAttribute("yara-has-modifiers", 'false');
-            // }
             let yaraJSON = {
                 "identifier": ys.getIdentifier(),
                 "value": ys.getValue(),
