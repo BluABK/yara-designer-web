@@ -129,6 +129,31 @@ function isValidModifiers(modifiers) {
     return true;
 }
 
+/**
+ * Identifiers must follow the same lexical conventions of the C programming language,
+ * they can contain any alphanumeric character and the underscore character, but the
+ * first character can not be a digit. Rule identifiers are case sensitive and cannot
+ * exceed 128 characters.
+ *
+ * @param identifier
+ * @returns {void | string | *}
+ */
+export function sanitizeIdentifier(identifier) {
+    // Match all non-word characters and spaces (everything except numbers and letters).
+    let re = /([^\w\s+]|[^\w\S+])/g;
+
+    if ( isNumeric(identifier[0]) ) {
+        // If the first character is a digit, prepend an underscore, as the first character can not be a digit.
+        identifier = '_' + identifier
+    } else if (identifier[0] === ' ' ) {
+        // If the first character is a whitespace, strip leading whitespace.
+        identifier = identifier.slice(1);
+    }
+
+    // Replace all matches with underscore.
+    return identifier.replace(re, '_'); // $& means the whole matched string (used with regex /g)
+}
+
  /**
  * YARA String modifier restrictions dict.
  *
@@ -151,26 +176,35 @@ export const YARA_STRING_MODIFIER_RESTRICTIONS = {
 };
 
 export var YARAString = {
-    stringIdentifier: null,
-    stringType: YARA_TYPE_TEXT,
-    stringModifiers: [],
-    stringValue: null,
-
     // Check that identifier is valid (throws exception if not).
     setIdentifier: function(t_stringIdentifier) {
+        // Clear any lingering existing setting from a previous object.
+        this.clearIdentifier();
         validateIdentifier(t_stringIdentifier);
         this.stringIdentifier = t_stringIdentifier;
+    },
+
+    clearIdentifier: function() {
+        this.stringModifiers = [];
     },
 
     getIdentifier: function() { return this.stringIdentifier },
     
     setValue: function(t_value) {
+        // Clear any lingering existing setting from a previous object.
+        this.clearValue();
         this.stringValue = t_value;
+    },
+
+    clearValue: function() {
+        this.stringModifiers = [];
     },
 
     getValue: function() { return this.stringValue },
 
-    setType: function(t_stringType) {
+    setType: function(t_stringType = YARA_TYPE_TEXT) {
+        // Clear any lingering existing setting from a previous object.
+        this.clearType();
         // Check that the given YARA String type is valid.
         if (isValidType(t_stringType) === true) {
             this.stringType = t_stringType;
@@ -180,16 +214,20 @@ export var YARAString = {
 
     },
 
+    clearType: function() {
+        this.stringModifiers = [];
+    },
+
     getType: function() { return this.stringType },
 
-    setModifier: function (t_modifier) {
+    addModifier: function (t_modifier) {
         if (isValidModifier(t_modifier) === true) {
             // Get restrictions that apply to currently set modifiers.
             let existingRestrictions = [];
             for (let existingModifier of this.stringModifiers) {
                 // NOTE: Apparently can't access JSON object values from a prototype,
                 // so uses switch-case to get the job done.
-                 let restrictions = [];
+                let restrictions = [];
                 switch(existingModifier) {
                     case YARA_MODIFIER_NO_CASE:
                         restrictions = [YARA_MODIFIER_XOR, YARA_MODIFIER_BASE64, YARA_MODIFIER_BASE64_WIDE];
@@ -244,17 +282,36 @@ export var YARAString = {
        }
     },
 
-    setModifiers: function(t_modifiers) {
+    setModifiers: function(t_modifiers = []) {
+        // Clear any lingering existing modifiers from a previous object.
+        this.clearModifiers();
         for (let modifier of t_modifiers) {
-            this.setModifier(modifier)
+            this.addModifier(modifier)
         }
     },
 
-    getModifiers: function() { return this.stringModifiers },
+    clearModifiers: function() {
+        this.stringModifiers = [];
+    },
+
+    getModifiers: function() { return Array.isArray(this.stringModifiers) ? this.stringModifiers : []},
+
+    clear: function() {
+        this.clearIdentifier();
+        this.clearType();
+        this.clearValue();
+        this.clearModifiers();
+    },
     
-    text: function() {
+    text: function() { // FIXME: Implement the other YARA String types!
         if (this.stringType === YARA_TYPE_TEXT) {
-            return `${YARA_STRING_SYMBOL}${this.stringIdentifier} = "${this.stringValue}" ${this.stringModifiers.join(' ')}`;
+            let modifiers = this.getModifiers();
+            let modStr = '';
+            if (this.stringModifiers.length > 0) {
+                modStr = ` ${modifiers.join(' ')}` // NB: has a single space in front.
+            }
+
+            return `${YARA_STRING_SYMBOL}${this.getIdentifier()} = "${this.getValue()}"${modStr}`;
         }
     }
 };
