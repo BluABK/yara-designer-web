@@ -866,16 +866,19 @@ function setTags(tags) {
 }
 
 /**
- * Takes a list of observable data entries.
+ * Takes a list of observable data entries, then creates and attaches
+ * a YARAString object to them and finally adds them to a given container.
  *
- * @param observables list of observables with at least fields 'data' and 'dataType'.
- * @param idPrefix
- * @param className
- * @param observableContainer
- * @param defaultStringType default string type.
- * @param forceDefaultStringType
+ * If a YARAString cannot be produced from an observable an error is raised and the item is skipped.
+ *
+ * @param observables               A list of observables with at least fields 'data' and 'dataType'.
+ * @param idPrefix                  Prefix string for each observable ID field.
+ * @param classBaseName             The base (primary) name of the class to group the observables into.
+ * @param observableContainer       Container element to add observables to.
+ * @param defaultStringType         The default string type.
+ * @param forceDefaultStringType    Disable string type check, setting it equal to default.
  */
-function setObservables(observables, idPrefix, className, observableContainer,
+function setObservables(observables, idPrefix, classBaseName, observableContainer,
                         defaultStringType = yara.YARA_TYPE_TEXT,
                         forceDefaultStringType = false) {
     for (let i = 0; i < observables.length; i++) {
@@ -905,7 +908,7 @@ function setObservables(observables, idPrefix, className, observableContainer,
 
             // Set necessary attributes.
             observable.setAttribute("id", identifier);
-            observable.setAttribute("class", className);
+            observable.setAttribute("class", classBaseName);
 
             // Set representative text (what user sees).
             observable.textContent = `${stringType}: ${data}`;
@@ -935,6 +938,11 @@ function setObservables(observables, idPrefix, className, observableContainer,
     }
 }
 
+/**
+ * Sets/adds observables to the designer editor leftpane.
+ *
+ * @param observables A list of observable Objects with at least fields 'data' and 'dataType'.
+ */
 function setAllObservables(observables) {
     let uniqueTypes = [];
     let uniqueObservables = [];
