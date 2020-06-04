@@ -869,6 +869,15 @@ function setTags(tags) {
 }
 
 /**
+ * Clears an element by setting its innerHTML to "".
+ *
+ * @param elementID
+ */
+function clearElement(elementID) {
+    document.getElementById(elementID).innerHTML = "";
+}
+
+/**
  * Takes a list of observable data entries, then creates and attaches
  * a YARAString object to them and finally adds them to a given container.
  *
@@ -881,7 +890,7 @@ function setTags(tags) {
  * @param defaultStringType         The default string type.
  * @param forceDefaultStringType    Disable string type check, setting it equal to default.
  */
-function setObservables(observables, idPrefix, classBaseName, observableContainer,
+function addObservables(observables, idPrefix, classBaseName, observableContainer,
                         defaultStringType = yara.YARA_TYPE_TEXT,
                         forceDefaultStringType = false) {
     for (let i = 0; i < observables.length; i++) {
@@ -959,7 +968,7 @@ function setObservables(observables, idPrefix, classBaseName, observableContaine
 }
 
 /**
- * Sets/adds observables to the designer editor leftpane.
+ * Clears observable containers and then adds observables to them.
  *
  * @param observables A list of observable Objects with at least fields 'data' and 'dataType'.
  */
@@ -993,8 +1002,13 @@ function setAllObservables(observables) {
         }
     }
 
-    setObservables(uniqueTypes, OBSERVABLE_TYPE, OBSERVABLE_TYPE_CLASS, OBSERVABLE_TYPE_CONTAINER, yara.YARA_TYPE_TEXT, true);
-    setObservables(uniqueObservables, OBSERVABLE_DATA, OBSERVABLE_DATA_CLASS, OBSERVABLE_DATA_CONTAINER)
+    // Clear any existing observables (leftover from a previously loaded rule)
+    clearElement(OBSERVABLE_TYPE_CONTAINER);
+    clearElement(OBSERVABLE_DATA_CONTAINER);
+
+    // Add new observables.
+    addObservables(uniqueTypes, OBSERVABLE_TYPE, OBSERVABLE_TYPE_CLASS, OBSERVABLE_TYPE_CONTAINER, yara.YARA_TYPE_TEXT, true);
+    addObservables(uniqueObservables, OBSERVABLE_DATA, OBSERVABLE_DATA_CLASS, OBSERVABLE_DATA_CONTAINER)
 }
 
 function loadRuleCallback(rule) {
