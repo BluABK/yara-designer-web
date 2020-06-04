@@ -858,11 +858,11 @@ function setTitle(title, id, description=null) {
 }
 
 function setTags(tags) {
-    let html ="";
+    let html = "";
     for (let i = 0; i < tags.length; i++) {
         html += `<input type="checkbox" id="tagCheckbox${i}" class="${DESIGNER_TAGS_CHECKBOX_CLASS}" ` +
             `value="${tags[i]}">\n` +
-            `<label for="tagCheckbox${i}" title="${tags[i]}">${tags[i]}</label>\n`;
+            `<label for="tagCheckbox${i}" title="${tags[i]}">${tags[i]}</label>\n` +
             `<div class="w-100"></div>\n`;
     }
     document.getElementById(DESIGNER_TAGS).innerHTML = html;
