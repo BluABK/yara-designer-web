@@ -64,6 +64,9 @@ const OBSERVABLE_TYPE_CLASS = `condition-observable-type`;
 const OBSERVABLE_TYPE_CONTAINER = `${ROOT_CLASS}-observable-types`;
 const LEFTPANE_DRAGGABLES = [OPERATOR_CONTAINER, OBSERVABLE_TYPE_CONTAINER, OBSERVABLE_DATA_CONTAINER];
 const OBSERVABLE_YARA_DATA_JSON = "data-yara-string-json";
+const YARA_STRING_TYPE_CLASS_TEXT = "yara-string-type-text";
+const YARA_STRING_TYPE_CLASS_HEX = "yara-string-type-hex";
+const YARA_STRING_TYPE_CLASS_REGEX = "yara-string-type-regex";
 
 const DESIGNER_EDITOR = `${ROOT_CLASS}-editor`;
 
@@ -912,6 +915,23 @@ function setObservables(observables, idPrefix, classBaseName, observableContaine
 
             // Set representative text (what user sees).
             observable.textContent = `${stringType}: ${data}`;
+
+            // Append corresponding string type class to classList.
+            switch (stringType) {
+                case yara.YARA_TYPE_TEXT:
+                    observable.classList.add(YARA_STRING_TYPE_CLASS_TEXT);
+                    break;
+                case yara.YARA_TYPE_HEX:
+                    observable.classList.add(YARA_STRING_TYPE_CLASS_HEX);
+                    break;
+                case yara.YARA_TYPE_REGEX:
+                    observable.classList.add(YARA_STRING_TYPE_CLASS_REGEX);
+                    break;
+                default:
+                    let acceptedStr = yara.YARA_TYPES.join(',');
+                    console.error(`stringType has unexpected type! '${stringType}' is not one of: [${acceptedStr}].`);
+                    break;
+            }
 
             // Set YARA specific properties (for use in computation):
             let yaraJSON = {
