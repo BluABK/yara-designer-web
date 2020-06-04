@@ -865,34 +865,19 @@ function setTags(tags) {
     document.getElementById(DESIGNER_TAGS).innerHTML = html;
 }
 
-function setObservableTypes(types) {
-    let html = "";
-
-    for (let i = 0; i < types.length; i++) {
-        html +=
-            `<span id='${OBSERVABLE_TYPE}-${types[i].md5sum()}' class='${OBSERVABLE_TYPE_CLASS}'>${types[i]}</span>`;
-    }
-
-    // Spawn the HTML.
-    document.getElementById(OBSERVABLE_TYPE_CONTAINER).innerHTML = html;
-
-    // Add event listeners to spawned HTML.
-    for (let i = 0; i < types.length; i++) {
-        document.querySelector(`#${OBSERVABLE_TYPE}-${types[i].md5sum()}`).addEventListener('click', function(){ addToEditor(event) });
-    }
-}
-
 /**
  * Takes a list of observable data entries.
  *
- * @param observables list of observables.
+ * @param observables list of observables with at least fields 'data' and 'dataType'.
  * @param idPrefix
  * @param className
  * @param observableContainer
  * @param defaultStringType default string type.
  * @param forceDefaultStringType
  */
-function setObservables(observables, idPrefix, className, observableContainer, defaultStringType = yara.YARA_TYPE_TEXT, forceDefaultStringType = false) { // FIXME: YS Type hardcoded as text!
+function setObservables(observables, idPrefix, className, observableContainer,
+                        defaultStringType = yara.YARA_TYPE_TEXT,
+                        forceDefaultStringType = false) {
     for (let i = 0; i < observables.length; i++) {
         let observable = document.createElement("span") ;
 
@@ -900,15 +885,17 @@ function setObservables(observables, idPrefix, className, observableContainer, d
         let dataType = observables[i].dataType;
 
         let identifier = yara.sanitizeIdentifier(`${idPrefix}-${data.md5sum()}`);
-        let stringType = defaultStringType;
 
-        // Determine string type based on observable's dataType property.
-        if (dataType === "regexp") {
-            stringType = yara.YARA_TYPE_REGEX;
-        } else {
-            // Try to determine data type based on data string.
-            if ( data.match(yara.YARA_HEX_REGEX) ) {
-                stringType = yara.YARA_TYPE_HEX;
+        let stringType = defaultStringType;
+        if (!forceDefaultStringType) {
+            // Determine string type based on observable's dataType property.
+            if (dataType === "regexp") {
+                stringType = yara.YARA_TYPE_REGEX;
+            } else {
+                // Try to determine data type based on data string.
+                if (data.match(yara.YARA_HEX_REGEX)) {
+                    stringType = yara.YARA_TYPE_HEX;
+                }
             }
         }
 
@@ -953,20 +940,32 @@ function setAllObservables(observables) {
     let uniqueObservables = [];
 
     for (let observable of observables) {
+        // Ensure 'dataType' field exists.
         if (observable.hasOwnProperty("dataType")) {
-            if (observable.dataType !== null && !uniqueTypes.includes(observable.dataType)) {
-                uniqueTypes.push(observable.dataType);
+            // Create a new observable object in order to make some non-destructive changes.
+            let modifiedObservable = Object.assign({}, observable);
+
+            // Set data equal to dataType so that type obj are added with the type as value not its original data.
+            modifiedObservable.data = modifiedObservable.dataType;
+
+            // Object isn't already in the list.
+            if (!uniqueTypes.some(obs => obs.dataType === modifiedObservable.dataType)) {
+                // Append to list.
+                uniqueTypes.push(modifiedObservable);
             }
         }
+
+        // Ensure 'data' field exists.
         if (observable.hasOwnProperty("data")) {
-            if (observable.data !== null && !uniqueObservables.includes(observable.data)) {
+            // Object isn't already in the list.
+            if (!uniqueObservables.some(obs => obs.data === observable.data)) {
+                // Append to list.
                 uniqueObservables.push(observable);
             }
         }
     }
 
-    setObservableTypes(uniqueTypes);
-    // setObservables(uniqueTypes, OBSERVABLE_TYPE, OBSERVABLE_TYPE_CLASS, OBSERVABLE_TYPE_CONTAINER);
+    setObservables(uniqueTypes, OBSERVABLE_TYPE, OBSERVABLE_TYPE_CLASS, OBSERVABLE_TYPE_CONTAINER, yara.YARA_TYPE_TEXT, true);
     setObservables(uniqueObservables, OBSERVABLE_DATA, OBSERVABLE_DATA_CLASS, OBSERVABLE_DATA_CONTAINER)
 }
 
