@@ -1164,7 +1164,7 @@ function handlePostRuleResponse(json) {
         let jsonToCommit = {};
         let yaraRule = window.currentlyLoadedRule;
         jsonToCommit["filepath"] = yaraRuleSourceFile;
-        jsonToCommit["rulename"] = json["in"]["rule"]; // FIXME: Make backend send the proper sanitized rulename in "out" dict.
+        jsonToCommit["rulename"] = json["in"]["name"]; // FIXME: Make backend send the proper sanitized rulename in "out" dict.
         jsonToCommit["case_id"] = yaraRule.data.id;
 
         postCommit(jsonToCommit);
