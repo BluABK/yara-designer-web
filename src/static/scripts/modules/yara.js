@@ -326,7 +326,7 @@ export function createYARAString(t_stringIdentifier, t_value, t_stringType=YARA_
     ys.setType(t_stringType);
     ys.setModifiers(t_modifiers);
 
-    console.log(`Spawned YARA String object: '${ys.text()}'`, ys);
+    // console.log(`Spawned YARA String object: '${ys.text()}'`, ys);
 
     return ys;
 }

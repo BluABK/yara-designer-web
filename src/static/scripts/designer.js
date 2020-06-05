@@ -318,6 +318,11 @@ function getEditorContents() {
     return document.getElementById(DESIGNER_EDITOR).children;
 }
 
+/**
+ * Parses the current observables in the designer (leftpane) to strings that conforms to YARA string syntax.
+ *
+ * @returns {string}
+ */
 function getEditorObservables(unique=true) {
     let observables = [];
     let children = getEditorContents();
@@ -326,7 +331,9 @@ function getEditorObservables(unique=true) {
     }
 
     for (let i = 0; i < children.length; i++) {
-        if ( OBSERVABLE_CLASSES.includes(children[i].className) ) {
+        // Check if child is of the observable family by comparing its classList against the OBSERVABLE_CLASSES list.
+        // This is because an observable/YARAString may have multiple class names attached to it.
+        if ( OBSERVABLE_CLASSES.some(name => [...children[i].classList].includes(name)) ) {
             if (unique === true) {
                 // If unique is specified, omit duplicate entries.
                 if ( !observables.some(child => child.id === children[i].id) ) {
@@ -356,6 +363,11 @@ function getEditorElementKeywordText(element) {
     return $(element).text();
 }
 
+/**
+ * Parses the current items in the editor to a string that conforms to YARA condition syntax.
+ *
+ * @returns {string}
+ */
 function getEditorConditionString() {
     let conditionString = "";
     let children = getEditorContents();
@@ -368,8 +380,9 @@ function getEditorConditionString() {
             preSpacing = " ";
         }
 
-        // If child is of the observable family.
-        if ( OBSERVABLE_CLASSES.includes(children[i].className) ) {
+        // Check if child is of the observable family by comparing its classList against the OBSERVABLE_CLASSES list.
+        // This is because an observable/YARAString may have multiple class names attached to it.
+        if ( OBSERVABLE_CLASSES.some(name => [...children[i].classList].includes(name)) ) {
             // Prepend with a YARA variable denominator.
             conditionString += preSpacing + YARA_VARIABLE_DENOMINATOR + children[i].id;
         } else if (KEYWORD_CLASSES.includes(children[i].className)) {
@@ -409,19 +422,19 @@ function getRuleJsonFromEditorElements() {
     json["meta"] = {"description" : yaraMetaDescription};
 
     // Set rule name.
-    json["rule"] = yaraRuleName;
+    json["name"] = yaraRuleName;
 
     // Set tags.
     json["tags"] = getEnabledTags();
 
-    // Get list of observables currently residing in editor DIV.
-    json["observables"] = {};
+    // Define an empty list in 'observables'.
+    json["strings"] = [];
 
+    // Get list of observables currently residing in editor DIV.
     let observables = getEditorObservables();
-    for (let i = 0; i < observables.length; i++) {
-        json["observables"][YARA_VARIABLE_DENOMINATOR + observables[i].id] = {
-            "observable": getEditorElementObservableText(observables[i])
-        }
+    for (let observable of observables) {
+        // Append the previously attached (see: addObservables) YARAString JSON to strings list.
+        json["strings"].push( JSON.parse(observable.getAttribute(OBSERVABLE_YARA_DATA_JSON)) )
     }
 
     // Get condition.
@@ -955,8 +968,6 @@ function addObservables(observables, idPrefix, classBaseName, observableContaine
 
             // Make observable element clickable.
             observable.addEventListener('click', function(){ addToEditor(event) });
-
-            console.log("observable SPAN", observable);
 
             // Append observable (DOM Element) to observables container (DOM element).
             document.getElementById(observableContainer).appendChild(observable);
