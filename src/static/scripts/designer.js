@@ -75,6 +75,7 @@ const NUMBERED_TEXTBOX_CLASS = "numbered-lines";
 const SUCCESS_ICON = "<span style='color: green'>&#10003;</color>";
 const FAILED_ICON = "<span style='color: red'>&#10005;</span>";
 const BGCOLOR_RED_CLASS = "red-bg";
+const BGCOLOR_YELLOW_CLASS = "yellow-bg";
 const TEXT_COLOR_GREEN_CLASS = "green-text";
 const TEXT_COLOR_RED_CLASS = "red-text";
 const YARA_VARIABLE_DENOMINATOR = "$";
@@ -1060,6 +1061,15 @@ function makeCollapsibleJSONDetails(json, id) {
            `</div>`;
 }
 
+function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+ }
+
 function handlePostRuleResponse(json) {
     let errorType = "";
     let errorMessage = "";
@@ -1068,16 +1078,29 @@ function handlePostRuleResponse(json) {
     let errorColumnRange = 0;
     let errorWord = "";
     let level = "success";
+    let warningType = "";
+    let warningMessage = "";
+    let warningLineNumber = 0;
+    let warningWord = "";
 
     // Parse JSON:
     let outJson = json["out"];
 
     let compilable = outJson["compilable"];
     let success = outJson["success"];
+    let hasWarning = outJson["has_warning"];
 
     let source = outJson["source"];
 
     let yaraRuleSourceFile = outJson["generated_yara_source_file"];
+
+    if (hasWarning) {
+        level = "warning";
+        warningType = outJson["warning"]["type"];
+        warningMessage = outJson["warning"]["message"];
+        warningLineNumber = outJson["warning"]["line_number"];
+        warningWord = outJson["warning"]["word"]
+    }
 
     if (!compilable) {
         level = "warning";
@@ -1091,14 +1114,6 @@ function handlePostRuleResponse(json) {
         errorColumnRange = parseInt(outJson["error"]["column_range"]);
         errorWord = outJson["error"]["word"];
         level = "error";
-
-        console.log("errorMessage: " + errorMessage);
-        console.log("errorType: " + errorType);
-        console.log("errorLineNumber: " + errorLineNumber);
-        console.log("errorColumnNumber: " + errorColumnNumber);
-        console.log("errorColumnRange: " + errorColumnRange);
-        console.log("errorWord: " + errorWord);
-        console.log("level: " + level);
     }
 
     // Define header
@@ -1112,7 +1127,11 @@ function handlePostRuleResponse(json) {
 
     // Error message (if any).
     if (!success) {
-        body += `<p>${errorType.replace(/^\w/, c => c.toUpperCase())} error message: ${errorMessage}</p>`;
+        body += `<p>${errorType.replace(/^\w/, c => c.toUpperCase())} error message: ${escapeHtml(errorMessage)}</p>`;
+    }
+
+    if (hasWarning) {
+        body += `<p>${warningType.replace(/^\w/, c => c.toUpperCase())} warning message: ${escapeHtml(warningMessage)}</p>`;
     }
 
     // Formatted string of the generated YARA rule ("source").
@@ -1122,6 +1141,7 @@ function handlePostRuleResponse(json) {
     let lines = String(source).split('\n');
     body += `<pre class='${NUMBERED_TEXTBOX_CLASS}'>`;
     for (let i = 0; i < lines.length; i++) {
+        console.log(`Line number ${i}`, lines[i]);
         if (!success) {
             if (errorType === SYNTAX_ERROR && i === errorLineNumber-1) {
                 // Color bad column or line.
@@ -1135,6 +1155,11 @@ function handlePostRuleResponse(json) {
                 // console.log("stringPastMark: " + stringPastMark);
 
                 lines[i] = `${stringUpToMark}<mark class='${BGCOLOR_RED_CLASS}'>${stringToMark}</mark>${stringPastMark}`;
+            }
+        }
+        if (hasWarning) {
+            if (i+1 === warningLineNumber) {
+                lines[i] = `<mark class='${BGCOLOR_YELLOW_CLASS}'>AYEEEEEEEEE${lines[i]}</mark>`;
             }
         }
 

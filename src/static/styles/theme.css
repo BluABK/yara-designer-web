@@ -427,6 +427,10 @@ mark.red-bg {
     background-color: var(--modal-background-error);
 }
 
+mark.yellow-bg {
+    background-color: var(--modal-background-warning);
+}
+
 mark.green-text {
     color: var(--mark-green-text-color);
     /* background is required to override Bootstrap's CSS. */
