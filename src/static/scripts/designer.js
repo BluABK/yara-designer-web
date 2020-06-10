@@ -602,13 +602,14 @@ function makeRuleTableRows(rules) {
     for (let rule of rules) {
         headerContentMaps.push({
             "<!--Pending-->": "",  // Value intentionally left blank (to be filled with pending bar later).
-            "Title": rule.data.title,
-            "Sev": rule.data.severity,
-            "<!--Observables--><img src='/static/images/searchicon.png' title='Observables'>": rule.data.observables.length,
+            "Title": rule.title,
+            "Tags #": rule.tags.length,
+            "Metadata #": rule.meta.length,
+            "Strings #": rule.strings.length,
             "Added": rule.added_on !== null ? humanizeISODate(rule.added_on) : "N/A",
-            "YARA File": rule["yara_filename"] !== undefined ? rule["yara_filename"] : "N/A",
+            "YARA File": rule["source_path"] !== null ? rule["source_path"] : "N/A",
             "Modified": rule.last_modified !== null ? humanizeISODate(rule.last_modified): "N/A",
-            "ID": rule.data.id
+            "Case ID": rule.thehive_case_id
         });
     }
 
