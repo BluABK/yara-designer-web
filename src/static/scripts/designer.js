@@ -465,6 +465,8 @@ function fetchGetRequest(url, callback) {
         callback(data);
       }).catch(function(error) {
         console.log('fetchRequest failed!', error);
+        modals.popupErrorModal("fetchRequest failed!",
+            `${error}<br/><br/>Traceback:<br/><p>${error.stack}</p>`);
       });
 }
 
@@ -502,6 +504,8 @@ async function fetchPostRequest(url = '', data = {}, callback) {
             callback(data);
           }).catch(function(error) {
             console.log('Request failed', error);
+            modals.popupErrorModal("fetchPostRequest failed!",
+            `${error}<br/><br/>Traceback:<br/><p>${error.stack}</p>`);
           });
 }
 

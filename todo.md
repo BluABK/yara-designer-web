@@ -7,7 +7,7 @@
         * Custom artifact types
 
 ## Other
-*  Rename post_rule_json and post_commit_json far more sensibly / unambiguously.
+* Rename post_rule_json and post_commit_json far more sensibly / unambiguously.
 * Make encapsulator work with click (surround elements currently in editor div)
 * Add some sort of hashed "state" string to URL to reproduce the current editor elements from URL.
 * Properly implement showing of column error occurred on (currently just appended to SyntaxError str).
