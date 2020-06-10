@@ -90,7 +90,7 @@ function getCSSVar(varName) {
  *  - '-modal-background-*'
  *  - '-modal-color-*'
  */
-function popupModal(modalId=null, header=null, bodyTop=null, bodyMiddle=null, bodyBottom=null, footer=null, level=null) {
+export function popupModal(modalId=null, header=null, bodyTop=null, bodyMiddle=null, bodyBottom=null, footer=null, level=null) {
     // Modal element itself.
     let modal = document.getElementById(modalId);
 
@@ -133,21 +133,21 @@ function popupModal(modalId=null, header=null, bodyTop=null, bodyMiddle=null, bo
     return modal;
 }
 
-function popupWarningModal(header, body, footer=null) {
+export function popupWarningModal(header, body, footer=null) {
     let hdr = `<h2>Warning: ${header}</h2>`;
     let bdy = `<h3>${body}</h3>`;
 
     popupModal(RESPONSE_MODAL, hdr, null, bdy, null, footer, levels.WARNING);
 }
 
-function popupErrorModal(header, body, footer=null) {
+export function popupErrorModal(header, body, footer=null) {
     let hdr = `<h2>Warning: ${header}</h2>`;
     let bdy = `<h3>${body}</h3>`;
 
     popupModal(RESPONSE_MODAL, hdr, null, bdy, null, footer, levels.ERROR);
 }
 
-function performAction(actionObj) {
+export function performAction(actionObj) {
     if ( actionObj.hasOwnProperty("action") ) {
         // Apply arguments (if defined).
         if (actionObj.hasOwnProperty("args")) {
@@ -170,7 +170,7 @@ function performAction(actionObj) {
 /**
 *   Adds Yes/No confirmation buttons to a custom modal and binds actions to them.
 */
-function popupConfirmationModal(yesAction, noAction=undefined,
+export function popupConfirmationModal(yesAction, noAction=undefined,
                                 body=MODAL_DEFAULT_CONFIRMATION_BODY,
                                 header=MODAL_DEFAULT_CONFIRMATION_HEADER,
                                 footer=MODAL_DEFAULT_CONFIRMATION_FOOTER,
@@ -200,7 +200,7 @@ function popupConfirmationModal(yesAction, noAction=undefined,
     };
 }
 
-function popupHelpModal() {
+export function popupHelpModal() {
     let header = "<h2>How To Use</h2>";
     let bodyMiddle =
             "<h4>Adding items</h4>" +
@@ -216,5 +216,3 @@ function popupHelpModal() {
 
     popupModal(RESPONSE_MODAL, header, null, bodyMiddle, null, null, levels.INFO);
 }
-
-export { popupModal, popupConfirmationModal, popupErrorModal, popupWarningModal, popupHelpModal };
