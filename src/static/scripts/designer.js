@@ -1,7 +1,7 @@
-import { md5 } from './third-party/md5.js';
+import {md5} from './third-party/md5.js';
 import * as levels from "./modules/levels.js";
-import { NoContentsException, NO_CONTENTS_EXCEPTION } from "./modules/exceptions.js";
-import { getParameterByName } from "./modules/utils.js";
+import {NO_CONTENTS_EXCEPTION, NoContentsException} from "./modules/exceptions.js";
+import {getParameterByName} from "./modules/utils.js";
 import * as modals from "./modules/modals.js";
 import * as yara from "./modules/yara.js";
 
@@ -324,7 +324,7 @@ function getEditorContents() {
  *
  * @returns {string}
  */
-function getEditorObservables(unique=true) {
+function getEditorYARAStrings(unique=true) {
     let observables = [];
     let children = getEditorContents();
     if (children.length === 0) {
@@ -414,34 +414,26 @@ function getEnabledTags() {
  * JSON template: { "meta": {...}, "rule": str, "tags": list, "observables": {...}, "condition": str }
  */
 function getRuleJsonFromEditorElements() {
-    let json = {};
     let yaraRule = window.currentlyLoadedRule;
-    let yaraRuleName = `Whitelist_${yaraRule.data.title}`; // FIXME: Hardcoded string variable should be made configurable.
-    let yaraMetaDescription = `Whitelist regler for alarmen: Whitelist_${yaraRule.data.title}`; // FIXME: Hardcoded string variable should be made configurable.
-
-    // Set meta FIXME: sub-dicts hardcoded!
-    json["meta"] = {"description" : yaraMetaDescription};
-
-    // Set rule name.
-    json["name"] = yaraRuleName;
-
-    // Set tags.
-    json["tags"] = getEnabledTags();
-
-    // Define an empty list in 'observables'.
-    json["strings"] = [];
+    let yaraRuleName = `Whitelist_${yaraRule.title}`; // FIXME: Hardcoded string variable should be made configurable.
+    let yaraMetaDescription = `Whitelist regler for alarmen: Whitelist_${yaraRule.title}`; // FIXME: Hardcoded string variable should be made configurable.
 
     // Get list of observables currently residing in editor DIV.
-    let observables = getEditorObservables();
-    for (let observable of observables) {
-        // Append the previously attached (see: addObservables) YARAString JSON to strings list.
-        json["strings"].push( JSON.parse(observable.getAttribute(OBSERVABLE_YARA_DATA_JSON)) )
+    let jsonifiedYARAStrings = [];
+    for (let yaraString of getEditorYARAStrings()) {
+        // Append the previously attached (see: addYARAStrings) YARAString JSON to strings list.
+        jsonifiedYARAStrings.push( JSON.parse(yaraString.getAttribute(OBSERVABLE_YARA_DATA_JSON)) )
     }
 
-    // Get condition.
-    json["condition"] = getEditorConditionString();
-
-    return json;
+    return {
+        "name": yaraRuleName,
+        // "thehive_case_id": yaraRule["thehive_case_id"],
+        // "namespace": yaraRule["namespace"],
+        "tags": getEnabledTags(),
+        "meta": yaraRule["meta"],
+        "strings": jsonifiedYARAStrings,
+        "condition": getEditorConditionString()
+    };
 }
 
 function fetchGetRequest(url, callback) {
@@ -848,12 +840,12 @@ function printRulesTable(rules, defaultCheckedRadio = TABLE_FILTER_CHECKED_RADIO
         document.getElementById(`${tableId}-row-${i}`).onclick = function() {
             // If editor isn't empty, prompt for confirmation to avoid possible work loss.
             if (getEditorContents().length > 0) {
-                modals.popupConfirmationModal({"action": loadRule, "args": [rules[i].data.id]}, null,
+                modals.popupConfirmationModal({"action": loadRule, "args": [rules[i]["thehive_case_id"]]}, null,
                     "<h3>You currently have contents in the editor, loading a rule clears the editor.</h3>")
             } else {
-                loadRule(rules[i].data.id);
+                loadRule(rules[i]["thehive_case_id"]);
                 document.getElementById(modals.RESPONSE_MODAL_FOOTER).innerText =
-                    `Loaded rule: ${rules[i].data.title} [ID: ${rules[i].data.id}]`;
+                    `Loaded rule: ${rules[i].title} [ID: ${rules[i]["thehive_case_id"]}]`;
             }
         };
 
@@ -902,58 +894,61 @@ function clearElement(elementID) {
  *
  * If a YARAString cannot be produced from an observable an error is raised and the item is skipped.
  *
- * @param observables               A list of observables with at least fields 'data' and 'dataType'.
+ * @param strings                   A list of YARA strings.
  * @param idPrefix                  Prefix string for each observable ID field.
- * @param classBaseName             The base (primary) name of the class to group the observables into.
- * @param observableContainer       Container element to add observables to.
- * @param defaultStringType         The default string type.
+ * @param classBaseName             The base (primary) name of the class to group the YARA strings into.
+ * @param observableContainer       Container element to add YARA strings to.
+ * @param defaultStringType         The default YARA string type.
  * @param forceDefaultStringType    Disable string type check, setting it equal to default.
  */
-function addObservables(observables, idPrefix, classBaseName, observableContainer,
+function addYARAStrings(strings, idPrefix, classBaseName, observableContainer,
                         defaultStringType = yara.YARA_TYPE_TEXT,
                         forceDefaultStringType = false) {
-    for (let i = 0; i < observables.length; i++) {
-        let observable = document.createElement("span") ;
+    for (let yaraString of strings) {
+        let yaraStringDOMElement = document.createElement("span") ;
 
-        let data = observables[i].data;
-        let dataType = observables[i].dataType;
+        let identifier = yaraString["identifier"];
+        let value = yaraString["value"];
+        let valueType = yaraString["value_type"];
+        let stringType = yaraString["string_type"];
+        let modifiers = yaraString["modifiers"];
+        let modifier_str = yaraString["modifier_str"];
+        let processedStr = yaraString["str"];
 
-        let identifier = yara.sanitizeIdentifier(`${idPrefix}-${data.md5sum()}`);
-
-        let stringType = defaultStringType;
-        if (!forceDefaultStringType) {
-            // Determine string type based on observable's dataType property.
-            if (dataType === "regexp") {
-                stringType = yara.YARA_TYPE_REGEX;
-            } else {
-                // Try to determine data type based on data string.
-                if (data.match(yara.YARA_HEX_REGEX)) {
-                    stringType = yara.YARA_TYPE_HEX;
-                }
-            }
-        }
+        // FIXME: Port string_type determination to backend.
+        // if (!forceDefaultStringType) {
+        //     // Determine string type based on observable's dataType property.
+        //     if (dataType === "regexp") {
+        //         stringType = yara.YARA_TYPE_REGEX;
+        //     } else {
+        //         // Try to determine data type based on data string.
+        //         if (data.match(yara.YARA_HEX_REGEX)) {
+        //             stringType = yara.YARA_TYPE_HEX;
+        //         }
+        //     }
+        // }
 
         try {
             // Make sure data can be transformed into a valid YARA String (throws exception if not).
-            let ys = yara.createYARAString(identifier, data, stringType, []);
+            // let ys = yara.createYARAString(identifier, data, stringType, []);
 
             // Set necessary attributes.
-            observable.setAttribute("id", identifier);
-            observable.setAttribute("class", classBaseName);
+            yaraStringDOMElement.setAttribute("id", identifier);
+            yaraStringDOMElement.setAttribute("class", classBaseName);
 
             // Set representative text (what user sees).
-            observable.textContent = `${stringType}: ${data}`;
+            yaraStringDOMElement.textContent = `${stringType}: ${value}`;
 
             // Append corresponding string type class to classList.
             switch (stringType) {
                 case yara.YARA_TYPE_TEXT:
-                    observable.classList.add(YARA_STRING_TYPE_CLASS_TEXT);
+                    yaraStringDOMElement.classList.add(YARA_STRING_TYPE_CLASS_TEXT);
                     break;
                 case yara.YARA_TYPE_HEX:
-                    observable.classList.add(YARA_STRING_TYPE_CLASS_HEX);
+                    yaraStringDOMElement.classList.add(YARA_STRING_TYPE_CLASS_HEX);
                     break;
                 case yara.YARA_TYPE_REGEX:
-                    observable.classList.add(YARA_STRING_TYPE_CLASS_REGEX);
+                    yaraStringDOMElement.classList.add(YARA_STRING_TYPE_CLASS_REGEX);
                     break;
                 default:
                     let acceptedStr = yara.YARA_TYPES.join(',');
@@ -961,73 +956,47 @@ function addObservables(observables, idPrefix, classBaseName, observableContaine
                     break;
             }
 
-            // Set YARA specific properties (for use in computation):
-            let yaraJSON = {
-                "identifier": ys.getIdentifier(),
-                "value": ys.getValue(),
-                "type": ys.getType(),
-                "modifiers": ys.getModifiers(),
-                "text": ys.text()
-            };
+            // // Set YARA specific properties (for use in computation):
+            // let yaraJSON = {
+            //     "identifier": ys.getIdentifier(),
+            //     "value": ys.getValue(),
+            //     "type": ys.getType(),
+            //     "modifiers": ys.getModifiers(),
+            //     "text": ys.text()
+            // };
 
-            observable.setAttribute(OBSERVABLE_YARA_DATA_JSON, JSON.stringify(yaraJSON));
+            yaraStringDOMElement.setAttribute(OBSERVABLE_YARA_DATA_JSON, JSON.stringify(yaraString));
 
             // Make observable element clickable.
-            observable.addEventListener('click', function(){ addToEditor(event) });
+            yaraStringDOMElement.addEventListener('click', function(){ addToEditor(event) });
 
-            // Append observable (DOM Element) to observables container (DOM element).
-            document.getElementById(observableContainer).appendChild(observable);
+            // Append observable (DOM Element) to strings container (DOM element).
+            document.getElementById(observableContainer).appendChild(yaraStringDOMElement);
         } catch (e) {
             console.exception(
-                `Caught exception while attempting to create YARA String from '${data}', skipping!`, e);
+                `Caught exception while attempting to create YARA String from '${value}', skipping!`, e);
         }
     }
 }
 
 /**
- * Clears observable containers and then adds observables to them.
+ * Clears YARA string containers and then adds new YARA strings to them.
  *
- * @param observables A list of observable Objects with at least fields 'data' and 'dataType'.
+ * @param strings A list of YARA String JSONs.
  */
-function setAllObservables(observables) {
-    let uniqueTypes = [];
-    let uniqueObservables = [];
-
-    for (let observable of observables) {
-        // Ensure 'dataType' field exists.
-        if (observable.hasOwnProperty("dataType")) {
-            // Create a new observable object in order to make some non-destructive changes.
-            let modifiedObservable = Object.assign({}, observable);
-
-            // Set data equal to dataType so that type obj are added with the type as value not its original data.
-            modifiedObservable.data = modifiedObservable.dataType;
-
-            // Object isn't already in the list.
-            if (!uniqueTypes.some(obs => obs.dataType === modifiedObservable.dataType)) {
-                // Append to list.
-                uniqueTypes.push(modifiedObservable);
-            }
-        }
-
-        // Ensure 'data' field exists.
-        if (observable.hasOwnProperty("data")) {
-            // Object isn't already in the list.
-            if (!uniqueObservables.some(obs => obs.data === observable.data)) {
-                // Append to list.
-                uniqueObservables.push(observable);
-            }
-        }
-    }
-
-    // Clear any existing observables (leftover from a previously loaded rule)
-    clearElement(OBSERVABLE_TYPE_CONTAINER);
+function setYARAStrings(strings) {
+    // Clear any existing strings (leftover from a previously loaded rule)
     clearElement(OBSERVABLE_DATA_CONTAINER);
 
-    // Add new observables.
-    addObservables(uniqueTypes, OBSERVABLE_TYPE, OBSERVABLE_TYPE_CLASS, OBSERVABLE_TYPE_CONTAINER, yara.YARA_TYPE_TEXT, true);
-    addObservables(uniqueObservables, OBSERVABLE_DATA, OBSERVABLE_DATA_CLASS, OBSERVABLE_DATA_CONTAINER)
+    // Add new strings.
+    addYARAStrings(strings, OBSERVABLE_DATA, OBSERVABLE_DATA_CLASS, OBSERVABLE_DATA_CONTAINER)
 }
 
+/**
+ * Loads a YARA Rule.
+ *
+ * @param rule  YARA Rule.
+ */
 function loadRuleCallback(rule) {
     // Clear editor.
     clearEditorDivContents();
@@ -1036,13 +1005,15 @@ function loadRuleCallback(rule) {
     window.currentlyLoadedRule = rule;
 
     // Set title tag and title div.
-    setTitle(rule.data.title, rule.data.id, rule.data.description);
+    setTitle(rule.title, rule["thehive_case_id"], rule.description);
 
     // Set tags div.
-    setTags(rule.data.tags);
+    setTags(rule.tags);
 
-    // Set observables divs.
-    setAllObservables(rule.data.observables);
+    //FIXME: Add setter for YARA Meta!
+
+    // Set YARA String divs.
+    setYARAStrings(rule.strings);
 }
 
 function loadRule(ruleId) {
@@ -1164,7 +1135,7 @@ function handlePostRuleResponse(json) {
         }
         if (hasWarning) {
             if (i+1 === warningLineNumber) {
-                lines[i] = `<mark class='${BGCOLOR_YELLOW_CLASS}'>AYEEEEEEEEE${lines[i]}</mark>`;
+                lines[i] = `<mark class='${BGCOLOR_YELLOW_CLASS}'>${lines[i]}</mark>`; //FIXME: Broken (never shows).
             }
         }
 
@@ -1194,8 +1165,8 @@ function handlePostRuleResponse(json) {
         let jsonToCommit = {};
         let yaraRule = window.currentlyLoadedRule;
         jsonToCommit["filepath"] = yaraRuleSourceFile;
-        jsonToCommit["rulename"] = json["in"]["name"]; // FIXME: Make backend send the proper sanitized rulename in "out" dict.
-        jsonToCommit["case_id"] = yaraRule.data.id;
+        jsonToCommit["rulename"] = yaraRule["name"];
+        jsonToCommit["case_id"] = yaraRule["thehive_case_id"];
 
         postCommit(jsonToCommit);
 
