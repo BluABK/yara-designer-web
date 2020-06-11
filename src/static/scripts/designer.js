@@ -416,7 +416,6 @@ function getEnabledTags() {
 function getRuleJsonFromEditorElements() {
     let yaraRule = window.currentlyLoadedRule;
     let yaraRuleName = `Whitelist_${yaraRule.title}`; // FIXME: Hardcoded string variable should be made configurable.
-    let yaraMetaDescription = `Whitelist regler for alarmen: Whitelist_${yaraRule.title}`; // FIXME: Hardcoded string variable should be made configurable.
 
     // Get list of observables currently residing in editor DIV.
     let jsonifiedYARAStrings = [];
@@ -427,8 +426,8 @@ function getRuleJsonFromEditorElements() {
 
     return {
         "name": yaraRuleName,
-        // "thehive_case_id": yaraRule["thehive_case_id"],
-        // "namespace": yaraRule["namespace"],
+        "thehive_case_id": yaraRule["thehive_case_id"],
+        "namespace": yaraRule["namespace"],
         "tags": getEnabledTags(),
         "meta": yaraRule["meta"],
         "strings": jsonifiedYARAStrings,
@@ -727,8 +726,9 @@ function mockRules(num) { // FIXME: Remove this debug/testing function.
  * @param hideRadios
  * @param modalId
  */
-function printRulesTable(rules, defaultCheckedRadio = TABLE_FILTER_CHECKED_RADIO,
+function printRulesTable(rulesJson, defaultCheckedRadio = TABLE_FILTER_CHECKED_RADIO,
                          hideRadios = TABLE_FILTER_HIDDEN_RADIOS, modalId = modals.RESPONSE_MODAL) {
+    let rules = rulesJson["rules"];
     console.log("rules", rules);
     // console.log("mock rules", mockRules(5));
     // for ( let mockRule of mockRules(50) ) {
@@ -1002,6 +1002,7 @@ function loadRuleCallback(rule) {
     clearEditorDivContents();
 
     // Set the currently loaded rule global variable (used in other functions).
+    console.log("Loading rule...", rule);
     window.currentlyLoadedRule = rule;
 
     // Set title tag and title div.
@@ -1047,6 +1048,7 @@ function escapeHtml(unsafe) {
  }
 
 function handlePostRuleResponse(json) {
+    console.log("handlePostRuleResponse JSON", json);
     let errorType = "";
     let errorMessage = "";
     let errorLineNumber = 0;
@@ -1066,9 +1068,9 @@ function handlePostRuleResponse(json) {
     let success = outJson["success"];
     let hasWarning = outJson["has_warning"];
 
-    let source = outJson["source"];
+    let yaraRuleSourceCode = outJson["source_code"];
 
-    let yaraRuleSourceFile = outJson["generated_yara_source_file"];
+    window.currentlyLoadedRule["source_path"] = outJson["source_path"];
 
     if (hasWarning) {
         level = "warning";
@@ -1114,7 +1116,7 @@ function handlePostRuleResponse(json) {
     body += "<br/>Generated YARA rule:<br/>";
 
     // Loop through lines to add line numbering support via CSS counter.
-    let lines = String(source).split('\n');
+    let lines = String(yaraRuleSourceCode).split('\n');
     body += `<pre class='${NUMBERED_TEXTBOX_CLASS}'>`;
     for (let i = 0; i < lines.length; i++) {
         console.log(`Line number ${i}`, lines[i]);
@@ -1162,12 +1164,13 @@ function handlePostRuleResponse(json) {
     // Add bindings to buttons.
     document.getElementById(modals.RESPONSE_MODAL_BUTTON_COMMIT).onclick = function() {
         // Perform bound action.
-        let jsonToCommit = {};
-        let yaraRule = window.currentlyLoadedRule;
-        jsonToCommit["filepath"] = yaraRuleSourceFile;
-        jsonToCommit["rulename"] = yaraRule["name"];
-        jsonToCommit["case_id"] = yaraRule["thehive_case_id"];
+        let jsonToCommit = {
+            "source_path": window.currentlyLoadedRule["source_path"],
+            "name": window.currentlyLoadedRule["name"],
+            "thehive_case_id": window.currentlyLoadedRule["thehive_case_id"]
+        };
 
+        console.log("postCommit(jsonToCommit)", jsonToCommit);
         postCommit(jsonToCommit);
 
         // Close modal after handling button action.
