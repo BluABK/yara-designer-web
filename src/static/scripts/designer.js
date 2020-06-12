@@ -175,43 +175,43 @@ function debugSelectedTarget(target) {
  *
  * @returns {boolean}
  */
-if (document.addEventListener) {
-    document.addEventListener('contextmenu', function(mouseEvent) {
-        console.log('contextmenu', mouseEvent);
-
-        let posX = mouseEvent.clientX;
-        let posY = mouseEvent.clientY;
-        customContextMenuShow(mouseEvent, posX, posY);
-        mouseEvent.preventDefault();
-    }, false);
-    document.addEventListener('click', function(mouseEvent) {
-        // console.log('click', mouseEvent);
-
-        let customContextMenuElement = document.getElementById("custom-context-menu");
-        customContextMenuElement.style.opacity = "0";
-        setTimeout(function() {
-            customContextMenuElement.style.visibility = "hidden";
-        }, 501);
-    }, false);
-} else {
-    document.attachEvent('oncontextmenu', function(e) {
-        console.log('oncontextmenu', e);
-
-        let posX = e.clientX;
-        let posY = e.clientY;
-        customContextMenuShow(e, posX, posY);
-        e.preventDefault();
-    });
-    document.attachEvent('onclick', function(e) {
-        console.log('onclick', e);
-
-        let customContextMenuElement = document.getElementById("custom-context-menu");
-        customContextMenuElement.style.opacity = "0";
-        setTimeout(function() {
-            customContextMenuElement.style.visibility = "hidden";
-        }, 501);
-    });
-}
+// if (document.addEventListener) {
+//     document.addEventListener('contextmenu', function(mouseEvent) {
+//         console.log('contextmenu', mouseEvent);
+//
+//         let posX = mouseEvent.clientX;
+//         let posY = mouseEvent.clientY;
+//         customContextMenuShow(mouseEvent, posX, posY);
+//         mouseEvent.preventDefault();
+//     }, false);
+//     document.addEventListener('click', function(mouseEvent) {
+//         // console.log('click', mouseEvent);
+//
+//         let customContextMenuElement = document.getElementById("custom-context-menu");
+//         customContextMenuElement.style.opacity = "0";
+//         setTimeout(function() {
+//             customContextMenuElement.style.visibility = "hidden";
+//         }, 501);
+//     }, false);
+// } else {
+//     document.attachEvent('oncontextmenu', function(e) {
+//         console.log('oncontextmenu', e);
+//
+//         let posX = e.clientX;
+//         let posY = e.clientY;
+//         customContextMenuShow(e, posX, posY);
+//         e.preventDefault();
+//     });
+//     document.attachEvent('onclick', function(e) {
+//         console.log('onclick', e);
+//
+//         let customContextMenuElement = document.getElementById("custom-context-menu");
+//         customContextMenuElement.style.opacity = "0";
+//         setTimeout(function() {
+//             customContextMenuElement.style.visibility = "hidden";
+//         }, 501);
+//     });
+// }
 
 function clearContextMenu() {
     let customContextMenuElement = document.getElementById("custom-context-menu");
@@ -1102,8 +1102,8 @@ function editSettingsDialog() {
 
         let valueTypeColumn = document.createElement("div");
         let valueTypeColumnLabel = document.createElement("label");
-        let valueTypeColumnInput = document.createElement("input");
-        let valueTypeColumnInputId = `yara-meta-value-type-${i}`;
+        let valueTypeColumnSelect = document.createElement("select");
+        let valueTypeColumnSelectId = `yara-meta-value-type-${i}`;
 
         // Set values to the objects defined above:
         // Row.
@@ -1133,14 +1133,37 @@ function editSettingsDialog() {
 
         // Value type.
         valueTypeColumn.setAttribute("class", "col-md-6 mb-3");
-        valueTypeColumnLabel.htmlFor = valueTypeColumnInputId;
+        valueTypeColumnLabel.htmlFor = valueTypeColumnSelectId;
         valueTypeColumnLabel.innerText = "Value type";
-        setAttributes(valueTypeColumnInput, {
-            "class": "form-control",
-            "id": valueTypeColumnInputId,
-            "value": metaArray[i]["value_type"]});
+        setAttributes(valueTypeColumnSelect, {
+            "class": "custom-select",
+            "id": valueTypeColumnSelectId});
+
+        for (let validValueType of yara.YARA_VALUE_TYPES) {
+            let option = document.createElement("option");
+
+            option.value = validValueType;
+            option.innerText = validValueType;
+
+           if (validValueType === metaArray[i]["value_type"]) {
+            option.selected = true;
+            }
+
+            valueTypeColumnSelect.appendChild(option);
+        }
+
+        // Select currently set value.
+        // valueTypeColumnSelect.value = metaArray[i]["value_type"];
+        valueTypeColumnSelect.selectedIndex = 2;
+        console.log("valueTypeColumnSelect", valueTypeColumnSelect);
+        console.log("valueTypeColumnSelect.value", valueTypeColumnSelect.value);
+        console.log(valueTypeColumnSelect.options);
+        // if (validValueType === metaArray[i]["value_type"]) {
+        //     // option.selected = true;
+        // }
+
         valueTypeColumn.appendChild(valueTypeColumnLabel);
-        valueTypeColumn.appendChild(valueTypeColumnInput);
+        valueTypeColumn.appendChild(valueTypeColumnSelect);
 
         // Add columns to row.
         metaFormRow.appendChild(identifierColumn);
@@ -1157,7 +1180,12 @@ function editSettingsDialog() {
         `<h3>Metadata</h3><br/>` +
         `${metaForm.outerHTML}`;
 
-    modals.popupModal(modals.RESPONSE_MODAL, "<h1>Settings</h1>", bodyTop, null, null, null, levels.INFO);
+    let modal = modals.popupModal(modals.RESPONSE_MODAL, "<h1>Settings</h1>", bodyTop, null, null, null, levels.INFO);
+
+    // FIXME: Workaround for select element somehow losing all 'selected' attrs when added to the HTML document.
+    for (let i = 0; i < metaArray.length; i++) {
+        modal.getElementsByClassName("custom-select")[i].value = metaArray[i]["value_type"];
+    }
 }
 
 function handlePostRuleResponse(json) {

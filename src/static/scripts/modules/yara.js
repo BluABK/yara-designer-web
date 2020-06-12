@@ -6,6 +6,11 @@ export const YARA_TYPE_HEX = "hex";
 export const YARA_TYPE_REGEX = "regex";
 export const YARA_TYPES = [YARA_TYPE_TEXT, YARA_TYPE_HEX, YARA_TYPE_REGEX];
 
+export const YARA_VALUE_TYPE_INT = "int";
+export const YARA_VALUE_TYPE_STR = "str";
+export const YARA_VALUE_TYPE_BOOL = "bool";
+export const YARA_VALUE_TYPES = [YARA_VALUE_TYPE_INT, YARA_VALUE_TYPE_STR, YARA_VALUE_TYPE_BOOL];
+
 export const YARA_MODIFIER_NO_CASE = "nocase";
 export const YARA_MODIFIER_WIDE = "wide";
 export const YARA_MODIFIER_ASCII = "ascii";
