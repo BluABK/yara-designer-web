@@ -1059,6 +1059,13 @@ function escapeHtml(unsafe) {
          .replace(/'/g, "&#039;");
 }
 
+function uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        let r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+  });
+}
+
 /**
  * Sets multiple attributes on a HTMLDomElement.
  *
@@ -1091,8 +1098,10 @@ function editSettingsDialog() {
 
     // Define column classNames in one single spot, so it is easy to modify later.
     let identifierColumnClass = "col-md-3 mb-3";
-    let valueColumnClass = "col-md-8 mb-3";
+    let valueColumnClass = "col-md-7 mb-3";
     let valueTypeColumnClass = "col-md-1 mb-3";
+    let deleteThisRowColumnClass = "col-md-1 mb-3";
+    let deleteThisRowColumnButtonIdPrefix = `yara-meta-delete-this-row-button`;
 
     // Add a fake row with label headings (in order to avoid reprinting labels for every single row)
     let fakeMetaFormRow = document.createElement("div");
@@ -1107,6 +1116,10 @@ function editSettingsDialog() {
     let fakeValueTypeColumn = document.createElement("div");
     let fakeValueTypeColumnId = `yara-meta-value-type-heading`;
     let fakeValueTypeColumnnLabel = document.createElement("label");
+
+    let fakeDeleteThisRowColumn = document.createElement("div");
+    let fakeDeleteThisRowColumnId = `yara-meta-del-row-heading`;
+    let fakeDeleteThisRowColumnLabel = document.createElement("label");
 
     fakeMetaFormRow.setAttribute("class", "form-row");
     fakeMetaFormRow.style.lineHeight = "0";
@@ -1126,6 +1139,11 @@ function editSettingsDialog() {
     fakeValueTypeColumnnLabel.innerText = "Value type";
     fakeValueTypeColumn.appendChild(fakeValueTypeColumnnLabel);
 
+    fakeDeleteThisRowColumn.setAttribute("class", valueTypeColumnClass);
+    fakeDeleteThisRowColumnLabel.htmlFor = fakeDeleteThisRowColumnId;
+    fakeDeleteThisRowColumnLabel.innerText = "";
+    fakeDeleteThisRowColumn.appendChild(fakeDeleteThisRowColumnLabel);
+
     // Add heading columns to heading row.
     fakeMetaFormRow.appendChild(fakeIdentifierColumn);
     fakeMetaFormRow.appendChild(fakeValueColumn);
@@ -1138,6 +1156,8 @@ function editSettingsDialog() {
     for (let i = 0; i < metaArray.length; i++) {
         // Define required structure.
         let metaFormRow = document.createElement("div");
+        // Set a GUID/UUID instead of index to avoid issues with del/add row feature (id collisions).
+        metaFormRow.setAttribute("id", `meta-form-row-${uuidv4()}`);
 
         let identifierColumn = document.createElement("div");
         let identifierColumnLabel = document.createElement("label");
@@ -1154,11 +1174,16 @@ function editSettingsDialog() {
         let valueTypeColumnSelect = document.createElement("select");
         let valueTypeColumnSelectId = `yara-meta-value-type-${i}`;
 
+        let deleteThisRowColumn = document.createElement("div");
+        let deleteThisRowColumnLabel = document.createElement("label");
+        let deleteThisRowColumnButton = document.createElement("button");
+        let deleteThisRowColumnButtonId = `${deleteThisRowColumnButtonIdPrefix}-${i}`;
+
         // Set values to the objects defined above:
         // Row.
         metaFormRow.setAttribute("class", "form-row");
 
-        // Identifier.
+        // Set Identifier column properties.
         identifierColumn.setAttribute("class", identifierColumnClass);
         identifierColumnLabel.htmlFor = identifierColumnInputId;
         identifierColumnLabel.innerText = "Identifier";
@@ -1167,10 +1192,12 @@ function editSettingsDialog() {
             "class": "form-control",
             "id": identifierColumnInputId,
             "value": metaArray[i]["identifier"]});
+
+        // Add Identifier label and input element to column.
         identifierColumn.appendChild(identifierColumnLabel);
         identifierColumn.appendChild(identifierColumnInput);
 
-        // Value.
+        // Set Value column properties.
         valueColumn.setAttribute("class", valueColumnClass);
         valueColumnLabel.htmlFor = valueColumnInputId;
         valueColumnLabel.innerText = "Value";
@@ -1179,10 +1206,12 @@ function editSettingsDialog() {
             "class": "form-control",
             "id": valueColumnInputId,
             "value": metaArray[i]["value"]});
+
+        // Add Value label and input element to column.
         valueColumn.appendChild(valueColumnLabel);
         valueColumn.appendChild(valueColumnInput);
 
-        // Value type.
+        // Set Value type column properties.
         valueTypeColumn.setAttribute("class", valueTypeColumnClass);
         valueTypeColumnLabel.htmlFor = valueTypeColumnSelectId;
         valueTypeColumnLabel.innerText = "Value type";
@@ -1191,6 +1220,7 @@ function editSettingsDialog() {
             "class": "custom-select",
             "id": valueTypeColumnSelectId});
 
+        // Add options for all valid value types.
         for (let validValueType of yara.YARA_VALUE_TYPES) {
             let option = document.createElement("option");
 
@@ -1198,35 +1228,76 @@ function editSettingsDialog() {
             option.innerText = validValueType;
 
            if (validValueType === metaArray[i]["value_type"]) {
-            option.selected = true;
-            }
+               option.selected = true;
+           }
 
+           // Add Value type option to select element.
             valueTypeColumnSelect.appendChild(option);
         }
 
+        // Add Value label and select element to column.
         valueTypeColumn.appendChild(valueTypeColumnLabel);
         valueTypeColumn.appendChild(valueTypeColumnSelect);
+
+        // Set row deletion button properties.
+        deleteThisRowColumn.setAttribute("class", deleteThisRowColumnClass);
+        deleteThisRowColumnLabel.htmlFor = deleteThisRowColumnButtonId;
+        // deleteThisRowColumnLabel.style.display = "none"; // Only use label for computation, heading labels are sufficient.
+        setAttributes(deleteThisRowColumnButton, {
+            "id": deleteThisRowColumnButtonId,
+            "title": `Delete row: ${metaArray[i]["identifier"]}`,
+            "_this-meta-row-id": metaFormRow.id
+        });
+        // Add some styling/graphics to the button.
+        let buttonGfx = document.createElement("i");
+        buttonGfx.setAttribute("class", "fa fa-trash");
+        deleteThisRowColumnButton.appendChild(buttonGfx);
+        // deleteThisRowColumnButton.addEventListener('click', function () {
+        //     console.log("weeeeeee!");
+        // });
+        // deleteThisRowColumnButton.onclick = function() {
+        //     console.log("$(this)", $(this));
+        //     // $(this).parents("div").remove();
+        // };
+
+        deleteThisRowColumn.appendChild(deleteThisRowColumnButton);
 
         // Add columns to row.
         metaFormRow.appendChild(identifierColumn);
         metaFormRow.appendChild(valueColumn);
         metaFormRow.appendChild(valueTypeColumn);
+        metaFormRow.appendChild(deleteThisRowColumn);
 
         // Add row to form element.
         metaForm.appendChild(metaFormRow)
     }
 
-    console.log("metaForm", metaForm);
-
     let bodyTop =
         `<h3>Metadata</h3><br/>` +
         `${metaForm.outerHTML}`;
 
-    let modal = modals.popupModal(modals.RESPONSE_MODAL, "<h1>Settings</h1>", bodyTop, null, null, null, levels.INFO);
+    let modal = modals.popupModal(
+        modals.RESPONSE_MODAL, "<h1>Settings</h1>", bodyTop, null, null, null, levels.INFO);
 
-    // FIXME: Workaround for select element somehow losing all 'selected' attrs when added to the HTML document.
     for (let i = 0; i < metaArray.length; i++) {
+        // FIXME: Workaround for select element somehow losing all 'selected' attrs when added to the HTML document.
         modal.getElementsByClassName("custom-select")[i].value = metaArray[i]["value_type"];
+
+        // Add event listeners to all the row deletion buttons.
+        document.querySelector(`#${deleteThisRowColumnButtonIdPrefix}-${i}`).addEventListener(
+            'click', function() {
+                event.preventDefault(); // For some reason the button causes the page to redirect to itself.
+
+                console.log(metaArray[i]);
+                console.log("_this-meta-row-id", this.getAttribute("_this-meta-row-id"));
+                console.log("event", event);
+
+                let thisRowId = this.getAttribute("_this-meta-row-id");
+                let thisRow = document.getElementById(thisRowId);
+
+                // Delete this row from the form element.
+                document.getElementById("settings-dialog-meta-form").removeChild(thisRow);
+            });
     }
 }
 
