@@ -1080,10 +1080,59 @@ function editSettingsDialog() {
         return;
     }
 
+    // Section: Metadata
     let metaArray = window.currentlyLoadedRule["meta"];
     console.log(metaArray);
 
+    // Define the form element to hold meta items.
     let metaForm = document.createElement("form");
+    metaForm.setAttribute("id", "settings-dialog-meta-form");
+    metaForm.style.lineHeight = "0"; // Reduce some vertical spacing (alas, not near enough).
+
+    // Define column classNames in one single spot, so it is easy to modify later.
+    let identifierColumnClass = "col-md-3 mb-3";
+    let valueColumnClass = "col-md-8 mb-3";
+    let valueTypeColumnClass = "col-md-1 mb-3";
+
+    // Add a fake row with label headings (in order to avoid reprinting labels for every single row)
+    let fakeMetaFormRow = document.createElement("div");
+    let fakeIdentifierColumn = document.createElement("div");
+    let fakeIdentifierColumnId = `yara-meta-identifier-heading`;
+    let fakeIdentifierColumnLabel = document.createElement("label");
+
+    let fakeValueColumn = document.createElement("div");
+    let fakeValueColumnId = `yara-meta-value-heading`;
+    let fakeValueColumnnLabel = document.createElement("label");
+
+    let fakeValueTypeColumn = document.createElement("div");
+    let fakeValueTypeColumnId = `yara-meta-value-type-heading`;
+    let fakeValueTypeColumnnLabel = document.createElement("label");
+
+    fakeMetaFormRow.setAttribute("class", "form-row");
+    fakeMetaFormRow.style.lineHeight = "0";
+
+    fakeIdentifierColumn.setAttribute("class", identifierColumnClass);
+    fakeIdentifierColumnLabel.htmlFor = fakeIdentifierColumnId;
+    fakeIdentifierColumnLabel.innerText = "Identifier";
+    fakeIdentifierColumn.appendChild(fakeIdentifierColumnLabel);
+
+    fakeValueColumn.setAttribute("class", valueColumnClass);
+    fakeValueColumnnLabel.htmlFor = fakeValueColumnId;
+    fakeValueColumnnLabel.innerText = "Value";
+    fakeValueColumn.appendChild(fakeValueColumnnLabel);
+
+    fakeValueTypeColumn.setAttribute("class", valueTypeColumnClass);
+    fakeValueTypeColumnnLabel.htmlFor = fakeValueTypeColumnId;
+    fakeValueTypeColumnnLabel.innerText = "Value type";
+    fakeValueTypeColumn.appendChild(fakeValueTypeColumnnLabel);
+
+    // Add heading columns to heading row.
+    fakeMetaFormRow.appendChild(fakeIdentifierColumn);
+    fakeMetaFormRow.appendChild(fakeValueColumn);
+    fakeMetaFormRow.appendChild(fakeValueTypeColumn);
+
+    // Add heading row to form element.
+    metaForm.appendChild(fakeMetaFormRow);
 
     // Add meta items to the meta form element.
     for (let i = 0; i < metaArray.length; i++) {
@@ -1110,9 +1159,10 @@ function editSettingsDialog() {
         metaFormRow.setAttribute("class", "form-row");
 
         // Identifier.
-        identifierColumn.setAttribute("class", "col-md mb-3");
+        identifierColumn.setAttribute("class", identifierColumnClass);
         identifierColumnLabel.htmlFor = identifierColumnInputId;
         identifierColumnLabel.innerText = "Identifier";
+        identifierColumnLabel.style.display = "none";  // Only use label for computation, heading labels are sufficient.
         setAttributes(identifierColumnInput, {
             "class": "form-control",
             "id": identifierColumnInputId,
@@ -1121,9 +1171,10 @@ function editSettingsDialog() {
         identifierColumn.appendChild(identifierColumnInput);
 
         // Value.
-        valueColumn.setAttribute("class", "col-md-3 mb-3");
+        valueColumn.setAttribute("class", valueColumnClass);
         valueColumnLabel.htmlFor = valueColumnInputId;
         valueColumnLabel.innerText = "Value";
+        valueColumnLabel.style.display = "none";  // Only use label for computation, heading labels are sufficient.
         setAttributes(valueColumnInput, {
             "class": "form-control",
             "id": valueColumnInputId,
@@ -1132,9 +1183,10 @@ function editSettingsDialog() {
         valueColumn.appendChild(valueColumnInput);
 
         // Value type.
-        valueTypeColumn.setAttribute("class", "col-md-6 mb-3");
+        valueTypeColumn.setAttribute("class", valueTypeColumnClass);
         valueTypeColumnLabel.htmlFor = valueTypeColumnSelectId;
         valueTypeColumnLabel.innerText = "Value type";
+        valueTypeColumnLabel.style.display = "none";  // Only use label for computation, heading labels are sufficient.
         setAttributes(valueTypeColumnSelect, {
             "class": "custom-select",
             "id": valueTypeColumnSelectId});
@@ -1151,16 +1203,6 @@ function editSettingsDialog() {
 
             valueTypeColumnSelect.appendChild(option);
         }
-
-        // Select currently set value.
-        // valueTypeColumnSelect.value = metaArray[i]["value_type"];
-        valueTypeColumnSelect.selectedIndex = 2;
-        console.log("valueTypeColumnSelect", valueTypeColumnSelect);
-        console.log("valueTypeColumnSelect.value", valueTypeColumnSelect.value);
-        console.log(valueTypeColumnSelect.options);
-        // if (validValueType === metaArray[i]["value_type"]) {
-        //     // option.selected = true;
-        // }
 
         valueTypeColumn.appendChild(valueTypeColumnLabel);
         valueTypeColumn.appendChild(valueTypeColumnSelect);
