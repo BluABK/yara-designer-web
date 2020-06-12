@@ -1245,20 +1245,14 @@ function editSettingsDialog() {
         // deleteThisRowColumnLabel.style.display = "none"; // Only use label for computation, heading labels are sufficient.
         setAttributes(deleteThisRowColumnButton, {
             "id": deleteThisRowColumnButtonId,
+            "class": "btn btn-danger",
             "title": `Delete row: ${metaArray[i]["identifier"]}`,
             "_this-meta-row-id": metaFormRow.id
         });
         // Add some styling/graphics to the button.
         let buttonGfx = document.createElement("i");
-        buttonGfx.setAttribute("class", "fa fa-trash");
+        buttonGfx.setAttribute("class", "fa fa-trash fa-lg");
         deleteThisRowColumnButton.appendChild(buttonGfx);
-        // deleteThisRowColumnButton.addEventListener('click', function () {
-        //     console.log("weeeeeee!");
-        // });
-        // deleteThisRowColumnButton.onclick = function() {
-        //     console.log("$(this)", $(this));
-        //     // $(this).parents("div").remove();
-        // };
 
         deleteThisRowColumn.appendChild(deleteThisRowColumnButton);
 
