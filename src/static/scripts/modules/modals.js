@@ -141,7 +141,7 @@ export function popupWarningModal(header, body, footer=null) {
 }
 
 export function popupErrorModal(header, body, footer=null) {
-    let hdr = `<h2>Warning: ${header}</h2>`;
+    let hdr = `<h2>Error: ${header}</h2>`;
     let bdy = `<h3>${body}</h3>`;
 
     popupModal(RESPONSE_MODAL, hdr, null, bdy, null, footer, levels.ERROR);

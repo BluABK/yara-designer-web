@@ -91,6 +91,7 @@ const SYNTAX_ERROR = "syntax";
 // Add event listeners.
 // -- Buttons:
 document.querySelector('#load-rule-button').addEventListener('click', loadRuleDialog);
+document.querySelector('#edit-settings-button').addEventListener('click', editSettingsDialog);
 document.querySelector('#show-help-button').addEventListener('click', modals.popupHelpModal);
 document.querySelector('#clear-rule-button').addEventListener('click', clearRule);
 document.querySelector('#submit-rule-button').addEventListener('click', postRule);
@@ -993,7 +994,7 @@ function setYARAStrings(strings) {
 }
 
 /**
- * Loads a YARA Rule.
+ * Loads a YARA Rule (callback function called by getRule).
  *
  * @param rule  YARA Rule.
  */
@@ -1017,6 +1018,11 @@ function loadRuleCallback(rule) {
     setYARAStrings(rule.strings);
 }
 
+/**
+ * Loads a YARA Rule by calling getRule with a callback.
+ *
+ * @param ruleId
+ */
 function loadRule(ruleId) {
     getRule(ruleId, loadRuleCallback);
 }
@@ -1038,6 +1044,12 @@ function makeCollapsibleJSONDetails(json, id) {
            `</div>`;
 }
 
+/**
+ * Converts troublesome characters to HTML-compliant symbols.
+ *
+ * @param unsafe        String containing unsafe characters.
+ * @returns {string}    String with unsafe characters converted to HTML-compliant symbols.
+ */
 function escapeHtml(unsafe) {
     return unsafe
          .replace(/&/g, "&amp;")
@@ -1045,7 +1057,108 @@ function escapeHtml(unsafe) {
          .replace(/>/g, "&gt;")
          .replace(/"/g, "&quot;")
          .replace(/'/g, "&#039;");
- }
+}
+
+/**
+ * Sets multiple attributes on a HTMLDomElement.
+ *
+ * @param HTMLDomElement
+ * @param attrJSON
+ */
+function setAttributes(HTMLDomElement, attrJSON) {
+    for (let key of Object.keys(attrJSON)) {
+        HTMLDomElement.setAttribute(key, attrJSON[key]);
+    }
+}
+
+/**
+ * Popup a modal with rule settings (e.g. metadata to include).
+ */
+function editSettingsDialog() {
+    if (window.currentlyLoadedRule === undefined) {
+        modals.popupErrorModal("No rule loaded!", "Cannot edit settings without loading a rule first!");
+        return;
+    }
+
+    let metaArray = window.currentlyLoadedRule["meta"];
+    console.log(metaArray);
+
+    let metaForm = document.createElement("form");
+
+    // Add meta items to the meta form element.
+    for (let i = 0; i < metaArray.length; i++) {
+        // Define required structure.
+        let metaFormRow = document.createElement("div");
+
+        let identifierColumn = document.createElement("div");
+        let identifierColumnLabel = document.createElement("label");
+        let identifierColumnInput = document.createElement("input");
+        let identifierColumnInputId = `yara-meta-identifier-${i}`;
+
+        let valueColumn = document.createElement("div");
+        let valueColumnLabel = document.createElement("label");
+        let valueColumnInput = document.createElement("input");
+        let valueColumnInputId = `yara-meta-value-${i}`;
+
+        let valueTypeColumn = document.createElement("div");
+        let valueTypeColumnLabel = document.createElement("label");
+        let valueTypeColumnInput = document.createElement("input");
+        let valueTypeColumnInputId = `yara-meta-value-type-${i}`;
+
+        // Set values to the objects defined above:
+        // Row.
+        metaFormRow.setAttribute("class", "form-row");
+
+        // Identifier.
+        identifierColumn.setAttribute("class", "col-md mb-3");
+        identifierColumnLabel.htmlFor = identifierColumnInputId;
+        identifierColumnLabel.innerText = "Identifier";
+        setAttributes(identifierColumnInput, {
+            "class": "form-control",
+            "id": identifierColumnInputId,
+            "value": metaArray[i]["identifier"]});
+        identifierColumn.appendChild(identifierColumnLabel);
+        identifierColumn.appendChild(identifierColumnInput);
+
+        // Value.
+        valueColumn.setAttribute("class", "col-md-3 mb-3");
+        valueColumnLabel.htmlFor = valueColumnInputId;
+        valueColumnLabel.innerText = "Value";
+        setAttributes(valueColumnInput, {
+            "class": "form-control",
+            "id": valueColumnInputId,
+            "value": metaArray[i]["value"]});
+        valueColumn.appendChild(valueColumnLabel);
+        valueColumn.appendChild(valueColumnInput);
+
+        // Value type.
+        valueTypeColumn.setAttribute("class", "col-md-6 mb-3");
+        valueTypeColumnLabel.htmlFor = valueTypeColumnInputId;
+        valueTypeColumnLabel.innerText = "Value type";
+        setAttributes(valueTypeColumnInput, {
+            "class": "form-control",
+            "id": valueTypeColumnInputId,
+            "value": metaArray[i]["value_type"]});
+        valueTypeColumn.appendChild(valueTypeColumnLabel);
+        valueTypeColumn.appendChild(valueTypeColumnInput);
+
+        // Add columns to row.
+        metaFormRow.appendChild(identifierColumn);
+        metaFormRow.appendChild(valueColumn);
+        metaFormRow.appendChild(valueTypeColumn);
+
+        // Add row to form element.
+        metaForm.appendChild(metaFormRow)
+    }
+
+    console.log("metaForm", metaForm);
+
+    let bodyTop =
+        `<h3>Metadata</h3><br/>` +
+        `${metaForm.outerHTML}`;
+
+    modals.popupModal(modals.RESPONSE_MODAL, "<h1>Settings</h1>", bodyTop, null, null, null, levels.INFO);
+}
 
 function handlePostRuleResponse(json) {
     console.log("handlePostRuleResponse JSON", json);
