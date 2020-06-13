@@ -5,23 +5,23 @@ import {getParameterByName} from "./modules/utils.js";
 import * as modals from "./modules/modals.js";
 import * as yara from "./modules/yara.js";
 
-console.log(yara);
-
-try {
-    let ys1 = yara.createYARAString('my_Identifier5', "This is a string", yara.YARA_TYPE_TEXT, [yara.YARA_MODIFIER_WIDE, yara.YARA_MODIFIER_NO_CASE]);
-
-    console.log("ys1", ys1);
-} catch (e) {
-    console.error(e);
-}
-
-try {
-    let ys2 = yara.createYARAString('my_Identifier5', "This is a string", yara.YARA_TYPE_TEXT, [yara.YARA_MODIFIER_WIDE, yara.YARA_MODIFIER_NO_CASE, yara.YARA_MODIFIER_BASE64]);
-
-    console.log("ys2", ys2);
-} catch (e) {
-    console.log("Caught Expected YS2 Exception ", e);
-}
+// console.log(yara);
+//
+// try {
+//     let ys1 = yara.createYARAString('my_Identifier5', "This is a string", yara.YARA_TYPE_TEXT, [yara.YARA_MODIFIER_WIDE, yara.YARA_MODIFIER_NO_CASE]);
+//
+//     console.log("ys1", ys1);
+// } catch (e) {
+//     console.error(e);
+// }
+//
+// try {
+//     let ys2 = yara.createYARAString('my_Identifier5', "This is a string", yara.YARA_TYPE_TEXT, [yara.YARA_MODIFIER_WIDE, yara.YARA_MODIFIER_NO_CASE, yara.YARA_MODIFIER_BASE64]);
+//
+//     console.log("ys2", ys2);
+// } catch (e) {
+//     console.log("Caught Expected YS2 Exception ", e);
+// }
 
 // MIME Types:
 const MIMETYPE_JSON = 'application/json';
@@ -88,10 +88,15 @@ const OBSERVABLE_CLASSES = ["condition-observable-data", "condition-observable-t
 const KEYWORD_CLASSES = ["condition-keyword"];
 const SYNTAX_ERROR = "syntax";
 
+// Customised modals - Settings Modal:
+const SETTINGS_MODAL_META_FORM_ROW = "yara-meta-";
+const SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX = `${SETTINGS_MODAL_META_FORM_ROW}-delete-this-row-button`;
+
+
 // Add event listeners.
 // -- Buttons:
 document.querySelector('#load-rule-button').addEventListener('click', loadRuleDialog);
-document.querySelector('#edit-settings-button').addEventListener('click', editSettingsDialog);
+document.querySelector('#edit-settings-button').addEventListener('click', settingsModal);
 document.querySelector('#show-help-button').addEventListener('click', modals.popupHelpModal);
 document.querySelector('#clear-rule-button').addEventListener('click', clearRule);
 document.querySelector('#submit-rule-button').addEventListener('click', postRule);
@@ -1079,15 +1084,53 @@ function setAttributes(HTMLDomElement, attrJSON) {
 }
 
 /**
- * Popup a modal with rule settings (e.g. metadata to include).
+ * Combine createElement and setting attributes into one function (significantly lessens code bloat).
+ *
+ * @param tagName
+ * @param attrJSON
+ *
+ * @returns {any}
  */
-function editSettingsDialog() {
-    if (window.currentlyLoadedRule === undefined) {
-        modals.popupErrorModal("No rule loaded!", "Cannot edit settings without loading a rule first!");
-        return;
-    }
+function createElementAndSetAttributes(tagName, attrJSON) {
+    let HTMLDomElement = document.createElement(tagName);
+    setAttributes(HTMLDomElement, attrJSON);
 
-    // Section: Metadata
+    return HTMLDomElement;
+}
+
+/**
+ * Set properties that can only be persistently set after the elements has been added to document.
+ *
+ * @param modal         Settings modal reference.
+ */
+function metaSettingsFormCallback(modal) {
+    let metaArray = window.currentlyLoadedRule["meta"];
+
+    for (let i = 0; i < metaArray.length; i++) {
+        // FIXME: Workaround for select element somehow losing all 'selected' attrs when added to the HTML document.
+        modal.getElementsByClassName("custom-select")[i].value = metaArray[i]["value_type"];
+
+        // Add event listeners to all the row deletion buttons.
+        document.querySelector(`#${SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX}-${i}`).addEventListener(
+            'click', function() {
+                // For some reason the button causes the page to redirect to itself, so let's not.
+                event.preventDefault();
+
+                let thisRowId = this.getAttribute("_this-meta-row-id");
+                let thisRow = document.getElementById(thisRowId);
+
+                // Delete this row from the form element.
+                document.getElementById("settings-dialog-meta-form").removeChild(thisRow);
+            });
+    }
+}
+
+/**
+ * Generates a form element for editing, adding and removing metadata to include in the rule.
+ *
+ * @returns {HTMLFormElement}
+ */
+function settingsGenerateMetaForm() {
     let metaArray = window.currentlyLoadedRule["meta"];
     console.log(metaArray);
 
@@ -1101,7 +1144,6 @@ function editSettingsDialog() {
     let valueColumnClass = "col-md-7 mb-3";
     let valueTypeColumnClass = "col-md-1 mb-3";
     let deleteThisRowColumnClass = "col-md-1 mb-3";
-    let deleteThisRowColumnButtonIdPrefix = `yara-meta-delete-this-row-button`;
 
     // Add a fake row with label headings (in order to avoid reprinting labels for every single row)
     let fakeMetaFormRow = document.createElement("div");
@@ -1177,7 +1219,7 @@ function editSettingsDialog() {
         let deleteThisRowColumn = document.createElement("div");
         let deleteThisRowColumnLabel = document.createElement("label");
         let deleteThisRowColumnButton = document.createElement("button");
-        let deleteThisRowColumnButtonId = `${deleteThisRowColumnButtonIdPrefix}-${i}`;
+        let deleteThisRowColumnButtonId = `${SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX}-${i}`;
 
         // Set values to the objects defined above:
         // Row.
@@ -1266,33 +1308,35 @@ function editSettingsDialog() {
         metaForm.appendChild(metaFormRow)
     }
 
-    let bodyTop =
+    return metaForm;
+}
+
+/**
+ * Popup a modal with rule settings (e.g. metadata to include).
+ */
+function settingsModal() {
+    if (window.currentlyLoadedRule === undefined) {
+        modals.popupErrorModal("No rule loaded!", "Cannot edit settings without loading a rule first!");
+        return;
+    }
+
+    let modalCallbacks = [];
+
+    // Generate the form element for metadata.
+    let metaForm = settingsGenerateMetaForm();
+
+    // Add necessary form callback to callbacks list.
+    modalCallbacks.push(metaSettingsFormCallback);
+
+    let header = `<h2><i class="fa fa-cog"></i> Settings</h2>`;
+
+    let bodyMiddle =
         `<h3>Metadata</h3><br/>` +
         `${metaForm.outerHTML}`;
 
-    let modal = modals.popupModal(
-        modals.RESPONSE_MODAL, "<h1>Settings</h1>", bodyTop, null, null, null, levels.INFO);
-
-    for (let i = 0; i < metaArray.length; i++) {
-        // FIXME: Workaround for select element somehow losing all 'selected' attrs when added to the HTML document.
-        modal.getElementsByClassName("custom-select")[i].value = metaArray[i]["value_type"];
-
-        // Add event listeners to all the row deletion buttons.
-        document.querySelector(`#${deleteThisRowColumnButtonIdPrefix}-${i}`).addEventListener(
-            'click', function() {
-                event.preventDefault(); // For some reason the button causes the page to redirect to itself.
-
-                console.log(metaArray[i]);
-                console.log("_this-meta-row-id", this.getAttribute("_this-meta-row-id"));
-                console.log("event", event);
-
-                let thisRowId = this.getAttribute("_this-meta-row-id");
-                let thisRow = document.getElementById(thisRowId);
-
-                // Delete this row from the form element.
-                document.getElementById("settings-dialog-meta-form").removeChild(thisRow);
-            });
-    }
+    modals.popupModal(
+        modals.RESPONSE_MODAL, header, null, bodyMiddle, null, null,
+        levels.INFO, modalCallbacks);
 }
 
 function handlePostRuleResponse(json) {
