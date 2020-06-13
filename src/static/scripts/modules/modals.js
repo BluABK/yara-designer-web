@@ -90,7 +90,8 @@ function getCSSVar(varName) {
  *  - '-modal-background-*'
  *  - '-modal-color-*'
  */
-export function popupModal(modalId=null, header=null, bodyTop=null, bodyMiddle=null, bodyBottom=null, footer=null, level=null) {
+export function popupModal(modalId=null, header=null, bodyTop=null, bodyMiddle=null, bodyBottom=null, footer=null,
+                           level=null, callbacks=null) {
     // Modal element itself.
     let modal = document.getElementById(modalId);
 
@@ -125,6 +126,13 @@ export function popupModal(modalId=null, header=null, bodyTop=null, bodyMiddle=n
     //      Footer.
     modalFooter.style.background = getCSSVar(`${MODAL_BG}-${level}`);
     modalFooter.style.color = getCSSVar(`${MODAL_TEXT_COLOR}-${level}`);
+
+    // Perform any callbacks on the spawned modal.
+    if (Array.isArray(callbacks)) {
+        for (let cb of callbacks) {
+            cb(modal);
+        }
+    }
 
     // Show modal.
     modal.style.display = "block";
