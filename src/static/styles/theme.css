@@ -219,6 +219,16 @@ tr:nth-child(even):hover td {
   color: var(--button-help-color-hover);
 }
 
+#edit-settings-button {
+    background: var(--button-default-background);
+    color: var(--button-default-color);
+}
+
+#edit-settings-button:hover {
+  background: var(--button-help-background-hover);
+  color: var(--button-help-color-hover);
+}
+
 #submit-rule-button {
     background: var(--button-submit-background);
     color: var(--button-submit-color);

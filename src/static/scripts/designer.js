@@ -1191,6 +1191,159 @@ function generateMetaFormRowHeading() {
     return fakeFormRow;
 }
 
+function generateMetaFormRow(identifierColumnValue, valueColumnValue, valueTypeColumnValue, idSuffix) {
+    // Define required row structure.
+
+    let metaFormRow = createElementAndSetAttributes("div", {
+        // Set a GUID/UUID instead of index to avoid issues with del/add row feature (id collisions).
+        "id": `meta-form-row-${uuidv4()}`,
+        "class": "form-row"
+    });
+
+    // -- COLUMN: Identifier.
+    let identifierColumnInputId = `yara-meta-identifier-${idSuffix}`;
+    let identifierColumn = createElementAndSetAttributes("div", {
+        "class": SETTINGS_MODAL_META_FORM_COLUMN_IDENTIFIER_CLASS
+    });
+    let identifierColumnLabel = createElementAndSetAttributes("label", {
+        "for": identifierColumnInputId,
+        "style": "display: none;" // Only use label for computation, heading labels are sufficient.
+    });
+    identifierColumnLabel.innerText = "Identifier";
+    let identifierColumnInput = createElementAndSetAttributes("input", {
+        "class": "form-control",
+        "id": identifierColumnInputId,
+        "value": identifierColumnValue
+    });
+
+    // Add label and input element to column and finally column to row.
+    identifierColumn.appendChild(identifierColumnLabel);
+    identifierColumn.appendChild(identifierColumnInput);
+    metaFormRow.appendChild(identifierColumn);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Value column.
+    let valueColumnInputId = `yara-meta-value-${idSuffix}`;
+    let valueColumn = createElementAndSetAttributes("div", {
+        "class": SETTINGS_MODAL_META_FORM_COLUMN_VALUE_CLASS
+    });
+    let valueColumnLabel = createElementAndSetAttributes("label", {
+        "for": valueColumnInputId,
+        "style": "display: none;" // Only use label for computation, heading labels are sufficient.
+    });
+    valueColumnLabel.innerText = "Value";
+    let valueColumnInput = createElementAndSetAttributes("input", {
+        "class": "form-control",
+        "id": valueColumnInputId,
+        "value": valueColumnValue
+    });
+
+    // Add label and input element to column and finally column to row.
+    valueColumn.appendChild(valueColumnLabel);
+    valueColumn.appendChild(valueColumnInput);
+    metaFormRow.appendChild(valueColumn);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // -- COLUMN: Value type.
+    let valueTypeColumnSelectId = `yara-meta-value-type-${idSuffix}`;
+    let valueTypeColumn = createElementAndSetAttributes("div", {
+        "class": SETTINGS_MODAL_META_FORM_COLUMN_VALUE_TYPE_CLASS
+    });
+    let valueTypeColumnLabel = createElementAndSetAttributes("label", {
+        "for": valueTypeColumnSelectId,
+        "style": "display: none;" // Only use label for computation, heading labels are sufficient.
+    });
+    valueTypeColumnLabel.innerText = "Value type";
+    let valueTypeColumnSelect = createElementAndSetAttributes("select", {
+        "class": "custom-select",
+        "id": valueTypeColumnSelectId
+    });
+
+    // Add options for all valid value types.
+    for (let validValueType of yara.YARA_VALUE_TYPES) {
+        let option = document.createElement("option");
+
+        option.value = validValueType;
+        option.innerText = validValueType;
+
+       if (validValueType === valueTypeColumnValue) {
+           option.selected = true;
+       }
+
+       // Add Value type option to select element.
+        valueTypeColumnSelect.appendChild(option);
+    }
+
+    // Add label and select element to column and finally column to row.
+    valueTypeColumn.appendChild(valueTypeColumnLabel);
+    valueTypeColumn.appendChild(valueTypeColumnSelect);
+    metaFormRow.appendChild(valueTypeColumn);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // -- COLUMN: Delete current row.
+    let deleteThisRowColumnButtonId = `${SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX}-${idSuffix}`;
+    let deleteThisRowColumn = createElementAndSetAttributes("div", {
+        "class": SETTINGS_MODAL_META_FORM_COLUMN_DELETE_ROW_CLASS
+    });
+    let deleteThisRowColumnLabel = createElementAndSetAttributes("label", {
+        "for": deleteThisRowColumnButtonId
+    });
+    let deleteThisRowColumnButton = createElementAndSetAttributes("button", {
+        "id": deleteThisRowColumnButtonId,
+        "class": "btn btn-danger",
+        "title": `Delete row: ${identifierColumnValue}`,
+        "_this-meta-row-id": metaFormRow.id
+    });
+
+    // Add some styling/graphics to the button.
+    let buttonGfx = createElementAndSetAttributes("i", {
+        "class": "fa fa-trash fa-lg"
+    });
+
+    // Add gfx to button, then button to column and finally column to row.
+    deleteThisRowColumnButton.appendChild(buttonGfx);
+    deleteThisRowColumn.appendChild(deleteThisRowColumnButton);
+    metaFormRow.appendChild(deleteThisRowColumn);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    return metaFormRow;
+}
+
+function addAddRowButton() {
+    let metaFormRow = createElementAndSetAttributes("div", {
+        // Set a GUID/UUID instead of index to avoid issues with del/add row feature (id collisions).
+        "id": `meta-form-row-${uuidv4()}`,
+        "class": "form-row"
+    });
+
+    // -- COLUMN: Delete current row.
+    let deleteThisRowColumnButtonId = `${SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX}`;
+    let deleteThisRowColumn = createElementAndSetAttributes("div", {
+        "class": SETTINGS_MODAL_META_FORM_COLUMN_DELETE_ROW_CLASS
+    });
+    let deleteThisRowColumnLabel = createElementAndSetAttributes("label", {
+        "for": deleteThisRowColumnButtonId
+    });
+    let deleteThisRowColumnButton = createElementAndSetAttributes("button", {
+        "id": deleteThisRowColumnButtonId,
+        "class": "btn btn-danger",
+        "title": `Delete row: ${identifierColumnValue}`,
+        "_this-meta-row-id": metaFormRow.id
+    });
+
+    // Add some styling/graphics to the button.
+    let buttonGfx = createElementAndSetAttributes("i", {
+        "class": "fa fa-trash fa-lg"
+    });
+
+    // Add gfx to button, then button to column and finally column to row.
+    deleteThisRowColumnButton.appendChild(buttonGfx);
+    deleteThisRowColumn.appendChild(deleteThisRowColumnButton);
+    metaFormRow.appendChild(deleteThisRowColumn);
+
+    return metaFormRow;
+}
+
 /**
  * Generates a form element for editing, adding and removing metadata to include in the rule.
  *
@@ -1211,123 +1364,10 @@ function settingsGenerateMetaForm() {
 
     // Add meta items to the meta form element.
     for (let i = 0; i < metaArray.length; i++) {
-        // Define required structure:
-
-        // Row.
-        let metaFormRow = createElementAndSetAttributes("div", {
-            // Set a GUID/UUID instead of index to avoid issues with del/add row feature (id collisions).
-            "id": `meta-form-row-${uuidv4()}`,
-            "class": "form-row"
-        });
-
-        // -- COLUMN: Identifier.
-        let identifierColumnInputId = `yara-meta-identifier-${i}`;
-        let identifierColumn = createElementAndSetAttributes("div", {
-            "class": SETTINGS_MODAL_META_FORM_COLUMN_IDENTIFIER_CLASS
-        });
-        let identifierColumnLabel = createElementAndSetAttributes("label", {
-            "for": identifierColumnInputId,
-            "style": "display: none;" // Only use label for computation, heading labels are sufficient.
-        });
-        identifierColumnLabel.innerText = "Identifier";
-        let identifierColumnInput = createElementAndSetAttributes("input", {
-            "class": "form-control",
-            "id": identifierColumnInputId,
-            "value": metaArray[i]["identifier"]
-        });
-
-        // Add label and input element to column and finally column to row.
-        identifierColumn.appendChild(identifierColumnLabel);
-        identifierColumn.appendChild(identifierColumnInput);
-        metaFormRow.appendChild(identifierColumn);
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        // Value column.
-        let valueColumnInputId = `yara-meta-value-${i}`;
-        let valueColumn = createElementAndSetAttributes("div", {
-            "class": SETTINGS_MODAL_META_FORM_COLUMN_VALUE_CLASS
-        });
-        let valueColumnLabel = createElementAndSetAttributes("label", {
-            "for": valueColumnInputId,
-            "style": "display: none;" // Only use label for computation, heading labels are sufficient.
-        });
-        valueColumnLabel.innerText = "Value";
-        let valueColumnInput = createElementAndSetAttributes("input", {
-            "class": "form-control",
-            "id": valueColumnInputId,
-            "value": metaArray[i]["value"]
-        });
-
-        // Add label and input element to column and finally column to row.
-        valueColumn.appendChild(valueColumnLabel);
-        valueColumn.appendChild(valueColumnInput);
-        metaFormRow.appendChild(valueColumn);
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        // -- COLUMN: Value type.
-        let valueTypeColumnSelectId = `yara-meta-value-type-${i}`;
-        let valueTypeColumn = createElementAndSetAttributes("div", {
-            "class": SETTINGS_MODAL_META_FORM_COLUMN_VALUE_TYPE_CLASS
-        });
-        let valueTypeColumnLabel = createElementAndSetAttributes("label", {
-            "for": valueTypeColumnSelectId,
-            "style": "display: none;" // Only use label for computation, heading labels are sufficient.
-        });
-        valueTypeColumnLabel.innerText = "Value type";
-        let valueTypeColumnSelect = createElementAndSetAttributes("select", {
-            "class": "custom-select",
-            "id": valueTypeColumnSelectId
-        });
-
-        // Add options for all valid value types.
-        for (let validValueType of yara.YARA_VALUE_TYPES) {
-            let option = document.createElement("option");
-
-            option.value = validValueType;
-            option.innerText = validValueType;
-
-           if (validValueType === metaArray[i]["value_type"]) {
-               option.selected = true;
-           }
-
-           // Add Value type option to select element.
-            valueTypeColumnSelect.appendChild(option);
-        }
-
-        // Add label and select element to column and finally column to row.
-        valueTypeColumn.appendChild(valueTypeColumnLabel);
-        valueTypeColumn.appendChild(valueTypeColumnSelect);
-        metaFormRow.appendChild(valueTypeColumn);
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        // -- COLUMN: Delete current row.
-        let deleteThisRowColumnButtonId = `${SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX}-${i}`;
-        let deleteThisRowColumn = createElementAndSetAttributes("div", {
-            "class": SETTINGS_MODAL_META_FORM_COLUMN_DELETE_ROW_CLASS
-        });
-        let deleteThisRowColumnLabel = createElementAndSetAttributes("label", {
-            "for": deleteThisRowColumnButtonId
-        });
-        let deleteThisRowColumnButton = createElementAndSetAttributes("button", {
-            "id": deleteThisRowColumnButtonId,
-            "class": "btn btn-danger",
-            "title": `Delete row: ${metaArray[i]["identifier"]}`,
-            "_this-meta-row-id": metaFormRow.id
-        });
-
-        // Add some styling/graphics to the button.
-        let buttonGfx = createElementAndSetAttributes("i", {
-            "class": "fa fa-trash fa-lg"
-        });
-
-        // Add gfx to button, then button to column and finally column to row.
-        deleteThisRowColumnButton.appendChild(buttonGfx);
-        deleteThisRowColumn.appendChild(deleteThisRowColumnButton);
-        metaFormRow.appendChild(deleteThisRowColumn);
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        // Add row to form element.
-        metaForm.appendChild(metaFormRow)
+        // Add generated row to form element.
+        metaForm.appendChild(
+            generateMetaFormRow(metaArray[i]["identifier"], metaArray[i]["value"], metaArray[i]["value_type"], i)
+        )
     }
 
     return metaForm;
@@ -1346,6 +1386,10 @@ function settingsModal() {
 
     // Generate the form element for metadata.
     let metaForm = settingsGenerateMetaForm();
+    // Add button to create new rows.
+    let addRowButton = createElementAndSetAttributes("button", {
+
+    });
 
     // Add necessary form callback to callbacks list.
     modalCallbacks.push(metaSettingsFormCallback);
