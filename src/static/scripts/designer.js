@@ -1454,7 +1454,7 @@ function saveMetaSettings() {
         if (identifierColumnValue === "") {
             console.warn("Skipping metadata row (reason: unset identifier)!", rowStr);
             continue;
-        } else if (newMeta.includes(identifierColumnValue)) {
+        } else if (newMeta.some((item => item["identifier"] === identifierColumnValue))) {
             console.warn("Skipping metadata row (reason: identifier already in use by a previous row)!", rowStr);
             continue;
         }
