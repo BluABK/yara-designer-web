@@ -91,6 +91,7 @@ const SYNTAX_ERROR = "syntax";
 // Customised modals - Settings Modal:
 const SETTINGS_MODAL_META_FORM_ROW = "yara-meta-";
 const SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX = `${SETTINGS_MODAL_META_FORM_ROW}-delete-this-row-button`;
+const SETTINGS_MODAL_META_FORM_ADD_ROW_BUTTON = `${SETTINGS_MODAL_META_FORM_ROW}-add-row-button`;
 const SETTINGS_MODAL_META_FORM_COLUMN_IDENTIFIER_CLASS = "col-md-3 mb-3";
 const SETTINGS_MODAL_META_FORM_COLUMN_VALUE_CLASS = "col-md-7 mb-3";
 const SETTINGS_MODAL_META_FORM_COLUMN_VALUE_TYPE_CLASS = "col-md-1 mb-3";
@@ -1103,20 +1104,8 @@ function createElementAndSetAttributes(tagName, attrJSON) {
     return HTMLDomElement;
 }
 
-/**
- * Set properties that can only be persistently set after the elements has been added to document.
- *
- * @param modal         Settings modal reference.
- */
-function metaSettingsFormCallback(modal) {
-    let metaArray = window.currentlyLoadedRule["meta"];
-
-    for (let i = 0; i < metaArray.length; i++) {
-        // FIXME: Workaround for select element somehow losing all 'selected' attrs when added to the HTML document.
-        modal.getElementsByClassName("custom-select")[i].value = metaArray[i]["value_type"];
-
-        // Add event listeners to all the row deletion buttons.
-        document.querySelector(`#${SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX}-${i}`).addEventListener(
+function addMetaFormDeleteCurrentRowButtonEventListeners(selector) {
+    document.querySelector(selector).addEventListener(
             'click', function() {
                 // For some reason the button causes the page to redirect to itself, so let's not.
                 event.preventDefault();
@@ -1127,6 +1116,51 @@ function metaSettingsFormCallback(modal) {
                 // Delete this row from the form element.
                 document.getElementById("settings-dialog-meta-form").removeChild(thisRow);
             });
+}
+
+/**
+ * Callback function for metadata form container's "Add row" button,
+ * which sets the onclick function for it and the onclick function for its "Remove this row" child column.
+ */
+function metaSettingsFormAddRowCallback() {
+    // Set static properties (e.g. 'Add row' button)
+    document.querySelector(`#${SETTINGS_MODAL_META_FORM_ADD_ROW_BUTTON}`).addEventListener(
+        'click', function () {
+            // For some reason the button causes the page to redirect to itself, so let's not.
+            event.preventDefault();
+
+            // Add generated row to form element.
+            let metaForm = document.getElementById("settings-dialog-meta-form");
+            let uniqueRowIdSuffix = uuidv4();
+            metaForm.appendChild(generateMetaFormRow(
+                null, null, null, uniqueRowIdSuffix)
+            );
+
+            // Add event listeners to the new row deletion button.
+            addMetaFormDeleteCurrentRowButtonEventListeners(
+                `#${SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX}-${uniqueRowIdSuffix}`);
+        });
+}
+
+/**
+ * Set properties that can only be persistently set after the elements has been added to document.
+ *
+ * NB: Only use this function in conjunction with a freshly spawned metaForm.
+ *     If used multiple times after rows have been added or removed, the indexes will be off.
+ *
+ * @param modal         Settings modal reference.
+ */
+function metaSettingsFormCallback(modal) {
+    let metaArray = window.currentlyLoadedRule["meta"];
+
+    // Iterate rows that correspond with metaArray.
+    for (let i = 0; i < metaArray.length; i++) {
+        // Set the currently selected value type item.
+        modal.getElementsByClassName("custom-select")[i].value = metaArray[i]["value_type"];
+
+        // Add event listeners to the row deletion button.
+        addMetaFormDeleteCurrentRowButtonEventListeners(
+            `#${SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX}-${i}`);
     }
 }
 
@@ -1191,9 +1225,22 @@ function generateMetaFormRowHeading() {
     return fakeFormRow;
 }
 
-function generateMetaFormRow(identifierColumnValue, valueColumnValue, valueTypeColumnValue, idSuffix) {
-    // Define required row structure.
+function generateMetaFormRow(identifierColumnValue=null, valueColumnValue=null, valueTypeColumnValue=null, idSuffix=null) {
+    // Set defaults for any unset (optional) params.
+    if (identifierColumnValue == null) {
+        identifierColumnValue = ""
+    }
+    if (valueColumnValue == null) {
+        valueColumnValue = ""
+    }
+    if (valueTypeColumnValue == null) {
+        valueTypeColumnValue = yara.YARA_VALUE_TYPE_STR;
+    }
+    if (idSuffix == null) {
+        idSuffix = uuidv4();
+    }
 
+    // Define required row structure.
     let metaFormRow = createElementAndSetAttributes("div", {
         // Set a GUID/UUID instead of index to avoid issues with del/add row feature (id collisions).
         "id": `meta-form-row-${uuidv4()}`,
@@ -1309,41 +1356,6 @@ function generateMetaFormRow(identifierColumnValue, valueColumnValue, valueTypeC
     return metaFormRow;
 }
 
-function addAddRowButton() {
-    let metaFormRow = createElementAndSetAttributes("div", {
-        // Set a GUID/UUID instead of index to avoid issues with del/add row feature (id collisions).
-        "id": `meta-form-row-${uuidv4()}`,
-        "class": "form-row"
-    });
-
-    // -- COLUMN: Delete current row.
-    let deleteThisRowColumnButtonId = `${SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX}`;
-    let deleteThisRowColumn = createElementAndSetAttributes("div", {
-        "class": SETTINGS_MODAL_META_FORM_COLUMN_DELETE_ROW_CLASS
-    });
-    let deleteThisRowColumnLabel = createElementAndSetAttributes("label", {
-        "for": deleteThisRowColumnButtonId
-    });
-    let deleteThisRowColumnButton = createElementAndSetAttributes("button", {
-        "id": deleteThisRowColumnButtonId,
-        "class": "btn btn-danger",
-        "title": `Delete row: ${identifierColumnValue}`,
-        "_this-meta-row-id": metaFormRow.id
-    });
-
-    // Add some styling/graphics to the button.
-    let buttonGfx = createElementAndSetAttributes("i", {
-        "class": "fa fa-trash fa-lg"
-    });
-
-    // Add gfx to button, then button to column and finally column to row.
-    deleteThisRowColumnButton.appendChild(buttonGfx);
-    deleteThisRowColumn.appendChild(deleteThisRowColumnButton);
-    metaFormRow.appendChild(deleteThisRowColumn);
-
-    return metaFormRow;
-}
-
 /**
  * Generates a form element for editing, adding and removing metadata to include in the rule.
  *
@@ -1374,6 +1386,46 @@ function settingsGenerateMetaForm() {
 }
 
 /**
+ * Generate a metadata container which holds the form element and "add row" button.
+ *
+ * This is necessary as button shouldn't be part of the form rows,
+ * unless you want to deal with indexing issues when adding/removing rows.
+ *
+ * It should be its own separate untouchable element.
+ *
+ * @returns {HTMLElement}
+ */
+function settingsGenerateMetaFormContainer() {
+    let container = createElementAndSetAttributes("div", {});
+
+    // Generate the form element for metadata.
+    let metaForm = settingsGenerateMetaForm();
+
+    // Add form to container.
+    container.appendChild(metaForm);
+
+    // Create button to create new rows and add it to container.
+    let addRowButton = createElementAndSetAttributes("button", {
+        "id": SETTINGS_MODAL_META_FORM_ADD_ROW_BUTTON,
+        "class": "btn btn-primary btn-block",
+        "title": "Add row",
+        "value": "Add row"
+    });
+
+    // Add some styling/graphics to the button.
+    let buttonGfx = createElementAndSetAttributes("i", {
+        "class": "fa fa-plus fa-lg"
+    });
+
+    // Add gfx and text to button, and then add button to container.
+    addRowButton.innerText = " Add row";
+    addRowButton.prepend(buttonGfx);
+    container.appendChild(addRowButton);
+
+    return container;
+}
+
+/**
  * Popup a modal with rule settings (e.g. metadata to include).
  */
 function settingsModal() {
@@ -1384,21 +1436,17 @@ function settingsModal() {
 
     let modalCallbacks = [];
 
-    // Generate the form element for metadata.
-    let metaForm = settingsGenerateMetaForm();
-    // Add button to create new rows.
-    let addRowButton = createElementAndSetAttributes("button", {
-
-    });
+    // Generate the metadata form container.
+    let metaFormContainer = settingsGenerateMetaFormContainer();
 
     // Add necessary form callback to callbacks list.
-    modalCallbacks.push(metaSettingsFormCallback);
+    modalCallbacks.push(metaSettingsFormCallback, metaSettingsFormAddRowCallback);
 
     let header = `<h2><i class="fa fa-cog"></i> Settings</h2>`;
 
     let bodyMiddle =
         `<h3>Metadata</h3><br/>` +
-        `${metaForm.outerHTML}`;
+        `${metaFormContainer.outerHTML}`;
 
     modals.popupModal(
         modals.RESPONSE_MODAL, header, null, bodyMiddle, null, null,
