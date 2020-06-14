@@ -89,6 +89,8 @@ const KEYWORD_CLASSES = ["condition-keyword"];
 const SYNTAX_ERROR = "syntax";
 
 // Customised modals - Settings Modal:
+const SETTINGS_MODAL_SAVE_ALL_BUTTON = "settings-modal-save-all-button";
+const SETTINGS_MODAL_META_FORM = "settings-modal-meta-form";
 const SETTINGS_MODAL_META_FORM_ROW = "yara-meta-";
 const SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX = `${SETTINGS_MODAL_META_FORM_ROW}-delete-this-row-button`;
 const SETTINGS_MODAL_META_FORM_ADD_ROW_BUTTON = `${SETTINGS_MODAL_META_FORM_ROW}-add-row-button`;
@@ -1114,7 +1116,7 @@ function addMetaFormDeleteCurrentRowButtonEventListeners(selector) {
                 let thisRow = document.getElementById(thisRowId);
 
                 // Delete this row from the form element.
-                document.getElementById("settings-dialog-meta-form").removeChild(thisRow);
+                document.getElementById(SETTINGS_MODAL_META_FORM).removeChild(thisRow);
             });
 }
 
@@ -1123,14 +1125,13 @@ function addMetaFormDeleteCurrentRowButtonEventListeners(selector) {
  * which sets the onclick function for it and the onclick function for its "Remove this row" child column.
  */
 function metaSettingsFormAddRowCallback() {
-    // Set static properties (e.g. 'Add row' button)
     document.querySelector(`#${SETTINGS_MODAL_META_FORM_ADD_ROW_BUTTON}`).addEventListener(
         'click', function () {
             // For some reason the button causes the page to redirect to itself, so let's not.
             event.preventDefault();
 
             // Add generated row to form element.
-            let metaForm = document.getElementById("settings-dialog-meta-form");
+            let metaForm = document.getElementById(SETTINGS_MODAL_META_FORM);
             let uniqueRowIdSuffix = uuidv4();
             metaForm.appendChild(generateMetaFormRow(
                 null, null, null, uniqueRowIdSuffix)
@@ -1367,7 +1368,7 @@ function settingsGenerateMetaForm() {
 
     // Define the form element to hold meta items.
     let metaForm = createElementAndSetAttributes("form", {
-        "id": "settings-dialog-meta-form",
+        "id": SETTINGS_MODAL_META_FORM,
         "style": "line-height: 0;"  // Reduce some vertical spacing (alas, not near enough).
     });
 
@@ -1426,6 +1427,72 @@ function settingsGenerateMetaFormContainer() {
 }
 
 /**
+ * Overwrite currently loaded rule's meta with what is listed in the settings form.
+ */
+function saveMetaSettings() {
+    let metaForm = document.getElementById(SETTINGS_MODAL_META_FORM);
+
+    let newMeta = [];
+    for (let i = 1; i < metaForm.childNodes.length; i++) {  // Start from 1 as index 0 is the heading/fake-row.
+        // Row
+        let row = metaForm.childNodes[i];
+
+        // Column via Row.
+        let identifierColumn = row.childNodes[0];
+        let valueColumn = row.childNodes[1];
+        let valueTypeColumn = row.childNodes[2];
+
+        // Value via input/control via label.
+        let identifierColumnValue = identifierColumn.childNodes[0].control.value;
+        let valueColumnValue = valueColumn.childNodes[0].control.value;
+        let valueTypeColumnValue = valueTypeColumn.childNodes[0].control.value;
+
+        let rowStr = `"${identifierColumnValue}" = "${valueColumnValue}" (${valueTypeColumnValue})`;
+        console.log(rowStr);
+
+        // Skip if identifier is unset.
+        if (identifierColumnValue === "") {
+            console.warn("Skipping metadata row (reason: unset identifier)!", rowStr);
+            continue;
+        } else if (newMeta.includes(identifierColumnValue)) {
+            console.warn("Skipping metadata row (reason: identifier already in use by a previous row)!", rowStr);
+            continue;
+        }
+
+        newMeta.push({
+            "identifier": identifierColumnValue,
+            "value": valueColumnValue,
+            "value_type": valueTypeColumnValue
+        });
+    }
+
+    window.currentlyLoadedRule["meta"] = newMeta;
+}
+
+/**
+ * Overwrites current rule properties with what is currently set in the settings modal.
+ */
+function saveAllSettings() {
+    saveMetaSettings();
+
+    console.log("currentlyLoadedRule", window.currentlyLoadedRule);  // FIXME: Remove debug log
+}
+
+/**
+ * Sets event listeners etc. on the "save all" button in the settings modal.
+ */
+function saveAllSettingsButtonCallback() {
+    document.querySelector(`#${SETTINGS_MODAL_SAVE_ALL_BUTTON}`).addEventListener(
+    'click', function () {
+        // For some reason the button causes the page to redirect to itself, so let's not.
+        event.preventDefault();
+
+        // Save all settings currently set in the modal (overwrites currently loaded rule's properties).
+        saveAllSettings();
+    });
+}
+
+/**
  * Popup a modal with rule settings (e.g. metadata to include).
  */
 function settingsModal() {
@@ -1448,8 +1515,21 @@ function settingsModal() {
         `<h3>Metadata</h3><br/>` +
         `${metaFormContainer.outerHTML}`;
 
+    let saveAllSettingsButton = createElementAndSetAttributes("button", {
+        "id": SETTINGS_MODAL_SAVE_ALL_BUTTON,
+        "class": "btn btn-primary btn-large btn-success btn-block",
+        "title": "Save all settings",
+        "value": "Save all settings"
+    });
+
+    saveAllSettingsButton.innerText = "Save changes";
+
+    let footer = saveAllSettingsButton.outerHTML;
+
+    modalCallbacks.push(saveAllSettingsButtonCallback);
+
     modals.popupModal(
-        modals.RESPONSE_MODAL, header, null, bodyMiddle, null, null,
+        modals.RESPONSE_MODAL, header, null, bodyMiddle, null, footer,
         levels.INFO, modalCallbacks);
 }
 
