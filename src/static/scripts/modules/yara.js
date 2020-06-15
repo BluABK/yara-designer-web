@@ -4,7 +4,7 @@ export const YARA_STRING_SYMBOL = "$";
 export const YARA_TYPE_TEXT = "text";
 export const YARA_TYPE_HEX = "hex";
 export const YARA_TYPE_REGEX = "regex";
-export const YARA_TYPES = [YARA_TYPE_TEXT, YARA_TYPE_HEX, YARA_TYPE_REGEX];
+export const YARA_STRING_TYPES = [YARA_TYPE_TEXT, YARA_TYPE_HEX, YARA_TYPE_REGEX];
 
 export const YARA_VALUE_TYPE_INT = "int";
 export const YARA_VALUE_TYPE_STR = "str";
@@ -119,7 +119,7 @@ export function validateIdentifier(identifier) {
 }
 
 function isValidType(stringType) {
-    return (YARA_TYPES.includes(stringType));
+    return (YARA_STRING_TYPES.includes(stringType));
 }
 
 function isValidModifier(modifier) {

@@ -99,11 +99,23 @@ const SETTINGS_MODAL_META_FORM_COLUMN_VALUE_CLASS = "col-md-7 mb-3";
 const SETTINGS_MODAL_META_FORM_COLUMN_VALUE_TYPE_CLASS = "col-md-1 mb-3";
 const SETTINGS_MODAL_META_FORM_COLUMN_DELETE_ROW_CLASS = "col-md-1 mb-3";
 
+// Customised modals - Add Custom YARA String to editor Modal:
+const ADD_CUSTOM_YARA_STRING_MODAL_ADD_BUTTON = "add-custom-yara-string-modal-add-button";
+const ADD_CUSTOM_YARA_STRING_MODAL_FORM = "add-custom-yara-string-modal-form";
+const ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM}-column`;
+const ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_IDENTIFIER_CLASS = "col-md-3 mb-3";
+const ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_VALUE_CLASS = "col-md-7 mb-3";
+const ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_VALUE_TYPE_CLASS = "col-md-1 mb-3";
+const ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_STRING_TYPE_CLASS = "col-md-1 mb-3";
+const ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_MODIFIERS_CLASS = "col-md-1 mb-3";
+
+
 
 // Add event listeners.
 // -- Buttons:
 document.querySelector('#load-rule-button').addEventListener('click', loadRuleDialog);
 document.querySelector('#edit-settings-button').addEventListener('click', settingsModal);
+document.querySelector('#add-yara-string-button').addEventListener('click', addYARAStringToEditorModal);
 document.querySelector('#show-help-button').addEventListener('click', modals.popupHelpModal);
 document.querySelector('#clear-rule-button').addEventListener('click', clearRule);
 document.querySelector('#submit-rule-button').addEventListener('click', postRule);
@@ -910,11 +922,11 @@ function clearElement(elementID) {
  * @param strings                   A list of YARA strings.
  * @param idPrefix                  Prefix string for each observable ID field.
  * @param classBaseName             The base (primary) name of the class to group the YARA strings into.
- * @param observableContainer       Container element to add YARA strings to.
+ * @param destinationContainer       Container element to add YARA strings to.
  * @param defaultStringType         The default YARA string type.
  * @param forceDefaultStringType    Disable string type check, setting it equal to default.
  */
-function addYARAStrings(strings, idPrefix, classBaseName, observableContainer,
+function addYARAStrings(strings, idPrefix, classBaseName, destinationContainer,
                         defaultStringType = yara.YARA_TYPE_TEXT,
                         forceDefaultStringType = false) {
     for (let yaraString of strings) {
@@ -964,7 +976,7 @@ function addYARAStrings(strings, idPrefix, classBaseName, observableContainer,
                     yaraStringDOMElement.classList.add(YARA_STRING_TYPE_CLASS_REGEX);
                     break;
                 default:
-                    let acceptedStr = yara.YARA_TYPES.join(',');
+                    let acceptedStr = yara.YARA_STRING_TYPES.join(',');
                     console.error(`stringType has unexpected type! '${stringType}' is not one of: [${acceptedStr}].`);
                     break;
             }
@@ -984,7 +996,7 @@ function addYARAStrings(strings, idPrefix, classBaseName, observableContainer,
             yaraStringDOMElement.addEventListener('click', function(){ addToEditor(event) });
 
             // Append observable (DOM Element) to strings container (DOM element).
-            document.getElementById(observableContainer).appendChild(yaraStringDOMElement);
+            document.getElementById(destinationContainer).appendChild(yaraStringDOMElement);
         } catch (e) {
             console.exception(
                 `Caught exception while attempting to create YARA String from '${value}', skipping!`, e);
@@ -1527,6 +1539,292 @@ function settingsModal() {
     let footer = saveAllSettingsButton.outerHTML;
 
     modalCallbacks.push(saveAllSettingsButtonCallback);
+
+    modals.popupModal(
+        modals.RESPONSE_MODAL, header, null, bodyMiddle, null, footer,
+        levels.INFO, modalCallbacks);
+}
+
+function generateCustomYARAStringBuilderForm(
+    identifierColumnValue=null, valueColumnValue=null, valueTypeColumnValue=null, stringTypeColumnValue=null,
+    modifiersColumnValue=null) {
+
+    // Set defaults for any unset (optional) params.
+    if (identifierColumnValue == null) {
+        identifierColumnValue = ""
+    }
+    if (valueColumnValue == null) {
+        valueColumnValue = ""
+    }
+    if (valueTypeColumnValue == null) {
+        valueTypeColumnValue = yara.YARA_VALUE_TYPE_STR;
+    }
+    if (stringTypeColumnValue == null) {
+        stringTypeColumnValue = yara.YARA_TYPE_TEXT;
+    }
+    if (modifiersColumnValue == null) {
+        modifiersColumnValue = [];
+    }
+
+    // Define the form element to hold rows..
+    let form = createElementAndSetAttributes("form", {
+        "id": ADD_CUSTOM_YARA_STRING_MODAL_FORM,
+    });
+
+    // Define required row structure.
+    let formRow = createElementAndSetAttributes("div", {
+        // Set a GUID/UUID instead of index to avoid issues with del/add row feature (id collisions).
+        "id": `add-yara-string-form-row-${uuidv4()}`,
+        "class": "form-row"
+    });
+
+    // -- COLUMN: Identifier.
+    let identifierColumnInputId = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-identifier`;
+    let identifierColumn = createElementAndSetAttributes("div", {
+        "class": ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_IDENTIFIER_CLASS
+    });
+    let identifierColumnLabel = createElementAndSetAttributes("label", {
+        "for": identifierColumnInputId,
+    });
+    identifierColumnLabel.innerText = "Identifier";
+    let identifierColumnInput = createElementAndSetAttributes("input", {
+        "class": "form-control",
+        "id": identifierColumnInputId,
+        "value": identifierColumnValue
+    });
+
+    // Add label and input element to column and finally column to row.
+    identifierColumn.appendChild(identifierColumnLabel);
+    identifierColumn.appendChild(identifierColumnInput);
+    formRow.appendChild(identifierColumn);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Value column.
+    let valueColumnInputId = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-value`;
+    let valueColumn = createElementAndSetAttributes("div", {
+        "class": ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_VALUE_CLASS
+    });
+    let valueColumnLabel = createElementAndSetAttributes("label", {
+        "for": valueColumnInputId,
+    });
+    valueColumnLabel.innerText = "Value";
+    let valueColumnInput = createElementAndSetAttributes("input", {
+        "class": "form-control",
+        "id": valueColumnInputId,
+        "value": valueColumnValue
+    });
+
+    // Add label and input element to column and finally column to row.
+    valueColumn.appendChild(valueColumnLabel);
+    valueColumn.appendChild(valueColumnInput);
+    formRow.appendChild(valueColumn);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // -- COLUMN: Value type.
+    let valueTypeColumnSelectId = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-value-type`;
+    let valueTypeColumn = createElementAndSetAttributes("div", {
+        "class": ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_VALUE_TYPE_CLASS
+    });
+    let valueTypeColumnLabel = createElementAndSetAttributes("label", {
+        "for": valueTypeColumnSelectId,
+    });
+    valueTypeColumnLabel.innerText = "Value type";
+    let valueTypeColumnSelect = createElementAndSetAttributes("select", {
+        "class": "custom-select",
+        "id": valueTypeColumnSelectId
+    });
+
+    // Add options for all valid value types.
+    for (let validValueType of yara.YARA_VALUE_TYPES) {
+        let option = document.createElement("option");
+
+        option.value = validValueType;
+        option.innerText = validValueType;
+
+       if (validValueType === valueTypeColumnValue) {
+           option.selected = true;
+       }
+
+       // Add Value type option to select element.
+        valueTypeColumnSelect.appendChild(option);
+    }
+
+    // Add label and select element to column and finally column to row.
+    valueTypeColumn.appendChild(valueTypeColumnLabel);
+    valueTypeColumn.appendChild(valueTypeColumnSelect);
+    formRow.appendChild(valueTypeColumn);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // -- COLUMN: String type.
+    let stringTypeColumnSelectId = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-string-type`;
+    let stringTypeColumn = createElementAndSetAttributes("div", {
+        "class": ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_STRING_TYPE_CLASS
+    });
+    let stringTypeColumnLabel = createElementAndSetAttributes("label", {
+        "for": stringTypeColumnSelectId,
+    });
+    stringTypeColumnLabel.innerText = "String type";
+    let stringTypeColumnSelect = createElementAndSetAttributes("select", {
+        "class": "custom-select",
+        "id": stringTypeColumnSelectId
+    });
+
+    // Add options for all valid string types.
+    for (let validStringType of yara.YARA_STRING_TYPES) {
+        let option = document.createElement("option");
+
+        option.value = validStringType;
+        option.innerText = validStringType;
+
+       if (validStringType === stringTypeColumnValue) {
+           option.selected = true;
+       }
+
+       // Add Value type option to select element.
+        stringTypeColumnSelect.appendChild(option);
+    }
+
+    // Add label and select element to column and finally column to row.
+    stringTypeColumn.appendChild(stringTypeColumnLabel);
+    stringTypeColumn.appendChild(stringTypeColumnSelect);
+    formRow.appendChild(stringTypeColumn);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // -- COLUMN: Modifiers.
+    let modifiersColumnCheckboxesId = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-modifiers`;
+    let modifiersColumn = createElementAndSetAttributes("div", {
+        "class": ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_MODIFIERS_CLASS
+    });
+    let modifiersColumnLabel = createElementAndSetAttributes("label", {
+        "for": modifiersColumnCheckboxesId,
+    });
+    modifiersColumnLabel.innerText = "Modifiers";
+    let modifiersColumnCheckboxes = createElementAndSetAttributes("div", {
+        "class": "form-group form-check form-check-inline",
+        // "class": "form-group",
+        "id": modifiersColumnCheckboxesId
+    });
+
+    // Add checkboxes buttons for all available modifiers.
+    for (let modifier of yara.YARA_MODIFIERS) {
+        let checkboxContainer = createElementAndSetAttributes("div", {
+            "class": "form-check form-check-inline"
+        });
+
+        let checkboxId = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-modifiers-checkbox-${modifier}`;
+        let label = createElementAndSetAttributes("label", {
+            "class": "form-check-label",
+            "for": checkboxId,
+        });
+        label.innerText = modifier;
+        let checkbox = createElementAndSetAttributes("input", {
+            "type": "checkbox",
+            "class": "form-check-input",
+            "value": modifier,
+            "id": checkboxId
+        });
+
+        // Mark checkbox as checked if modifier is in the enabled modifiers list.
+        if (modifiersColumnValue.includes(modifier)) {
+            checkbox.checked = true;
+        }
+
+        checkboxContainer.appendChild(label);
+        checkboxContainer.appendChild(checkbox);
+
+        // Add modifier checkbox and label to checkbox group.
+        modifiersColumnCheckboxes.appendChild(checkboxContainer);
+    }
+
+    // Add label and checkbox container element to column and finally column to row.
+    modifiersColumn.appendChild(modifiersColumnLabel);
+    modifiersColumn.appendChild(modifiersColumnCheckboxes);
+    formRow.appendChild(modifiersColumn);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    form.appendChild(formRow);
+
+    return form;
+}
+
+function addYARAStringToEditorCallback() {
+    document.querySelector(`#${ADD_CUSTOM_YARA_STRING_MODAL_ADD_BUTTON}`).addEventListener(
+    'click', function () {
+
+        // For some reason the button causes the page to redirect to itself, so let's not.
+        event.preventDefault();
+
+        // Gather data from columns.
+        let identifierValue = document.getElementById(`${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-identifier`).value;
+        let valueValue = document.getElementById(`${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-value`).value;
+        let valueTypeValue = document.getElementById(`${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-value-type`).value;
+        let stringTypeValue = document.getElementById(`${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-string-type`).value;
+
+        let modifiers = [];
+
+        for (let checkboxContainer of document.getElementById(`${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-modifiers`).childNodes) {
+            // checkbox element via input/control via label.
+            let checkbox = checkboxContainer.childNodes[0].control;
+
+            // Add checked items to modifiers list.
+            if (checkbox.checked) {
+                modifiers.push(checkbox.value);
+            }
+        }
+
+        console.log(identifierValue, valueValue, valueTypeValue, stringTypeValue, modifiers);
+
+        // Create YARA String object.
+        let yaraString = {
+            "identifier": identifierValue,
+            "value": valueValue,
+            "value_type": valueTypeValue,
+            "string_type": stringTypeValue,
+            "modifiers": modifiers,
+            "modifier_str": modifiers.join(' ').split(' '),
+            "str": null // FIXME: Generate the proper string.
+        };
+
+        // Add object to editor.
+        addYARAStrings([yaraString], OBSERVABLE_DATA, OBSERVABLE_DATA_CLASS, DESIGNER_EDITOR);
+    });
+
+    // FIXME: Add modifiers checkbox restriction ev listener logic.
+}
+
+/**
+ * Pops up a modal where you configure a custom YARA String and then adds it to editor element.
+ */
+function addYARAStringToEditorModal() {
+    let modalCallbacks = [];
+    let addButtonTitle = "Add to Editor";
+
+     // Generate the YARA String builder form.
+    let form = generateCustomYARAStringBuilderForm();
+
+    // Add necessary form callback to callbacks list.
+    // modalCallbacks.push(metaSettingsFormCallback, metaSettingsFormAddRowCallback);
+
+    let header = `<h2><i class="fa fa-plus"></i> Define and Add Custom YARA String to Editor</h2>`;
+
+    let bodyMiddle =`${form.outerHTML}`;
+
+    let addYARAStringToEditorButton = createElementAndSetAttributes("button", {
+        "id": ADD_CUSTOM_YARA_STRING_MODAL_ADD_BUTTON,
+        "class": "btn btn-primary btn-large btn-success btn-block",
+        "title": addButtonTitle,
+        "value": addButtonTitle
+    });
+
+    addYARAStringToEditorButton.innerText = addButtonTitle;
+
+    // Put the 'add' button in the footer.
+    let footer = addYARAStringToEditorButton.outerHTML;
+
+    // Callback for assigning an event listener to the 'add' button.
+    modalCallbacks.push(addYARAStringToEditorCallback);
 
     modals.popupModal(
         modals.RESPONSE_MODAL, header, null, bodyMiddle, null, footer,

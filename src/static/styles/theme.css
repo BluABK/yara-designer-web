@@ -40,6 +40,12 @@
     --button-default-background: #5d6d7e;
     --button-help-color-hover: white;
     --button-help-background-hover: #2e4053;
+    --button-settings-color-hover: white;
+    --button-settings-background-hover: #2e4053;
+    --button-add-yara-string-color: white;
+    --button-add-yara-string-background: #509316;
+    --button-add-yara-string-color-hover: white;
+    --button-add-yara-string-background-hover: #336615;
 
     --button-collapsible-tags-color: white;
     --button-collapsible-tags-background: #f48d00;
@@ -227,6 +233,16 @@ tr:nth-child(even):hover td {
 #edit-settings-button:hover {
   background: var(--button-help-background-hover);
   color: var(--button-help-color-hover);
+}
+
+#add-yara-string-button {
+    background: var(--button-add-yara-string-background);
+    color: var(--button-add-yara-string-color);
+}
+
+#add-yara-string-button:hover {
+  background: var(--button-add-yara-string-background-hover);
+  color: var(--button-add-yara-string-color-hover);
 }
 
 #submit-rule-button {
