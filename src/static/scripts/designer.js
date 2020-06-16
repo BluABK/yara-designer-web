@@ -118,7 +118,7 @@ document.querySelector('#edit-settings-button').addEventListener('click', settin
 document.querySelector('#add-yara-string-button').addEventListener('click', addYARAStringToEditorModal);
 document.querySelector('#show-help-button').addEventListener('click', modals.popupHelpModal);
 document.querySelector('#clear-rule-button').addEventListener('click', clearRule);
-document.querySelector('#submit-rule-button').addEventListener('click', postRule);
+document.querySelector('#submit-rule-button').addEventListener('click', function(){ postRule() });
 
 // -- Draggables:
 // -- -- Operators
@@ -746,7 +746,7 @@ function mockRules(num) { // FIXME: Remove this debug/testing function.
  *
  * Customised printTable code for fetched rules.
  *
- * @param rules
+ * @param rulesJson
  * @param defaultCheckedRadio
  * @param hideRadios
  * @param modalId
@@ -1965,10 +1965,11 @@ function handlePostRuleResponse(json) {
 /**
  * Make a custom POST request for non-form elements like DIV and SPAN.
  */
-function postRule() {
+function postRule(json=null) {
+    if (json == null) {
+        json = getRuleJsonFromEditorElements();
+    }
     try {
-        let json = getRuleJsonFromEditorElements();
-
         let xhr = new XMLHttpRequest();  // FIXME: Replace antiquated XHR with fetch.
 
         console.log("POST URL: " + POST_RULE_ROUTE);
@@ -1979,6 +1980,8 @@ function postRule() {
         // Add custom handling of the response returned by XHR POST URL.
         xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE) {
+                // console.log("postRule XHR", xhr);
+                // console.log("postRule XHR Response text", xhr.responseText);
                 handlePostRuleResponse(JSON.parse(xhr.responseText));
             }
         };
