@@ -19,7 +19,8 @@ ejs.renderFile(__dirname + '/static/index.html',
         POST_RULE_ROUTE: `'${baseUrl}${process.env.POST_RULE_ROUTE}'`,
         POST_COMMIT_ROUTE: `'${baseUrl}${process.env.POST_COMMIT_ROUTE}'`,
         GET_RULES_ROUTE: `'${baseUrl}${process.env.GET_RULES_ROUTE}'`,
-        GET_RULE_ROUTE: `'${baseUrl}${process.env.GET_RULE_ROUTE}'`
+        GET_RULE_ROUTE: `'${baseUrl}${process.env.GET_RULE_ROUTE}'`,
+        GET_THEORACLE_RULES_ROUTE: `'${baseUrl}${process.env.GET_THEORACLE_RULES_ROUTE}'`
     }, function(err, str) {
     // str => Rendered HTML string
     // console.log(str);

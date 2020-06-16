@@ -460,7 +460,7 @@ function getRuleJsonFromEditorElements() {
     };
 }
 
-function fetchGetRequest(url, callback) {
+function fetchGetRequest(url, callback, callbackKwargs=null) {
     function status(response) {
         if (response.status >= 200 && response.status < 300) {
             return Promise.resolve(response)
@@ -478,7 +478,11 @@ function fetchGetRequest(url, callback) {
     .then(json)
     .then(function(data) {
         // console.log(`fetchRequest succeeded with JSON response`, data);
-        callback(data);
+        if (callbackKwargs == null) {
+            callback(data);
+        } else {
+            callback(data, callbackKwargs)
+        }
       }).catch(function(error) {
         console.log('fetchRequest failed!', error);
         modals.popupErrorModal("fetchRequest failed!",
@@ -531,8 +535,25 @@ function getRule(ruleId, callback=printRulesTable) {
     fetchGetRequest(`${GET_RULE_ROUTE}/${ruleId}`, callback);
 }
 
-function getRules(callback=printRulesTable) {
+function combineRulesThenPrintRulesTable(additonalRules, existingRules) {
+    printRulesTable({"rules": existingRules["rules"].concat(additonalRules["rules"])});
+}
+
+function getAdditionalRules(rules, callback=combineRulesThenPrintRulesTable) {
+    // Carry received rules into the fetch request
+    fetchGetRequest(GET_THEORACLE_RULES_ROUTE, callback, rules);
+}
+
+function getRules(callback=getAdditionalRules) {
     fetchGetRequest(GET_RULES_ROUTE, callback);
+}
+
+function getRulesDB(callback=printRulesTable) {
+    fetchGetRequest(GET_RULES_ROUTE, callback);
+}
+
+function getRulesTheOracle(callback=printRulesTable) {
+    fetchGetRequest(GET_THEORACLE_RULES_ROUTE, callback);
 }
 
 /**
