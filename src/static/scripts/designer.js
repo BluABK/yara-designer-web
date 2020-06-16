@@ -123,6 +123,7 @@ document.querySelector('#add-yara-string-button').addEventListener('click', addY
 document.querySelector('#show-help-button').addEventListener('click', modals.popupHelpModal);
 document.querySelector('#clear-rule-button').addEventListener('click', clearRule);
 document.querySelector('#submit-rule-button').addEventListener('click', function(){ postRule() });
+document.querySelector('#yara-rule-designer-tags-add-button').addEventListener('click', function(){ popupAddTagDialog() });
 
 // -- Draggables:
 // -- -- Operators
@@ -2064,6 +2065,16 @@ function postRule(json=null) {
             console.error(e.message, e.name);
             modals.popupErrorModal(e.name, e.message);
         }
+    }
+}
+
+function popupAddTagDialog() {
+    let newTag = prompt("Enter tag name", "");
+    console.log("newTag", newTag);
+
+    if (newTag !== null && newTag !== "") {
+        window.currentlyLoadedRule.tags.push(newTag);
+        setTags(window.currentlyLoadedRule.tags);
     }
 }
 
