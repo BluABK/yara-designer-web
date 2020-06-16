@@ -6,3 +6,4 @@ POST_COMMIT_ROUTE=/api/v1/core/commit
 GET_RULES_ROUTE=/api/v1/core/rules
 GET_RULE_ROUTE=/api/v1/core/rule
 GET_THEORACLE_RULES_ROUTE=/api/v1/theoracle/rules
+GET_THEORACLE_RULE_ROUTE=/api/v1/theoracle/rule
