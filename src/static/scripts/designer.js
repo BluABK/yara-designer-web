@@ -89,6 +89,7 @@ const MOUSE_CLICK_LEFT = 0;
 const MOUSE_CLICK_MIDDLE = 1;
 const MOUSE_CLICK_RIGHT = 2;
 const OBSERVABLE_CLASSES = ["condition-observable-data", "condition-observable-type"];
+const KEYWORD_CLASS = "condition-keyword";
 const KEYWORD_CLASSES = ["condition-keyword"];
 const SYNTAX_ERROR = "syntax";
 
@@ -1077,6 +1078,49 @@ function setYARAStrings(strings) {
     addYARAStrings(strings, OBSERVABLE_DATA, OBSERVABLE_DATA_CLASS, OBSERVABLE_DATA_CONTAINER)
 }
 
+function setEditorElementsByCondition(x) {
+    let editorDiv = document.getElementById(DESIGNER_EDITOR);
+    console.log("setEditorElementsByCondition", x);
+
+    if (x == null) {
+        return;
+    }
+
+    let items = x.split(' ');
+
+    for (let item of items) {
+        let target = null;
+
+        if (item.startsWith(YARA_VARIABLE_DENOMINATOR)) {
+            // Is YARA string
+
+            // Determine target by string identifier
+            let yaraStrings = document.getElementsByClassName(OBSERVABLE_DATA_CLASS);
+            for (let ys of yaraStrings) {
+                if (ys.id === item.substr(1)) {
+                    target = ys;
+                }
+            }
+
+        } else {
+            // Is conditional operator
+            let operators = document.getElementsByClassName(KEYWORD_CLASS)
+            console.log("ops", operators);
+            for (let opElem of operators) {
+                if (opElem.innerText.toLowerCase() === item.toLowerCase()) {
+                    target = opElem;
+                }
+            }
+        }
+
+        // If target was valid and got set, add it to editor div.
+        if (target != null) {
+            console.log('addToEditor', target);
+            editorDiv.appendChild(makeClone(target));
+        }
+    }
+}
+
 /**
  * Loads a YARA Rule (callback function called by getRule).
  *
@@ -1096,10 +1140,11 @@ function loadRuleCallback(rule) {
     // Set tags div.
     setTags(rule.tags);
 
-    //FIXME: Add setter for YARA Meta!
-
     // Set YARA String divs.
     setYARAStrings(rule.strings);
+
+    // Set editor condition:
+    setEditorElementsByCondition(rule.condition)
 }
 
 /**
