@@ -1092,9 +1092,7 @@ function setEditorElementsByCondition(x) {
         let target = null;
 
         if (item.startsWith(YARA_VARIABLE_DENOMINATOR)) {
-            // Is YARA string
-
-            // Determine target by string identifier
+            // Is YARA string; determine target by string identifier
             let yaraStrings = document.getElementsByClassName(OBSERVABLE_DATA_CLASS);
             for (let ys of yaraStrings) {
                 if (ys.id === item.substr(1)) {
@@ -1103,8 +1101,8 @@ function setEditorElementsByCondition(x) {
             }
 
         } else {
-            // Is conditional operator
-            let operators = document.getElementsByClassName(KEYWORD_CLASS)
+            // Is conditional operator; determine target by operator identifier
+            let operators = document.getElementsByClassName(KEYWORD_CLASS);
             console.log("ops", operators);
             for (let opElem of operators) {
                 if (opElem.innerText.toLowerCase() === item.toLowerCase()) {
@@ -1602,6 +1600,8 @@ function saveAllSettings() {
     saveMetaSettings();
 
     console.log("currentlyLoadedRule", window.currentlyLoadedRule);  // FIXME: Remove debug log
+
+    closeModals();
 }
 
 /**
@@ -1615,6 +1615,7 @@ function saveAllSettingsButtonCallback() {
 
         // Save all settings currently set in the modal (overwrites currently loaded rule's properties).
         saveAllSettings();
+        closeModals();
     });
 }
 
@@ -1903,6 +1904,7 @@ function addYARAStringToEditorCallback() {
 
         // Add object to editor.
         addYARAStrings([yaraString], OBSERVABLE_DATA, OBSERVABLE_DATA_CLASS, DESIGNER_EDITOR);
+        closeModals();
     });
 
     // FIXME: Add modifiers checkbox restriction ev listener logic.
@@ -2210,6 +2212,18 @@ function handlePostCommitResponse(json) {
 }
 
 /**
+ * Closes any open modals.
+ */
+function closeModals() {
+    for ( let modalElement of document.getElementsByClassName(modals.MODAL_CLASS) ) {
+        if (modalElement.style.display !== "none") {
+            console.log("Closed open modal: " + modalElement.id);
+            modalElement.style.display = "none";
+        }
+    }
+}
+
+/**
  * Make a custom POST request for non-form elements like DIV and SPAN.
  */
 function postCommit(json) {
@@ -2224,12 +2238,7 @@ function postCommit(json) {
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             // Make sure to close any open modals.
-            for ( let modalElement of document.getElementsByClassName(modals.MODAL_CLASS) ) {
-                if (modalElement.style.display !== "none") {
-                    console.log("[postCommit] xhr.onreadystatechange: Closed open modal: " + modalElement.id);
-                    modalElement.style.display = "none";
-                }
-            }
+            closeModals();
 
             // Handle response.
             handlePostCommitResponse(JSON.parse(xhr.responseText));
