@@ -107,12 +107,16 @@ const SETTINGS_MODAL_META_FORM_COLUMN_DELETE_ROW_CLASS = "col-md-1 mb-3";
 // Customised modals - Add Custom YARA String to editor Modal:
 const ADD_CUSTOM_YARA_STRING_MODAL_ADD_BUTTON = "add-custom-yara-string-modal-add-button";
 const ADD_CUSTOM_YARA_STRING_MODAL_FORM = "add-custom-yara-string-modal-form";
+const ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM}-row`;
 const ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM}-column`;
 const ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_IDENTIFIER_CLASS = "col-md-3 mb-3";
 const ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_VALUE_CLASS = "col-md-7 mb-3";
 const ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_VALUE_TYPE_CLASS = "col-md-1 mb-3";
 const ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_STRING_TYPE_CLASS = "col-md-1 mb-3";
-const ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_MODIFIERS_CLASS = "col-md-1 mb-3";
+const ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_CLASS = `form-row ${ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW}-modifiers`;
+const ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_HEADING_COLUMN_CLASS = "col-md-1 mb-3";
+const ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_COLUMN_CHECKBOX_CLASS = "col-md-2 mb-3";
+const ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_COLUMN_DATA_INPUT_CLASS = "col-md-10 mb-3";
 
 
 
@@ -1023,7 +1027,12 @@ function addYARAStrings(strings, idPrefix, classBaseName, destinationContainer,
             yaraStringDOMElement.setAttribute("class", classBaseName);
 
             // Set representative text (what user sees).
-            yaraStringDOMElement.textContent = `${stringType}: ${value}`;
+            let hfModifierString = "";
+            if (modifier_str !== "" && modifier_str != null) {
+                hfModifierString = ` ${modifier_str}`;
+            }
+
+            yaraStringDOMElement.textContent = `${stringType}: ${value}${hfModifierString}`;
 
             // Append corresponding string type class to classList.
             switch (stringType) {
@@ -1041,15 +1050,6 @@ function addYARAStrings(strings, idPrefix, classBaseName, destinationContainer,
                     console.error(`stringType has unexpected type! '${stringType}' is not one of: [${acceptedStr}].`);
                     break;
             }
-
-            // // Set YARA specific properties (for use in computation):
-            // let yaraJSON = {
-            //     "identifier": ys.getIdentifier(),
-            //     "value": ys.getValue(),
-            //     "type": ys.getType(),
-            //     "modifiers": ys.getModifiers(),
-            //     "text": ys.text()
-            // };
 
             yaraStringDOMElement.setAttribute(OBSERVABLE_YARA_DATA_JSON, JSON.stringify(yaraString));
 
@@ -1660,9 +1660,149 @@ function settingsModal() {
         levels.INFO, modalCallbacks);
 }
 
+/**
+ * Generates a "fake" row with label headings (in order to avoid reprinting labels for every single row)
+ *
+ * @returns {HTMLElement}   The generated "fake" row heading.
+ */
+function generateYARAStringModifierFormRowHeading() {
+    let fakeFormRow = createElementAndSetAttributes("div", {
+        "class": "form-row",
+        "style": "line-height: 0;"  // Reduce some vertical spacing (alas, not near enough).
+    });
+
+    // Checkbox heading.
+    let fakeIdentifierColumn = createElementAndSetAttributes("div", {
+        "class": ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_COLUMN_CHECKBOX_CLASS
+    });
+    let fakeIdentifierColumnLabel = document.createElement("label");
+    fakeIdentifierColumnLabel.htmlFor = `yara-string-modifier-checkbox-heading`;
+    fakeIdentifierColumnLabel.innerText = "Modifier";
+
+    // Add label to column and then add that column to row.
+    fakeIdentifierColumn.appendChild(fakeIdentifierColumnLabel);
+    fakeFormRow.appendChild(fakeIdentifierColumn);
+
+    // Data/Payload heading.
+    let fakeValueColumn = createElementAndSetAttributes("div", {
+        "class": ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_COLUMN_DATA_INPUT_CLASS
+    });
+    let fakeValueColumnLabel = document.createElement("label");
+    fakeValueColumnLabel.htmlFor = `yara-string-modifier-data-heading`;
+    fakeValueColumnLabel.innerText = "Payload/Data (if applicable)";
+
+    // Add label to column and then add that column to row.
+    fakeValueColumn.appendChild(fakeValueColumnLabel);
+    fakeFormRow.appendChild(fakeValueColumn);
+
+    return fakeFormRow;
+}
+
+function generateYARAStringModifierFormRows(modifiersCheckboxColumnValue=null, modifiersDataColumnValue=null) {
+    let formModifierRows = [];
+
+    for (let modifier of yara.YARA_MODIFIERS) {
+        // for row
+        let formModifierRow = createElementAndSetAttributes("div", {
+        // Set a GUID/UUID instead of index to avoid issues with del/add row feature (id collisions).
+        "id": `add-yara-string-form-row-${uuidv4()}`,
+        // "class": "form-row "
+        "class": ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_CLASS
+        });
+
+        // COLUMN: Checkbox
+        let modifiersColumnCheckboxesId = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-modifier-checkbox-container`;
+        let modifiersCheckboxColumn = createElementAndSetAttributes("div", {
+            "class": ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_COLUMN_CHECKBOX_CLASS
+        });
+        let modifiersColumnLabel = createElementAndSetAttributes("label", {
+            "for": modifiersColumnCheckboxesId,
+            "style": "display: none;"
+        });
+        modifiersColumnLabel.innerText = modifier;
+        let modifiersColumnCheckboxes = createElementAndSetAttributes("div", {
+            "class": "form-group form-check",
+            "id": modifiersColumnCheckboxesId
+        });
+
+        // Add checkboxes buttons for all available modifiers.
+        let checkboxContainer = createElementAndSetAttributes("div", {
+            "class": "form-check form-check-inline",
+            "style": "display: inline-block;"
+        });
+
+        let checkboxId = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-modifier-checkbox-${modifier}`;
+        let label = createElementAndSetAttributes("label", {
+            "class": "form-check-label",
+            "for": checkboxId,
+        });
+        label.innerText = modifier;
+        let checkbox = createElementAndSetAttributes("input", {
+            "type": "checkbox",
+            "class": "form-check-input",
+            "value": modifier,
+            "id": checkboxId,
+        });
+
+
+        // Mark checkbox as checked if modifier is in the enabled modifiers list.
+        if (modifiersCheckboxColumnValue.includes(modifier)) {
+            checkbox.checked = true;
+        }
+
+        checkboxContainer.appendChild(checkbox);
+        checkboxContainer.appendChild(label);
+
+        // Add modifier checkbox and label to checkbox group.
+        modifiersColumnCheckboxes.appendChild(checkboxContainer);
+
+        // Add label and checkbox container element to column and finally column to row.
+        modifiersCheckboxColumn.appendChild(modifiersColumnLabel);
+        modifiersCheckboxColumn.appendChild(modifiersColumnCheckboxes);
+        formModifierRow.appendChild(modifiersCheckboxColumn);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Payload/Data field
+        let dataInputId = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-modifiers-data-input-${modifier}`;
+        let dataInputColumn = createElementAndSetAttributes("div", {
+            "class": ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_COLUMN_DATA_INPUT_CLASS
+        });
+        let dataInputColumnLabel = createElementAndSetAttributes("label", {
+            "for": modifiersColumnCheckboxesId,
+            "style": "display: none;"
+        });
+        dataInputColumnLabel.innerText = modifier;
+
+        let dataInput = createElementAndSetAttributes("input", {
+            "class": "form-control",
+            "value": "",
+            "id": dataInputId,
+        });
+
+        if (!yara.YARA_MODIFIERS_WITH_PAYLOAD.includes(modifier)) {
+            dataInput.disabled = true;
+            dataInput.defaultValue = "This modifier has no custom payload.";
+        }
+        // // Set data input payload value if given.
+        // if (modifiersDataColumnValue != null) {
+        //     dataInput.defaultValue = modifiersDataColumnValue;
+        //     dataInput.value = modifiersDataColumnValue;
+        // }
+
+        dataInputColumn.appendChild(dataInputColumnLabel);
+        dataInputColumn.appendChild(dataInput);
+        formModifierRow.appendChild(dataInputColumn);
+
+        // Finally append row to list of rows.
+        formModifierRows.push(formModifierRow);
+    }
+
+    return formModifierRows;
+}
+
 function generateCustomYARAStringBuilderForm(
     identifierColumnValue=null, valueColumnValue=null, valueTypeColumnValue=null, stringTypeColumnValue=null,
-    modifiersColumnValue=null) {
+    modifiersCheckboxColumnValue=null, modifiersDataColumnValue=null) {
 
     // Set defaults for any unset (optional) params.
     if (identifierColumnValue == null) {
@@ -1677,8 +1817,11 @@ function generateCustomYARAStringBuilderForm(
     if (stringTypeColumnValue == null) {
         stringTypeColumnValue = yara.YARA_TYPE_TEXT;
     }
-    if (modifiersColumnValue == null) {
-        modifiersColumnValue = [];
+    if (modifiersCheckboxColumnValue == null) {
+        modifiersCheckboxColumnValue = [];
+    }
+    if (modifiersDataColumnValue == null) {
+        modifiersCheckboxColumnValue = [];
     }
 
     // Define the form element to hold rows..
@@ -1686,8 +1829,7 @@ function generateCustomYARAStringBuilderForm(
         "id": ADD_CUSTOM_YARA_STRING_MODAL_FORM,
     });
 
-    // Define required row structure.
-    let formRow = createElementAndSetAttributes("div", {
+    let formRow1 = createElementAndSetAttributes("div", {
         // Set a GUID/UUID instead of index to avoid issues with del/add row feature (id collisions).
         "id": `add-yara-string-form-row-${uuidv4()}`,
         "class": "form-row"
@@ -1711,7 +1853,7 @@ function generateCustomYARAStringBuilderForm(
     // Add label and input element to column and finally column to row.
     identifierColumn.appendChild(identifierColumnLabel);
     identifierColumn.appendChild(identifierColumnInput);
-    formRow.appendChild(identifierColumn);
+    formRow1.appendChild(identifierColumn);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Value column.
@@ -1732,7 +1874,7 @@ function generateCustomYARAStringBuilderForm(
     // Add label and input element to column and finally column to row.
     valueColumn.appendChild(valueColumnLabel);
     valueColumn.appendChild(valueColumnInput);
-    formRow.appendChild(valueColumn);
+    formRow1.appendChild(valueColumn);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // -- COLUMN: Value type.
@@ -1767,7 +1909,7 @@ function generateCustomYARAStringBuilderForm(
     // Add label and select element to column and finally column to row.
     valueTypeColumn.appendChild(valueTypeColumnLabel);
     valueTypeColumn.appendChild(valueTypeColumnSelect);
-    formRow.appendChild(valueTypeColumn);
+    formRow1.appendChild(valueTypeColumn);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // -- COLUMN: String type.
@@ -1802,64 +1944,39 @@ function generateCustomYARAStringBuilderForm(
     // Add label and select element to column and finally column to row.
     stringTypeColumn.appendChild(stringTypeColumnLabel);
     stringTypeColumn.appendChild(stringTypeColumnSelect);
-    formRow.appendChild(stringTypeColumn);
+    formRow1.appendChild(stringTypeColumn);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    let formRow2 = createElementAndSetAttributes("div", {
+    // Set a GUID/UUID instead of index to avoid issues with del/add row feature (id collisions).
+    "id": `add-yara-string-form-row-${uuidv4()}`,
+    "class": "form-row"
+    });
+    let modifiersHeadingColumnId = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-modifiers-heading`;
+    let modifiersHeadingColumn = createElementAndSetAttributes("div", {
+        "class": ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_HEADING_COLUMN_CLASS
+    });
+    let modifiersHeadingColumnLabel = createElementAndSetAttributes("label", {
+        "for": modifiersHeadingColumnId,
+    });
+    modifiersHeadingColumnLabel.innerHTML = "<h2>Modifiers</h2>";
+    modifiersHeadingColumn.appendChild(modifiersHeadingColumnLabel);
+    formRow2.appendChild(modifiersHeadingColumn);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // -- COLUMN: Modifiers.
-    let modifiersColumnCheckboxesId = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-modifiers`;
-    let modifiersColumn = createElementAndSetAttributes("div", {
-        "class": ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN_MODIFIERS_CLASS
-    });
-    let modifiersColumnLabel = createElementAndSetAttributes("label", {
-        "for": modifiersColumnCheckboxesId,
-    });
-    modifiersColumnLabel.innerText = "Modifiers";
-    let modifiersColumnCheckboxes = createElementAndSetAttributes("div", {
-        "class": "form-group form-check form-check-inline",
-        // "class": "form-group",
-        "id": modifiersColumnCheckboxesId
-    });
+    // -- ROWs: Modifiers.
+    let formModifierRows = generateYARAStringModifierFormRows(modifiersCheckboxColumnValue, modifiersDataColumnValue);
 
-    // Add checkboxes buttons for all available modifiers.
-    for (let modifier of yara.YARA_MODIFIERS) {
-        let checkboxContainer = createElementAndSetAttributes("div", {
-            "class": "form-check form-check-inline"
-        });
 
-        let checkboxId = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-modifiers-checkbox-${modifier}`;
-        let label = createElementAndSetAttributes("label", {
-            "class": "form-check-label",
-            "for": checkboxId,
-        });
-        label.innerText = modifier;
-        let checkbox = createElementAndSetAttributes("input", {
-            "type": "checkbox",
-            "class": "form-check-input",
-            "value": modifier,
-            "id": checkboxId
-        });
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // Mark checkbox as checked if modifier is in the enabled modifiers list.
-        if (modifiersColumnValue.includes(modifier)) {
-            checkbox.checked = true;
-        }
-
-        checkboxContainer.appendChild(label);
-        checkboxContainer.appendChild(checkbox);
-
-        // Add modifier checkbox and label to checkbox group.
-        modifiersColumnCheckboxes.appendChild(checkboxContainer);
+    form.appendChild(formRow1);
+    form.appendChild(formRow2);
+    form.appendChild(generateYARAStringModifierFormRowHeading());
+    for (let row of formModifierRows) {
+        form.appendChild(row);
     }
-
-    // Add label and checkbox container element to column and finally column to row.
-    modifiersColumn.appendChild(modifiersColumnLabel);
-    modifiersColumn.appendChild(modifiersColumnCheckboxes);
-    formRow.appendChild(modifiersColumn);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    form.appendChild(formRow);
 
     return form;
 }
@@ -1879,17 +1996,39 @@ function addYARAStringToEditorCallback() {
 
         let modifiers = [];
 
-        for (let checkboxContainer of document.getElementById(`${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-modifiers`).childNodes) {
-            // checkbox element via input/control via label.
-            let checkbox = checkboxContainer.childNodes[0].control;
+        for (let modifierRow of document.getElementsByClassName(ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_CLASS)) {
+            console.log("modifier row", modifierRow);
+            let checkboxColumn = modifierRow.childNodes[0];
+            let dataColumn = modifierRow.childNodes[1];
 
-            // Add checked items to modifiers list.
-            if (checkbox.checked) {
-                modifiers.push(checkbox.value);
+            let checkboxColumnLabel = checkboxColumn.firstChild;
+            let checkboxColumnCheckboxElement = checkboxColumn.lastChild.firstChild.firstChild;
+            let dataColumnInputElement = dataColumn.lastChild;
+
+            if (checkboxColumnCheckboxElement.checked) {
+                modifiers.push({
+                    "keyword": checkboxColumnLabel.innerText,
+                    "data": !dataColumnInputElement.disabled ? dataColumnInputElement.value : null,
+                });
             }
         }
 
-        console.log(identifierValue, valueValue, valueTypeValue, stringTypeValue, modifiers);
+        let modifier_str = "";
+
+        let spacing = '';
+        for (let modifier of modifiers) {
+            let keyword = modifier["keyword"];
+            let data = modifier["data"];
+
+            if (modifier["data"] != null) {
+                let wrappedDataString = yara.wrapYARAStringModifierData(keyword, data);
+                modifier_str += `${spacing}${keyword}(${wrappedDataString})`;
+            } else {
+                modifier_str += `${spacing}${keyword}`;
+            }
+            // Start using spacing after first element (avoids useless leading space).
+            spacing = ' ';
+        }
 
         // Create YARA String object.
         let yaraString = {
@@ -1898,9 +2037,12 @@ function addYARAStringToEditorCallback() {
             "value_type": valueTypeValue,
             "string_type": stringTypeValue,
             "modifiers": modifiers,
-            "modifier_str": modifiers.join(' ').split(' '),
+            // "modifier_str": modifiers.join(' ').split(' '),
+            "modifier_str": modifier_str,
             "str": null // FIXME: Generate the proper string.
         };
+
+        console.log("Created/Modifier YARA String", yaraString);
 
         // Add object to editor.
         addYARAStrings([yaraString], OBSERVABLE_DATA, OBSERVABLE_DATA_CLASS, DESIGNER_EDITOR);
@@ -1947,6 +2089,10 @@ function addYARAStringToEditorModal() {
         levels.INFO, modalCallbacks);
 }
 
+/**
+ * Handles the returned response to postRule.
+ * @param json
+ */
 function handlePostRuleResponse(json) {
     console.log("handlePostRuleResponse JSON", json);
     let errorType = "";

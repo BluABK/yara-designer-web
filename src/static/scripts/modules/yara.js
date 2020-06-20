@@ -24,6 +24,8 @@ export const YARA_MODIFIERS =
      YARA_MODIFIER_XOR, YARA_MODIFIER_BASE64, YARA_MODIFIER_BASE64_WIDE,
      YARA_MODIFIER_FULL_WORD, YARA_MODIFIER_PRIVATE];
 
+export const YARA_MODIFIERS_WITH_PAYLOAD = [YARA_MODIFIER_BASE64, YARA_MODIFIER_BASE64_WIDE, YARA_MODIFIER_XOR];
+
 export const YARA_HEX_REGEX = /^(\{\s*)?\(*(\[*[0-9a-fA-F\?\|\-\(\)\[\]]{1,3}\]*)(\s\[*[0-9a-fA-F\?\|\-\(\)\[\]]{1,3}\]*)*\)*\s*(\}\s*)?$/;
 
 var YARAStringSpec = {
@@ -334,4 +336,14 @@ export function createYARAString(t_stringIdentifier, t_value, t_stringType=YARA_
     // console.log(`Spawned YARA String object: '${ys.text()}'`, ys);
 
     return ys;
+}
+
+export function wrapYARAStringModifierData(keyword, data) {
+    if (keyword === YARA_MODIFIER_XOR) {
+        return data;
+    } else if (keyword === YARA_MODIFIER_BASE64 || keyword === YARA_MODIFIER_BASE64_WIDE) {
+        return `"${data}"`;
+    } else {
+        return data;
+    }
 }
