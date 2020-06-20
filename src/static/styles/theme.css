@@ -22,10 +22,10 @@
     /* Draggables. */
     --condition-keyword-color: white;
     --condition-keyword-background: #8a3ab9;
-    --draggable-observable-data-color: white;
-    --draggable-observable-data-background: #2879af;
-    --draggable-observable-type-color: white;
-    --draggable-observable-type-background: #509316;
+    --draggable-yara-string-editor-element-color: white;
+    --draggable-yara-string-editor-element-background: #2879af;
+    --draggable-custom-yara-string-editor-element-color: white;
+    --draggable-custom-yara-string-editor-element-background: #509316;
 
     /* Buttons. */
     --button-submit-color: white;
@@ -57,15 +57,15 @@
     --button-collapsible-operators-color-hover: white;
     --button-collapsible-operators-background-hover: #55337d;
 
-    --button-collapsible-observable-types-color: white;
-    --button-collapsible-observable-types-background: #509316;
-    --button-collapsible-observable-types-color-hover: white;
-    --button-collapsible-observable-types-background-hover: #336615;
+    --button-collapsible-custom-yara-string-editor-elements-color: white;
+    --button-collapsible-custom-yara-string-editor-elements-background: #509316;
+    --button-collapsible-custom-yara-string-editor-elements-color-hover: white;
+    --button-collapsible-custom-yara-string-editor-elements-background-hover: #336615;
 
-    --button-collapsible-observable-data-color: white;
-    --button-collapsible-observable-data-background: #2879af;
-    --button-collapsible-observable-data-color-hover: white;
-    --button-collapsible-observable-data-background-hover: #315595;
+    --button-collapsible-yara-string-editor-element-color: white;
+    --button-collapsible-yara-string-editor-element-background: #2879af;
+    --button-collapsible-yara-string-editor-element-color-hover: white;
+    --button-collapsible-yara-string-editor-element-background-hover: #315595;
 
 
     --button-yes-color: white;
@@ -299,24 +299,24 @@ tr:nth-child(even):hover td {
     background: var(--button-collapsible-operators-background-hover);
 }
 
-.button-collapsible-observable-types {
-    color: var(--button-collapsible-observable-types-color);
-    background: var(--button-collapsible-observable-types-background);
+.button-collapsible-custom-yara-string-editor-elements {
+    color: var(--button-collapsible-custom-yara-string-editor-elements-color);
+    background: var(--button-collapsible-custom-yara-string-editor-elements-background);
 }
 
-.button-collapsible-observable-types:hover {
-    color: var(--button-collapsible-observable-types-color-hover);
-    background: var(--button-collapsible-observable-types-background-hover);
+.button-collapsible-custom-yara-string-editor-elements:hover {
+    color: var(--button-collapsible-custom-yara-string-editor-elements-color-hover);
+    background: var(--button-collapsible-custom-yara-string-editor-elements-background-hover);
 }
 
-.button-collapsible-observable-data {
-    color: var(--button-collapsible-observable-data-color);
-    background: var(--button-collapsible-observable-data-background);
+.button-collapsible-yara-string-editor-element {
+    color: var(--button-collapsible-yara-string-editor-element-color);
+    background: var(--button-collapsible-yara-string-editor-element-background);
 }
 
-.button-collapsible-observable-data:hover {
-    color: var(--button-collapsible-observable-data-color-hover);
-    background: var(--button-collapsible-observable-data-background-hover);
+.button-collapsible-yara-string-editor-element:hover {
+    color: var(--button-collapsible-yara-string-editor-element-color-hover);
+    background: var(--button-collapsible-yara-string-editor-element-background-hover);
 }
 
 #yara-rule-designer-operators {
@@ -339,14 +339,14 @@ tr:nth-child(even):hover td {
     background: var(--condition-keyword-background);
 }
 
-.condition-observable-data {
-    color: var(--draggable-observable-data-color);
-    background-color: var(--draggable-observable-data-background);
+.condition-yara-string-editor-element {
+    color: var(--draggable-yara-string-editor-element-color);
+    background-color: var(--draggable-yara-string-editor-element-background);
 }
 
-.condition-observable-type {
-    color: var(--draggable-observable-type-color);
-    background-color: var(--draggable-observable-type-background);
+.condition-custom-yara-string-editor-element {
+    color: var(--draggable-custom-yara-string-editor-element-color);
+    background-color: var(--draggable-custom-yara-string-editor-element-background);
 }
 
  /* Modal Header */

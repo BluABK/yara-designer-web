@@ -221,7 +221,7 @@ tr {
     background: transparent;
 }
 
-.button-collapsible-observable-types {
+.button-collapsible-custom-yara-string-editor-elements {
     cursor: pointer;
     /*padding: 18px;*/
     width: 100%;
@@ -231,13 +231,13 @@ tr {
     font-size: 15px;
 }
 
-#yara-rule-designer-observable-types {
+#yara-rule-designer-custom-yara-string-editor-elements {
     /* Bootstrap: If you actually remove this border, the contents flee out of bounds. */
     border-right:1px solid transparent;
     background: transparent;
 }
 
-.button-collapsible-observable-data {
+.button-collapsible-yara-string-editor-element {
     cursor: pointer;
     /*padding: 18px;*/
     width: 100%;
@@ -247,7 +247,7 @@ tr {
     font-size: 15px;
 }
 
-#yara-rule-designer-observable-data {
+#yara-rule-designer-yara-string-editor-element {
     /* Bootstrap: If you actually remove this border, the contents flee out of bounds. */
     border-right:1px solid transparent;
     /*border-top: 1px solid;*/
@@ -281,12 +281,12 @@ tr {
     cursor: pointer;
 }
 
-.condition-observable-data {
+.condition-yara-string-editor-element {
     display: inline-table;
     cursor: pointer;
 }
 
-.condition-observable-type {
+.condition-custom-yara-string-editor-element {
     display: inline-table;
     cursor: pointer;
 }

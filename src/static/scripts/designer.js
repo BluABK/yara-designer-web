@@ -60,14 +60,14 @@ const DESIGNER_HEADER_CONTENT_DESCRIPTION = `${DESIGNER_HEADER_CONTENT}-descript
 const DESIGNER_TAGS = `${ROOT_CLASS}-tags`;
 const DESIGNER_TAGS_CHECKBOX_CLASS = "yara-tag-checkbox";
 const OPERATOR_CONTAINER = `${ROOT_CLASS}-operators`;
-const OBSERVABLE_DATA = `observable-data`;
-const OBSERVABLE_DATA_CLASS = `condition-observable-data`;
-const OBSERVABLE_DATA_CONTAINER = `${ROOT_CLASS}-observable-data`;
-const OBSERVABLE_TYPE = `observable-type`;
-const OBSERVABLE_TYPE_CLASS = `condition-observable-type`;
-const OBSERVABLE_TYPE_CONTAINER = `${ROOT_CLASS}-observable-types`;
-const LEFTPANE_DRAGGABLES = [OPERATOR_CONTAINER, OBSERVABLE_TYPE_CONTAINER, OBSERVABLE_DATA_CONTAINER];
-const OBSERVABLE_YARA_DATA_JSON = "data-yara-string-json";
+const YARA_STRING_EDITOR_ELEMENT = `yara-string-editor-element`;
+const YARA_STRING_EDITOR_ELEMENT_CLASS = `condition-yara-string-editor-element`;
+const YARA_STRING_EDITOR_ELEMENT_CONTAINER = `${ROOT_CLASS}-yara-string-editor-element`;
+const CUSTOM_YARA_STRING_EDITOR_ELEMENT = `custom-yara-string-editor-element`;
+const CUSTOM_YARA_STRING_EDITOR_ELEMENT_CLASS = `condition-custom-yara-string-editor-element`;
+const CUSTOM_YARA_STRING_EDITOR_ELEMENT_CONTAINER = `${ROOT_CLASS}-custom-yara-string-editor-elements`;
+const LEFTPANE_DRAGGABLES = [OPERATOR_CONTAINER, CUSTOM_YARA_STRING_EDITOR_ELEMENT_CONTAINER, YARA_STRING_EDITOR_ELEMENT_CONTAINER];
+const YARA_STRING_ELEMENT_JSON_DATA_ATTR = "data-yara-string-json";
 const YARA_STRING_TYPE_CLASS_TEXT = "yara-string-type-text";
 const YARA_STRING_TYPE_CLASS_HEX = "yara-string-type-hex";
 const YARA_STRING_TYPE_CLASS_REGEX = "yara-string-type-regex";
@@ -88,7 +88,7 @@ const YARA_VARIABLE_DENOMINATOR = "$";
 const MOUSE_CLICK_LEFT = 0;
 const MOUSE_CLICK_MIDDLE = 1;
 const MOUSE_CLICK_RIGHT = 2;
-const OBSERVABLE_CLASSES = ["condition-observable-data", "condition-observable-type"];
+const OBSERVABLE_CLASSES = ["condition-yara-string-editor-element", "condition-custom-yara-string-editor-element"];
 const KEYWORD_CLASS = "condition-keyword";
 const KEYWORD_CLASSES = ["condition-keyword"];
 const SYNTAX_ERROR = "syntax";
@@ -179,8 +179,8 @@ var currentlyLoadedRule = null;
 dragula([
     // Enable drag and drop for these DIVs:
     document.getElementById(OPERATOR_CONTAINER),
-    document.getElementById(OBSERVABLE_TYPE_CONTAINER),
-    document.getElementById(OBSERVABLE_DATA_CONTAINER),
+    document.getElementById(CUSTOM_YARA_STRING_EDITOR_ELEMENT_CONTAINER),
+    document.getElementById(YARA_STRING_EDITOR_ELEMENT_CONTAINER),
     document.getElementById(DESIGNER_EDITOR)
 ], { // Apply logic.
     copy: function (el, source) {
@@ -456,7 +456,7 @@ function getRuleJsonFromEditorElements() {
     let jsonifiedYARAStrings = [];
     for (let yaraString of getEditorYARAStrings()) {
         // Append the previously attached (see: addYARAStrings) YARAString JSON to strings list.
-        jsonifiedYARAStrings.push( JSON.parse(yaraString.getAttribute(OBSERVABLE_YARA_DATA_JSON)) )
+        jsonifiedYARAStrings.push( JSON.parse(yaraString.getAttribute(YARA_STRING_ELEMENT_JSON_DATA_ATTR)) )
     }
 
     return {
@@ -1051,7 +1051,7 @@ function addYARAStrings(strings, idPrefix, classBaseName, destinationContainer,
                     break;
             }
 
-            yaraStringDOMElement.setAttribute(OBSERVABLE_YARA_DATA_JSON, JSON.stringify(yaraString));
+            yaraStringDOMElement.setAttribute(YARA_STRING_ELEMENT_JSON_DATA_ATTR, JSON.stringify(yaraString));
 
             // Make observable element clickable.
             yaraStringDOMElement.addEventListener('click', function(){ addToEditor(event) });
@@ -1072,10 +1072,10 @@ function addYARAStrings(strings, idPrefix, classBaseName, destinationContainer,
  */
 function setYARAStrings(strings) {
     // Clear any existing strings (leftover from a previously loaded rule)
-    clearElement(OBSERVABLE_DATA_CONTAINER);
+    clearElement(YARA_STRING_EDITOR_ELEMENT_CONTAINER);
 
     // Add new strings.
-    addYARAStrings(strings, OBSERVABLE_DATA, OBSERVABLE_DATA_CLASS, OBSERVABLE_DATA_CONTAINER)
+    addYARAStrings(strings, YARA_STRING_EDITOR_ELEMENT, YARA_STRING_EDITOR_ELEMENT_CLASS, YARA_STRING_EDITOR_ELEMENT_CONTAINER)
 }
 
 function setEditorElementsByCondition(x) {
@@ -1093,7 +1093,7 @@ function setEditorElementsByCondition(x) {
 
         if (item.startsWith(YARA_VARIABLE_DENOMINATOR)) {
             // Is YARA string; determine target by string identifier
-            let yaraStrings = document.getElementsByClassName(OBSERVABLE_DATA_CLASS);
+            let yaraStrings = document.getElementsByClassName(YARA_STRING_EDITOR_ELEMENT_CLASS);
             for (let ys of yaraStrings) {
                 if (ys.id === item.substr(1)) {
                     target = ys;
@@ -2044,8 +2044,11 @@ function addYARAStringToEditorCallback() {
 
         console.log("Created/Modifier YARA String", yaraString);
 
-        // Add object to editor.
-        addYARAStrings([yaraString], OBSERVABLE_DATA, OBSERVABLE_DATA_CLASS, DESIGNER_EDITOR);
+        // Add object to available YARA Strings/Observables
+        addYARAStrings([yaraString], YARA_STRING_EDITOR_ELEMENT, CUSTOM_YARA_STRING_EDITOR_ELEMENT_CLASS, CUSTOM_YARA_STRING_EDITOR_ELEMENT_CONTAINER);
+
+        // Add object to editor. // FIXME: Should probably be changed to a fork of addToEditor that takes YARA string obj not clickEvent.
+        addYARAStrings([yaraString], YARA_STRING_EDITOR_ELEMENT, CUSTOM_YARA_STRING_EDITOR_ELEMENT_CLASS, DESIGNER_EDITOR);
         closeModals();
     });
 
