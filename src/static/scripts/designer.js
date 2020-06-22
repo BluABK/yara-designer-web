@@ -420,9 +420,11 @@ function getEditorElementKeywordText(element) {
 function getEditorConditionString() {
     let conditionString = "";
     let children = getEditorContents();
+    console.log("getEditorConditionString children", children);
 
     // Spacing to use in front of a word, to form a coherent sentence structure.
     let preSpacing = "";
+    let hasCountOperatorInFront = false;
     for (let i = 0; i < children.length; i++) {
         if (i === 1) {
             // If we're past the first entry we can start prepending spacing.
@@ -432,13 +434,30 @@ function getEditorConditionString() {
         // Check if child is of the observable family by comparing its classList against the OBSERVABLE_CLASSES list.
         // This is because an observable/YARAString may have multiple class names attached to it.
         if ( OBSERVABLE_CLASSES.some(name => [...children[i].classList].includes(name)) ) {
-            // Prepend with a YARA variable denominator.
-            conditionString += preSpacing + YARA_VARIABLE_DENOMINATOR + children[i].id;
+            if (hasCountOperatorInFront) {
+                // Prepend with a YARA variable count operation denominator.
+                conditionString += preSpacing + yara.VARIABLE_COUNTER_DENOMINATOR + children[i].id;
+                hasCountOperatorInFront = false;
+            } else {
+                // Prepend with a YARA variable denominator.
+                conditionString += preSpacing + yara.VARIABLE_DENOMINATOR + children[i].id;
+            }
         } else if (KEYWORD_CLASSES.includes(children[i].className)) {
             // Child is a logical operator
-            conditionString += preSpacing + getEditorElementKeywordText(children[i]).toLowerCase();
+            if (children[i].id === VAR_COUNT_KEYWORD) {
+                // This operator should replace the var denominator,
+                // so let's set a flag and not add this keyword as a separate entity.
+                hasCountOperatorInFront = true;
+            } else {
+                conditionString += preSpacing + getEditorElementKeywordText(children[i]).toLowerCase();
+            }
+        } else if (children[i].className === NUMERIC_CLASS) {
+            // Child is a numeric element.
+            conditionString += preSpacing + getEditorElementKeywordText(children[i]);
         } else {
-            console.error("getEditorConditionString is not supposed to reach an else condition!", children[i]);
+            const msg = "getEditorConditionString is not supposed to reach an else condition!";
+            modals.popupErrorModal("<h2>Programming Error</h2>", msg);
+            console.error(msg, children[i]);
         }
     }
 
