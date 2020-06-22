@@ -160,6 +160,14 @@ tr {
     font-size: 16px;
 }
 
+#add-numeric-element-button {
+    border: none;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+}
+
 #submit-rule-button {
     border: none;
     padding: 15px 32px;
@@ -270,6 +278,12 @@ tr {
 }
 
 .condition-keyword {
+    display: inline-table;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.condition-numeric {
     display: inline-table;
     font-weight: bold;
     cursor: pointer;

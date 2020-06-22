@@ -1,5 +1,6 @@
 
-export const YARA_STRING_SYMBOL = "$";
+export const VARIABLE_DENOMINATOR = "$";
+export const VARIABLE_COUNTER_DENOMINATOR = "#";
 
 export const YARA_TYPE_TEXT = "text";
 export const YARA_TYPE_HEX = "hex";
@@ -320,7 +321,7 @@ export var YARAString = {
                 modStr = ` ${modifiers.join(' ')}` // NB: has a single space in front.
             }
 
-            return `${YARA_STRING_SYMBOL}${this.getIdentifier()} = "${this.getValue()}"${modStr}`;
+            return `${VARIABLE_DENOMINATOR}${this.getIdentifier()} = "${this.getValue()}"${modStr}`;
         }
     }
 };

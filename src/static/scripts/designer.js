@@ -91,6 +91,9 @@ const MOUSE_CLICK_RIGHT = 2;
 const OBSERVABLE_CLASSES = ["condition-yara-string-editor-element", "condition-custom-yara-string-editor-element"];
 const KEYWORD_CLASS = "condition-keyword";
 const KEYWORD_CLASSES = ["condition-keyword"];
+const VAR_COUNT_KEYWORD = "condition-keyword-count";
+const NUMERIC_CLASS = "condition-numeric";
+const NUMERIC_CLASSES = ["condition-numeric"];
 const SYNTAX_ERROR = "syntax";
 
 // Customised modals - Settings Modal:
@@ -118,14 +121,13 @@ const ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_HEADING_COLUMN_CLASS = "co
 const ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_COLUMN_CHECKBOX_CLASS = "col-md-2 mb-3";
 const ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_COLUMN_DATA_INPUT_CLASS = "col-md-10 mb-3";
 
-
-
 // Add event listeners.
 // -- Buttons:
 document.querySelector('#load-rule-button').addEventListener('click', loadRuleDialog);
 document.querySelector('#edit-settings-button').addEventListener('click', settingsModal);
 document.querySelector('#add-yara-string-button').addEventListener('click', addYARAStringToEditorModal);
 document.querySelector('#show-help-button').addEventListener('click', modals.popupHelpModal);
+document.querySelector('#add-numeric-element-button').addEventListener('click', function(){ popupAddNumericElementDialog() });
 document.querySelector('#clear-rule-button').addEventListener('click', clearRule);
 document.querySelector('#submit-rule-button').addEventListener('click', function(){ postRule() });
 document.querySelector('#yara-rule-designer-tags-add-button').addEventListener('click', function(){ popupAddTagDialog() });
@@ -143,6 +145,7 @@ document.querySelector('#condition-keyword-gt').addEventListener('click', functi
 document.querySelector('#condition-keyword-leq').addEventListener('click', function(){ addToEditor(event) });
 document.querySelector('#condition-keyword-geq').addEventListener('click', function(){ addToEditor(event) });
 document.querySelector('#condition-keyword-neq').addEventListener('click', function(){ addToEditor(event) });
+document.querySelector(`#${VAR_COUNT_KEYWORD}`).addEventListener('click', function(){ addToEditor(event) });
 // -- -- -- Relational:
 document.querySelector('#condition-keyword-add').addEventListener('click', function(){ addToEditor(event) });
 document.querySelector('#condition-keyword-sub').addEventListener('click', function(){ addToEditor(event) });
@@ -162,6 +165,16 @@ document.querySelector('#condition-keyword-lparen').addEventListener('click', fu
 document.querySelector('#condition-keyword-rparen').addEventListener('click', function(){ addToEditor(event) });
 // -- -- -- Encapsulators:
 document.querySelector('#condition-keyword-encapsulate-paren').addEventListener('click', function(){ addToEditor(event) });
+
+/**
+ * Add a replace-at-index feature for String objects.
+ * @param index
+ * @param replacement
+ * @returns {string}
+ */
+String.prototype.replaceAt = function(index, replacement) {
+    return this.substr(0, index) + replacement + this.substr(index + replacement.length);
+};
 
 /**
  * Add a MD5 sum property to String prototype which returns the MD5 sum of its value.
@@ -978,6 +991,22 @@ function clearElement(elementID) {
     document.getElementById(elementID).innerHTML = "";
 }
 
+function addNumericElementToEditor(number) {
+    if (isNaN(number)) {
+        throw Error("addNumericElement got NaN!")
+    }
+
+    let numericDOMElement = createElementAndSetAttributes("span", {
+        "id": uuidv4(),
+        "class": NUMERIC_CLASS
+    });
+
+    numericDOMElement.textContent = number;
+
+    // Add to editor
+    document.getElementById(DESIGNER_EDITOR).appendChild(numericDOMElement);
+}
+
 /**
  * Takes a list of observable data entries, then creates and attaches
  * a YARAString object to them and finally adds them to a given container.
@@ -1086,22 +1115,36 @@ function setEditorElementsByCondition(items) {
         return;
     }
 
+    let operators = document.getElementsByClassName(KEYWORD_CLASS);
+    console.log("Operators", operators);
+    let yaraStrings = document.getElementsByClassName(YARA_STRING_EDITOR_ELEMENT_CLASS);
+    console.log("YARA Strings", yaraStrings);
     for (let item of items) {
         let target = null;
 
-        if (item.startsWith(YARA_VARIABLE_DENOMINATOR)) {
+        if (item.startsWith(yara.VARIABLE_COUNTER_DENOMINATOR)) {
+            // Add count operator
+            let operator = document.getElementById(VAR_COUNT_KEYWORD);
+            console.log('addToEditor (count op)', operator);
+            editorDiv.appendChild(makeClone(operator));
+
+            // Replace the counter denominator with a variable denominator
+            // in order to handle it as a regular YARA String.
+            item = String(yara.VARIABLE_DENOMINATOR + item.substr(1));
+        }
+
+        if (item.startsWith(yara.VARIABLE_DENOMINATOR)) {
             // Is YARA string; determine target by string identifier
-            let yaraStrings = document.getElementsByClassName(YARA_STRING_EDITOR_ELEMENT_CLASS);
             for (let ys of yaraStrings) {
                 if (ys.id === item.substr(1)) {
                     target = ys;
                 }
             }
-
+        } else if (!isNaN(parseInt(item))) {
+            // If string is numeric.
+            addNumericElementToEditor(parseInt(item));
         } else {
             // Is conditional operator; determine target by operator identifier
-            let operators = document.getElementsByClassName(KEYWORD_CLASS);
-            console.log("ops", operators);
             for (let opElem of operators) {
                 if (opElem.innerText.toLowerCase() === item.toLowerCase()) {
                     target = opElem;
@@ -1140,7 +1183,8 @@ function loadRuleCallback(rule) {
     setYARAStrings(rule.strings);
 
     // Set editor condition:
-    setEditorElementsByCondition(rule.condition)
+    setEditorElementsByCondition(rule.condition);
+
 }
 
 /**
@@ -2262,6 +2306,21 @@ function postRule(json=null) {
     }
 }
 
+
+function popupAddNumericElementDialog() {
+    let numberInputString = prompt("Enter integer number", "");
+    console.log("numberInputString", numberInputString);
+
+    if (numberInputString !== null && numberInputString !== "") {
+        let number = parseInt(numberInputString);
+
+        if (!isNaN(number)) {
+            addNumericElementToEditor(number);
+        }
+    }
+}
+
+
 function popupAddTagDialog() {
     let newTag = prompt("Enter tag name", "");
     console.log("newTag", newTag);
@@ -2410,7 +2469,7 @@ function clearRule() {
 }
 
 function makeClone(node) {
-    console.log("makeClone", node);
+    // console.log("makeClone", node);
     let clone;
 
     // Returns a copy of node. If deep is true, the copy also includes the node's descendants.

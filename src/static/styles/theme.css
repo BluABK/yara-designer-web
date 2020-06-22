@@ -22,6 +22,8 @@
     /* Draggables. */
     --condition-keyword-color: white;
     --condition-keyword-background: #8a3ab9;
+    --condition-numeric-color: white;
+    --condition-numeric-background: #ff7800;
     --draggable-yara-string-editor-element-color: white;
     --draggable-yara-string-editor-element-background: #2879af;
     --draggable-custom-yara-string-editor-element-color: white;
@@ -46,6 +48,10 @@
     --button-add-yara-string-background: #509316;
     --button-add-yara-string-color-hover: white;
     --button-add-yara-string-background-hover: #336615;
+    --button-add-numeric-element-color: white;
+    --button-add-numeric-element-background: #ff7800;
+    --button-add-numeric-element-color-hover: white;
+    --button-add-numeric-element-background-hover: #af5800;
 
     --button-collapsible-tags-color: white;
     --button-collapsible-tags-background: #f48d00;
@@ -245,6 +251,16 @@ tr:nth-child(even):hover td {
   color: var(--button-add-yara-string-color-hover);
 }
 
+#add-numeric-element-button {
+    background: var(--button-add-numeric-element-background);
+    color: var(--button-add-yara-string-color);
+}
+
+#add-numeric-element-button:hover {
+  background: var(--button-add-numeric-element-background-hover);
+  color: var(--button-add-yara-string-color-hover);
+}
+
 #submit-rule-button {
     background: var(--button-submit-background);
     color: var(--button-submit-color);
@@ -332,6 +348,11 @@ tr:nth-child(even):hover td {
 .condition-keyword {
     color: var(--condition-keyword-color);
     background: var(--condition-keyword-background);
+}
+
+.condition-numeric {
+    color: var(--condition-numeric-color);
+    background: var(--condition-numeric-background);
 }
 
 .condition-encapsulator {
