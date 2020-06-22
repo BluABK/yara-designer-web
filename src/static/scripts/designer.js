@@ -1078,15 +1078,13 @@ function setYARAStrings(strings) {
     addYARAStrings(strings, YARA_STRING_EDITOR_ELEMENT, YARA_STRING_EDITOR_ELEMENT_CLASS, YARA_STRING_EDITOR_ELEMENT_CONTAINER)
 }
 
-function setEditorElementsByCondition(x) {
+function setEditorElementsByCondition(items) {
     let editorDiv = document.getElementById(DESIGNER_EDITOR);
-    console.log("setEditorElementsByCondition", x);
+    console.log("setEditorElementsByCondition", items);
 
-    if (x == null) {
+    if (items == null) {
         return;
     }
-
-    let items = x.split(' ');
 
     for (let item of items) {
         let target = null;
