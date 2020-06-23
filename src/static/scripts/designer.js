@@ -124,6 +124,7 @@ const ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_COLUMN_DATA_INPUT_CLASS = 
 // Add event listeners.
 // -- Buttons:
 document.querySelector('#load-rule-button').addEventListener('click', loadRuleDialog);
+document.querySelector('#load-observables-button').addEventListener('click', loadObservablesDialog);
 document.querySelector('#edit-settings-button').addEventListener('click', settingsModal);
 document.querySelector('#add-yara-string-button').addEventListener('click', addYARAStringToEditorModal);
 document.querySelector('#show-help-button').addEventListener('click', modals.popupHelpModal);
@@ -756,18 +757,31 @@ function comparer(idx, asc) {
  * @param defaultCheckedRadio
  * @param hideRadios
  * @param modalId
+ * @param loaderMode
+ * @param ruleKindDBLoader
+ * @param ruleKindTheOracleLoader
  */
 function printRulesTable(rulesJson, defaultCheckedRadio = TABLE_FILTER_CHECKED_RADIO,
-                         hideRadios = TABLE_FILTER_HIDDEN_RADIOS, modalId = modals.RESPONSE_MODAL) {
+                         hideRadios = TABLE_FILTER_HIDDEN_RADIOS, modalId = modals.RESPONSE_MODAL,
+                         loaderMode = "replace",
+                         ruleKindDBLoader=loadDBRuleById, ruleKindTheOracleLoader=loadTheOracleRuleByFilename) {
     // let rules = rulesJson["rules"];
     let rules = [];
-    for (let dbRule of rulesJson["db_rules"]) {
-        dbRule["kind"] = "database";
-        rules.push(dbRule);
+    if ( rulesJson.hasOwnProperty("db_rules") ) {
+        for (let dbRule of rulesJson["db_rules"]) {
+            dbRule["kind"] = "database";
+            rules.push(dbRule);
+        }
     }
-    for (let theoracleRule of rulesJson["theoracle_rules"]) {
-        theoracleRule["kind"] = "theoracle";
-        rules.push(theoracleRule);
+    if ( rulesJson.hasOwnProperty("theoracle_rules") ) {
+        for (let theoracleRule of rulesJson["theoracle_rules"]) {
+            theoracleRule["kind"] = "theoracle";
+            rules.push(theoracleRule);
+        }
+    }
+    if (rules.length === 0) {
+        modals.popupErrorModal("printRulesTable Error!", "printRulesTable failed to parse any rules!")
+        return;
     }
     console.log("rules", rules);
 
@@ -878,15 +892,15 @@ function printRulesTable(rulesJson, defaultCheckedRadio = TABLE_FILTER_CHECKED_R
             let loader = function() {modals.popupErrorModal("<h2>ERROR</h2>", "Loader func is unset!")};
             let loaderParam = null;
             if (rules[i].kind === RULE_KIND_DB) {
-                loader = loadDBRuleById;
+                loader = ruleKindDBLoader;
                 loaderParam = rules[i]["thehive_case_id"];
             } else if (rules[i].kind === RULE_KIND_THEORACLE) {
-                loader = loadTheOracleRuleByFilename;
+                loader = ruleKindTheOracleLoader;
                 loaderParam = rules[i]["source_filename"];
             }
 
             // If editor isn't empty, prompt for confirmation to avoid possible work loss.
-            if (getEditorContents().length > 0) {
+            if (getEditorContents().length > 0 && loaderMode === "replace") {
                 modals.popupConfirmationModal({"action": loader, "args": [loaderParam]}, null,
                     "<h3>You currently have contents in the editor, loading a rule clears the editor.</h3>")
             } else {
@@ -905,6 +919,17 @@ function printRulesTable(rulesJson, defaultCheckedRadio = TABLE_FILTER_CHECKED_R
 
 function loadRuleDialog() {
     getRules();
+}
+
+function loadObservablesDialog() {
+    // if (window.currentlyLoadedRule) {
+    getRulesDB(loadObservablesHandler);
+    // }
+    // else {
+    //     modals.popupErrorModal("Attempted to import observables without an Rule loaded!",
+    //         "You need to load a Rule before you can import additional observables." +
+    //         "<br><br> You can load a Rule using the 'Open Rule' button")
+    // }
 }
 
 function setTitle(title, id, description=null) {
@@ -1137,6 +1162,37 @@ function loadRuleCallback(rule) {
 
 }
 
+function newRule() {
+    let rule = {
+      "added_on": null,
+      "compilable": null,
+      "condition": [],
+      "condition_str": "",
+      "last_modified": null,
+      "meta": [],
+      "name": "Untitled",
+      "namespace": null,
+      "pending": false,
+      "processing_time": null,
+      "source_filename": null,
+      "source_path": null,
+      "source_path_sha256sum": null,
+      "strings": [],
+      "tags": [],
+      "thehive_case_id": null,
+      "title": "Untitled",
+      "description": "No description"
+    };
+
+    loadRuleCallback(rule);
+}
+
+function addStringsFromRule(rule) {
+    // Add new strings.
+    addYARAStrings(rule.strings, YARA_STRING_EDITOR_ELEMENT, YARA_STRING_EDITOR_ELEMENT_CLASS,
+        YARA_STRING_EDITOR_ELEMENT_CONTAINER)
+}
+
 /**
  * Loads a YARA Rule by calling getRule with a callback.
  *
@@ -1153,6 +1209,20 @@ function loadDBRuleById(ruleId) {
  */
 function loadTheOracleRuleByFilename(ruleId) {
     getTheOracleRuleByFilename(ruleId, loadRuleCallback);
+}
+
+/**
+ * Loads a YARA Rule by calling getRule with a callback.
+ *
+ * @param rulesJson
+ */
+function loadObservablesHandler(rulesJson) {
+    printRulesTable({"db_rules": rulesJson["rules"]}, TABLE_FILTER_CHECKED_RADIO, TABLE_FILTER_HIDDEN_RADIOS,
+        modals.RESPONSE_MODAL, "append", loadObservablesLoader);
+}
+
+function loadObservablesLoader(ruleId) {
+    getRuleDBById(ruleId, addStringsFromRule);
 }
 
 function makeCollapsibleJSONDetails(json, id) {
@@ -2432,6 +2502,9 @@ let idParm = getParameterByName("id");
 if (idParm !== null && idParm !== "") {
     console.log("Load rule: " + idParm);
     loadDBRuleById(idParm);
+} else {
+    // Load a default blank rule (sets various properties and models so we run into less issues).
+    newRule();
 }
 
 // Indicate that script ran through to the end during the initial load.
