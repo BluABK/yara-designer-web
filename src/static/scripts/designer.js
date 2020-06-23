@@ -579,7 +579,9 @@ function extrapolateMissingRuleInfoFromMeta(rule) {
 
     if (rule.title) {
         title = rule.title;
-    } else if (!rule.title.includes(' ')) {
+    }
+
+    if (!rule.title.includes(' ')) {
         // If there are no whitespaces, the rule title is likely determined by the rule name.
         // In which case we should replace all _ with ' '.
         title = rule.title.replace(/[_-]/g, ' ');
