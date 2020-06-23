@@ -571,6 +571,56 @@ async function fetchPostRequest(url = '', data = {}, callback) {
           });
 }
 
+function extrapolateMissingRuleInfoFromMeta(rule) {
+    let title = "Untitled Rule.";
+    let caseId = "N/A";
+    let description = "No description";
+    let modifiedRule = rule;
+
+    if (rule.title) {
+        title = rule.title;
+    } else if (!rule.title.includes(' ')) {
+        // If there are no whitespaces, the rule title is likely determined by the rule name.
+        // In which case we should replace all _ with ' '.
+        title = rule.title.replace(/[_-]/g, ' ');
+    }
+
+    if (rule.thehive_case_id) {
+        caseId = rule.thehive_case_id;
+    } else {
+        if ( rule.meta.some(item => item.identifier.toLowerCase() === "thehive_case_id") ) {
+            caseId = rule.meta.find(item => item.identifier.toLowerCase() === "thehive_case_id").value;
+        } else if ( rule.meta.some(item => item.identifier.toLowerCase() === "case_id") ) {
+            caseId = rule.meta.find(item => item.identifier.toLowerCase() === "case_id").value;
+        } else if ( rule.meta.some(item => item.identifier.toLowerCase() === "id") ) {
+            caseId = rule.meta.find(item => item.identifier.toLowerCase() === "id").value;
+        }
+    }
+
+    if (rule.description) {
+        description = rule.description;
+    } else {
+        if ( rule.meta.some(item => item.identifier.toLowerCase() === "description") ) {
+            description = rule.meta.find(item => item.identifier.toLowerCase() === "description").value;
+        }
+    }
+
+    modifiedRule.title = title;
+    modifiedRule.thehive_case_id = caseId;
+    modifiedRule.description = description;
+
+    return modifiedRule;
+}
+
+function extrapolateMissingRulesInfoFromMeta(rules) {
+    let modifiedRules = [];
+
+    for (let rule of rules) {
+        modifiedRules.push(extrapolateMissingRuleInfoFromMeta(rule));
+    }
+
+    return modifiedRules
+}
 
 function getRuleDBById(ruleId, callback=printRulesTable) {
     // noinspection JSIgnoredPromiseFromCall
@@ -587,9 +637,14 @@ function getTheOracleRuleByFilename(filename, callback=printRulesTable) {
     fetchGetRequest(`${GET_THEORACLE_RULE_ROUTE}/${filename}`, callback);
 }
 
-function combineRulesThenPrintRulesTable(additonalRules, existingRules) {
-    // printRulesTable({"rules": existingRules["rules"].concat(additonalRules["rules"])});
-    printRulesTable({"db_rules": existingRules["rules"], "theoracle_rules": additonalRules["rules"]});
+function combineRulesThenPrintRulesTable(additionalRules, existingRules) {
+    let combinedRules = {
+        "db_rules": extrapolateMissingRulesInfoFromMeta(existingRules["rules"]),
+        "theoracle_rules": extrapolateMissingRulesInfoFromMeta(additionalRules["rules"])
+    };
+    // let extrapolatedCombinedRules = extrapolateMissingRulesInfoFromMeta(combinedRules);
+
+    printRulesTable(combinedRules);
 }
 
 function getAdditionalRules(rules, callback=combineRulesThenPrintRulesTable) {
@@ -789,32 +844,11 @@ function getCellValue(tr, idx) {
     return tr.children[idx].innerText || tr.children[idx].textContent;
 }
 
-
 function comparer(idx, asc) {
     return function(a, b) { return function(v1, v2) {
         return v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2);
     }(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
 }}
-
-function mockRules(num) { // FIXME: Remove this debug/testing function.
-    let mockRules = [];
-    for (let i = 0; i < num; i++) {
-        mockRules.push({
-            "added_on": "2020-03-05T13:50:07.793123",
-            "case_id": String(i),
-            "data": {
-                "title": `Mock Rule #${i}`,
-                "severity": i,
-                "observables": [],
-                "id": String(i)
-            },
-            "last_modified": "2020-04-29T10:28:28.504976",
-            "pending": true,
-            "yara_file": null
-        })
-    }
-    return mockRules;
-}
 
 /**
  * Print fetched rules table.
@@ -839,10 +873,6 @@ function printRulesTable(rulesJson, defaultCheckedRadio = TABLE_FILTER_CHECKED_R
         rules.push(theoracleRule);
     }
     console.log("rules", rules);
-    // console.log("mock rules", mockRules(5));
-    // for ( let mockRule of mockRules(50) ) {
-    //     rules.push(mockRule);
-    // }
 
     let header = `<h3>Fetched rules <span id='${modalId}-header-${TABLE_FILTER_COUNT}'</span></h3>`;
     let bodyTop = "";
@@ -1193,39 +1223,7 @@ function loadRuleCallback(rule) {
     window.currentlyLoadedRule = rule;
 
     // Set title tag and title div.
-    let sanitizedTitle = "Untitled Rule.";
-    if (rule.title) {
-        sanitizedTitle = rule.title;
-    } else if (!rule.title.includes(' ')) {
-        // If there are no whitespaces, the rule title is likely determined by the rule name.
-        // In which case we should replace all _ with ' '.
-        sanitizedTitle = rule.title.replace(/[_-]/g, ' ');
-        // sanitizedTitle = rule.title.replace('-', ' ');
-    }
-
-    let sanitizedId = "N/A";
-    if (rule["thehive_case_id"]) {
-        sanitizedId = rule["thehive_case_id"];
-    } else {
-        if ( rule.meta.some(item => item.identifier.toLowerCase() === "thehive_case_id") ) {
-            sanitizedId = rule.meta.find(item => item.identifier.toLowerCase() === "thehive_case_id").value;
-        } else if ( rule.meta.some(item => item.identifier.toLowerCase() === "case_id") ) {
-            sanitizedId = rule.meta.find(item => item.identifier.toLowerCase() === "case_id").value;
-        } else if ( rule.meta.some(item => item.identifier.toLowerCase() === "id") ) {
-            sanitizedId = rule.meta.find(item => item.identifier.toLowerCase() === "id").value;
-        }
-    }
-
-    let sanitizedDescription = "No description";
-    if (rule.description) {
-        sanitizedDescription = rule.description;
-    } else {
-        if ( rule.meta.some(item => item.identifier.toLowerCase() === "description") ) {
-            sanitizedDescription = rule.meta.find(item => item.identifier.toLowerCase() === "description").value;
-        }
-    }
-
-    setTitle(sanitizedTitle, sanitizedId, sanitizedDescription);
+    setTitle(rule.title, rule.thehive_case_id, rule.description);
 
     // Set tags div.
     setTags(rule.tags);
@@ -2355,7 +2353,6 @@ function postRule(json=null) {
     }
 }
 
-
 function popupAddNumericElementDialog() {
     let numberInputString = prompt("Enter integer number", "");
     console.log("numberInputString", numberInputString);
@@ -2368,7 +2365,6 @@ function popupAddNumericElementDialog() {
         }
     }
 }
-
 
 function popupAddTagDialog() {
     let newTag = prompt("Enter tag name", "");
