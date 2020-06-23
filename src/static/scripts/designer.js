@@ -1380,6 +1380,7 @@ function saveGeneralSettings() {
     let title = document.getElementById(SETTINGS_MODAL_GENERAL_FORM_COLUMN_TITLE_INPUT).value;
 
     window.currentlyLoadedRule.title = title;
+    window.currentlyLoadedRule.name = yara.sanitizeIdentifier(title);
     setTitle(title, window.currentlyLoadedRule.thehive_case_id, window.currentlyLoadedRule.description);
 }
 
