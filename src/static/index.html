@@ -51,23 +51,24 @@
                     <div class="row">
                         <div id="yara-rule-designer-leftpane-container-top">
                             <div class="row m-row yara-rule-designer" id="yara-rule-designer-buttons">
-                                <button id="load-rule-button" class="col" title="Open YARA rule...">
-                                    <i class="fas fa-folder-open fa-lg"></i>
+                                <button id="load-rule-button" class="col yara-rule-designer-leftpane-buttons" title="Open YARA rule...">
+                                    <i class="fas fa-folder-open fa-lg"></i><br><p>Open Rule</p>
                                 </button>
-                                <button id="edit-settings-button" class="col" title="Edit settings...">
-                                    <i class="fas fa-cog fa-lg"></i>
+                                <button id="load-observables-button" class="col yara-rule-designer-leftpane-buttons" title="Import observables from database...">
+                                    <i class="fas fa-file-import fa-lg"></i><br><p>Import observables</p>
                                 </button>
-                                <button id="show-help-button" class="col" title="Info">
-                                    <i class="fas fa-info-circle fa-lg"></i>
+                                <button id="edit-settings-button" class="col yara-rule-designer-leftpane-buttons" title="Edit settings...">
+                                    <i class="fas fa-cog fa-lg"></i><br><p>Edit metadata</p>
                                 </button>
-                                <button id="add-yara-string-button" class="col" title="Add custom YARA String...">
-                                    <i class="fas fa-plus fa-lg"></i>
+                                <button id="show-help-button" class="col yara-rule-designer-leftpane-buttons" title="Info">
+                                    <i class="fas fa-question fa-lg"></i><br><p>Show help</p>
                                 </button>
-                                <button id="add-numeric-element-button" class="col" title="Add number...">
-                                    <i class="fas fa-plus fa-lg"> 0-9</i>
+                                <div class="w-100"></div>
+                                <button id="add-yara-string-button" class="col yara-rule-designer-leftpane-buttons" title="Add custom YARA String...">
+                                    <i class="fas fa-plus fa-lg"></i><br><p>String</p>
                                 </button>
-                                <button id="clear-rule-button" class="col" title="Clear editor">
-                                    <i class="fas fa-broom fa-lg"></i>
+                                <button id="add-numeric-element-button" class="col yara-rule-designer-leftpane-buttons" title="Add number...">
+                                    <i class="fas fa-plus fa-lg"> 0-9</i><br><p>Number</p>
                                 </button>
                                 <div class="w-100"></div>
                                 <button id="submit-rule-button" class="col" title="Submit">
@@ -159,6 +160,11 @@
                 <div id="yara-rule-designer-editor-container" class="col-10 yara-rule-designer">
                     <div class="row">
                         <div class="container col yara-rule-designer" id="yara-rule-designer-editor"></div>
+                    </div>
+                    <div id="yara-rule-designer-clear-condition-container" class="yara-rule-designer">
+                        <button id="clear-rule-button" class="btn btn-danger" title="Clear editor condition">
+                            <i class="fas fa-trash fa-lg"></i>
+                        </button>
                     </div>
                 </div>
 

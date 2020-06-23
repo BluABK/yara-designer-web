@@ -231,6 +231,16 @@ tr:nth-child(even):hover td {
   color: var(--button-help-color-hover);
 }
 
+#load-observables-button {
+    background: var(--button-default-background);
+    color: var(--button-default-color);
+}
+
+#load-observables-button:hover {
+  background: var(--button-help-background-hover);
+  color: var(--button-help-color-hover);
+}
+
 #edit-settings-button {
     background: var(--button-default-background);
     color: var(--button-default-color);
@@ -269,16 +279,6 @@ tr:nth-child(even):hover td {
 #submit-rule-button:hover {
     background: var(--button-submit-background-hover);
     color: var(--button-submit-color-hover);
-}
-
-#clear-rule-button {
-    background: var(--button-clear-background);
-    color: var(--button-clear-color);
-}
-
-#clear-rule-button:hover {
-    background: var(--button-clear-background-hover);
-    color: var(--button-clear-color-hover);
 }
 
 #show-help-button {
