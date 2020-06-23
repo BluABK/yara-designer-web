@@ -166,8 +166,6 @@ document.querySelector('#condition-keyword-bitwise-rshift').addEventListener('cl
 // -- -- -- Parenthesis and wrappers:
 document.querySelector('#condition-keyword-lparen').addEventListener('click', function(){ addToEditor(event) });
 document.querySelector('#condition-keyword-rparen').addEventListener('click', function(){ addToEditor(event) });
-// -- -- -- Encapsulators:
-document.querySelector('#condition-keyword-encapsulate-paren').addEventListener('click', function(){ addToEditor(event) });
 
 /**
  * Add a replace-at-index feature for String objects.
