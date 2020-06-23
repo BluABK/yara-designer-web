@@ -97,6 +97,8 @@ const NUMERIC_CLASSES = ["condition-numeric"];
 const SYNTAX_ERROR = "syntax";
 
 // Customised modals - Settings Modal:
+const SETTINGS_MODAL_GENERAL_FORM = "settings-modal-general-form";
+const SETTINGS_MODAL_GENERAL_FORM_COLUMN_TITLE_INPUT = "general-settings-title-column-input";
 const SETTINGS_MODAL_SAVE_ALL_BUTTON = "settings-modal-save-all-button";
 const SETTINGS_MODAL_META_FORM = "settings-modal-meta-form";
 const SETTINGS_MODAL_META_FORM_ROW = "yara-meta-";
@@ -378,7 +380,7 @@ function getEnabledTags() {
  */
 function getRuleJsonFromEditorElements() {
     let yaraRule = window.currentlyLoadedRule;
-    let yaraRuleName = `Whitelist_${yaraRule.title}`; // FIXME: Hardcoded string variable should be made configurable.
+    let yaraRuleName = yaraRule.title;
 
     // Get list of observables currently residing in editor DIV.
     let jsonifiedYARAStrings = [];
@@ -1290,6 +1292,97 @@ function createElementAndSetAttributes(tagName, attrJSON) {
     return HTMLDomElement;
 }
 
+function generalSettingsFormCallback(modal) {
+    let metaArray = window.currentlyLoadedRule["meta"];
+
+    // // Iterate rows that correspond with metaArray.
+    // for (let i = 0; i < metaArray.length; i++) {
+    //     // Set the currently selected value type item.
+    //     modal.getElementsByClassName("custom-select")[i].value = metaArray[i]["value_type"];
+    //
+    //     // Add event listeners to the row deletion button.
+    //     addMetaFormDeleteCurrentRowButtonEventListeners(
+    //         `#${SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX}-${i}`);
+    // }
+}
+
+/**
+ * Generates a form element for editing, adding and removing metadata to include in the rule.
+ *
+ * @returns {HTMLElement}
+ */
+function settingsGenerateGeneralForm() {
+    // Define the form element to hold items.
+    let form = createElementAndSetAttributes("form", {
+        "id": SETTINGS_MODAL_GENERAL_FORM,
+        "style": "line-height: 0;"  // Reduce some vertical spacing (alas, not near enough).
+    });
+
+    // Define required row structure.
+    let formRow = createElementAndSetAttributes("div", {
+        // Set a GUID/UUID instead of index to avoid issues with del/add row feature (id collisions).
+        "id": `general-form-row-${uuidv4()}`,
+        "class": "form-row"
+    });
+
+    // -- COLUMN: Identifier.
+    let titleColumnInputId = SETTINGS_MODAL_GENERAL_FORM_COLUMN_TITLE_INPUT;
+    let titleColumn = createElementAndSetAttributes("div", {
+        "class": "col-md-12"
+    });
+    let titleColumnLabel = createElementAndSetAttributes("label", {
+        "for": titleColumnInputId,
+    });
+    titleColumnLabel.innerText = "Title";
+    let titleColumnInput = createElementAndSetAttributes("input", {
+        "class": "form-control",
+        "id": titleColumnInputId,
+        "value": window.currentlyLoadedRule.title
+    });
+
+    // Add label and input element to column and finally column to row.
+    titleColumn.appendChild(titleColumnLabel);
+    titleColumn.appendChild(titleColumnInput);
+    formRow.appendChild(titleColumn);
+
+    // Add row to form.
+    form.appendChild(formRow);
+
+    return form;
+}
+
+/**
+ * Generate a metadata container which holds the form element and "add row" button.
+ *
+ * This is necessary as button shouldn't be part of the form rows,
+ * unless you want to deal with indexing issues when adding/removing rows.
+ *
+ * It should be its own separate untouchable element.
+ *
+ * @returns {HTMLElement}
+ */
+function settingsGenerateGeneralFormContainer() {
+    let container = createElementAndSetAttributes("div", {});
+
+    // Generate the form element for metadata.
+    let form = settingsGenerateGeneralForm();
+
+    // Add form to container.
+    container.appendChild(form);
+
+    return container;
+}
+
+/**
+ * Overwrite currently loaded rule's meta with what is listed in the settings form.
+ */
+function saveGeneralSettings() {
+    let title = document.getElementById(SETTINGS_MODAL_GENERAL_FORM_COLUMN_TITLE_INPUT).value;
+
+    window.currentlyLoadedRule.title = title;
+    setTitle(title, window.currentlyLoadedRule.thehive_case_id, window.currentlyLoadedRule.description);
+}
+
 function addMetaFormDeleteCurrentRowButtonEventListeners(selector) {
     document.querySelector(selector).addEventListener(
             'click', function() {
@@ -1657,9 +1750,8 @@ function saveMetaSettings() {
  * Overwrites current rule properties with what is currently set in the settings modal.
  */
 function saveAllSettings() {
+    saveGeneralSettings();
     saveMetaSettings();
-
-    console.log("currentlyLoadedRule", window.currentlyLoadedRule);  // FIXME: Remove debug log
 
     closeModals();
 }
@@ -1690,7 +1782,13 @@ function settingsModal() {
 
     let modalCallbacks = [];
 
-    // Generate the metadata form container.
+    // Generate the General form container.
+    let generalFormContainer = settingsGenerateGeneralFormContainer();
+
+    // Add necessary form callback to callbacks list.
+    modalCallbacks.push(generalSettingsFormCallback);
+
+    // Generate the Metadata form container.
     let metaFormContainer = settingsGenerateMetaFormContainer();
 
     // Add necessary form callback to callbacks list.
@@ -1699,6 +1797,8 @@ function settingsModal() {
     let header = `<h2><i class="fa fa-cog"></i> Settings</h2>`;
 
     let bodyMiddle =
+        `<h3>General</h3><br/>` +
+        `${generalFormContainer.outerHTML}` +
         `<h3>Metadata</h3><br/>` +
         `${metaFormContainer.outerHTML}`;
 
