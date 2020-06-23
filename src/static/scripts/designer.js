@@ -983,7 +983,7 @@ function loadRuleDialog() {
 function setTitle(title, id, description=null) {
     document.getElementById(HTML_TITLE).innerText = title;
     document.getElementById(DESIGNER_HEADER_CONTENT_TITLE).innerHTML =
-        `<p> Case: ${title}</p>`;
+        `<p> Rule: ${title}</p>`;
     document.getElementById(DESIGNER_HEADER_CONTENT_BYLINE).innerHTML =
         `<p>ID: ${id}</p>`;
     document.getElementById(DESIGNER_HEADER_CONTENT_DESCRIPTION).innerHTML =
@@ -1193,7 +1193,39 @@ function loadRuleCallback(rule) {
     window.currentlyLoadedRule = rule;
 
     // Set title tag and title div.
-    setTitle(rule.title, rule["thehive_case_id"], rule.description);
+    let sanitizedTitle = "Untitled Rule.";
+    if (rule.title) {
+        sanitizedTitle = rule.title;
+    } else if (!rule.title.includes(' ')) {
+        // If there are no whitespaces, the rule title is likely determined by the rule name.
+        // In which case we should replace all _ with ' '.
+        sanitizedTitle = rule.title.replace(/[_-]/g, ' ');
+        // sanitizedTitle = rule.title.replace('-', ' ');
+    }
+
+    let sanitizedId = "N/A";
+    if (rule["thehive_case_id"]) {
+        sanitizedId = rule["thehive_case_id"];
+    } else {
+        if ( rule.meta.some(item => item.identifier.toLowerCase() === "thehive_case_id") ) {
+            sanitizedId = rule.meta.find(item => item.identifier.toLowerCase() === "thehive_case_id").value;
+        } else if ( rule.meta.some(item => item.identifier.toLowerCase() === "case_id") ) {
+            sanitizedId = rule.meta.find(item => item.identifier.toLowerCase() === "case_id").value;
+        } else if ( rule.meta.some(item => item.identifier.toLowerCase() === "id") ) {
+            sanitizedId = rule.meta.find(item => item.identifier.toLowerCase() === "id").value;
+        }
+    }
+
+    let sanitizedDescription = "No description";
+    if (rule.description) {
+        sanitizedDescription = rule.description;
+    } else {
+        if ( rule.meta.some(item => item.identifier.toLowerCase() === "description") ) {
+            sanitizedDescription = rule.meta.find(item => item.identifier.toLowerCase() === "description").value;
+        }
+    }
+
+    setTitle(sanitizedTitle, sanitizedId, sanitizedDescription);
 
     // Set tags div.
     setTags(rule.tags);
@@ -1230,7 +1262,6 @@ function makeCollapsibleJSONDetails(json, id) {
            `                      aria-expanded="false" aria-controls="${id}">\n` +
            `     Show JSON\n` +
            `</button>` +
-
            `<div id="${id}" class="collapse">` +
            `   <div class='${modals.RESPONSE_MODAL_JSON_COLLAPSIBLE_CONTENT_CLASS}'>` +
            `       <pre>` +
