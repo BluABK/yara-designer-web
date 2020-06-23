@@ -2002,7 +2002,7 @@ function generateCustomYARAStringBuilderForm(
     let identifierColumnLabel = createElementAndSetAttributes("label", {
         "for": identifierColumnInputId,
     });
-    identifierColumnLabel.innerText = "Identifier";
+    identifierColumnLabel.innerText = "Identifier (Leave blank for MD5)";
     let identifierColumnInput = createElementAndSetAttributes("input", {
         "class": "form-control",
         "id": identifierColumnInputId,
@@ -2140,6 +2140,17 @@ function generateCustomYARAStringBuilderForm(
     return form;
 }
 
+function containsNonSeparatorChar(s) {
+    for (let i = 0; i < s.length; i++) {
+        let c = s[i];
+        if (c !== '\n' && c !== '\t'&& c !== '' && c !== ' ') {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 function addYARAStringToEditorCallback() {
     document.querySelector(`#${ADD_CUSTOM_YARA_STRING_MODAL_ADD_BUTTON}`).addEventListener(
     'click', function () {
@@ -2152,6 +2163,10 @@ function addYARAStringToEditorCallback() {
         let valueValue = document.getElementById(`${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-value`).value;
         let valueTypeValue = document.getElementById(`${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-value-type`).value;
         let stringTypeValue = document.getElementById(`${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-string-type`).value;
+
+        if (!containsNonSeparatorChar(identifierValue)) {
+            identifierValue = yara.sanitizeIdentifier(md5(valueValue));
+        }
 
         let modifiers = [];
 
