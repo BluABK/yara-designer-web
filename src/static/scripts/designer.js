@@ -1233,9 +1233,8 @@ function makeCollapsibleJSONDetails(json, id) {
 
            `<div id="${id}" class="collapse">` +
            `   <div class='${modals.RESPONSE_MODAL_JSON_COLLAPSIBLE_CONTENT_CLASS}'>` +
-           // `<div>` +
            `       <pre>` +
-           `           ${JSON.stringify(json, undefined, 4)}` +
+           `${escapeHtml(JSON.stringify(json, undefined, 4))}` +
            `       </pre>` +
            `   </div>` +
            `</div>`;
@@ -2252,7 +2251,7 @@ function handlePostRuleResponse(json) {
         }
 
         // Append line
-        body += `<span>${lines[i]}</span>`;
+        body += `<span>${escapeHtml(lines[i])}</span>`;
     }
     body += "</pre>";
 
