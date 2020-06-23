@@ -1115,8 +1115,12 @@ function loadRuleCallback(rule) {
     // Clear editor.
     clearEditorDivContents();
 
-    // Set the currently loaded rule global variable (used in other functions).
     console.log("Loading rule...", rule);
+
+    // Extrapolate missing info from metadata, if available.
+    rule = extrapolateMissingRuleInfoFromMeta(rule);
+
+    // Set the currently loaded rule global variable (used in other functions).
     window.currentlyLoadedRule = rule;
 
     // Set title tag and title div.
