@@ -13,7 +13,7 @@ The following projects must be running and available over network.
 
 ## Setup
 1. Copy `dotenv.sample` to `.env` and configure it.
-2. Install packages: `$ npm install`.
+2. Install packages: `$ npm install` (for dependencies see `packages.json`).
 
 ## Usage
 1. Start the web server: `$ npm start`
