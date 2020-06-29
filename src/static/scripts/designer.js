@@ -2347,10 +2347,10 @@ function handlePostRuleResponse(json) {
  * Make a custom POST request for non-form elements like DIV and SPAN.
  */
 function postRule(json=null) {
-    if (json == null) {
-        json = getRuleJsonFromEditorElements();
-    }
     try {
+        if (json == null) {
+            json = getRuleJsonFromEditorElements();
+        }
         let xhr = new XMLHttpRequest();  // FIXME: Replace antiquated XHR with fetch.
 
         console.log("POST URL: " + POST_RULE_ROUTE);
