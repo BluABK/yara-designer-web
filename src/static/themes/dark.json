@@ -17,9 +17,9 @@
     "--draggable-custom-yara-string-editor-element-background": "#63ab26",
 
     "--button-collapsible-tags-color": "white",
-    "--button-collapsible-tags-background": "#f48d00",
+    "--button-collapsible-tags-background": "#c12f5b",
     "--button-collapsible-tags-color-hover": "white",
-    "--button-collapsible-tags-background-hover": "#bd5f00",
+    "--button-collapsible-tags-background-hover": "#8f2547",
     "--button-collapsible-operators-color": "white",
     "--button-collapsible-operators-background": "#77209b",
     "--button-collapsible-operators-color-hover": "white",
