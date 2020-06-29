@@ -5,24 +5,6 @@ import {getParameterByName} from "./modules/utils.js";
 import * as modals from "./modules/modals.js";
 import * as yara from "./modules/yara.js";
 
-// console.log(yara);
-//
-// try {
-//     let ys1 = yara.createYARAString('my_Identifier5', "This is a string", yara.YARA_TYPE_TEXT, [yara.YARA_MODIFIER_WIDE, yara.YARA_MODIFIER_NO_CASE]);
-//
-//     console.log("ys1", ys1);
-// } catch (e) {
-//     console.error(e);
-// }
-//
-// try {
-//     let ys2 = yara.createYARAString('my_Identifier5', "This is a string", yara.YARA_TYPE_TEXT, [yara.YARA_MODIFIER_WIDE, yara.YARA_MODIFIER_NO_CASE, yara.YARA_MODIFIER_BASE64]);
-//
-//     console.log("ys2", ys2);
-// } catch (e) {
-//     console.log("Caught Expected YS2 Exception ", e);
-// }
-
 // MIME Types:
 const MIMETYPE_JSON = 'application/json';
 
@@ -266,7 +248,7 @@ function getEditorContents() {
 /**
  * Parses the current observables in the designer (leftpane) to strings that conforms to YARA string syntax.
  *
- * @returns {string}
+ * @returns {Array}
  */
 function getEditorYARAStrings(unique=true) {
     let observables = [];
@@ -291,16 +273,6 @@ function getEditorYARAStrings(unique=true) {
     }
 
     return observables;
-}
-
-function getEditorElementObservableText(element) {
-    // Get text string.
-    return $(element).text();
-}
-
-function getEditorElementObservableType(element) {
-    // Get text string.
-    return $(element).getAttribute(YARA_STRING_TYPE_ATTR);
 }
 
 function getEditorElementKeywordText(element) {
@@ -524,11 +496,6 @@ function getRuleDBById(ruleId, callback=printRulesTable) {
     // noinspection JSIgnoredPromiseFromCall
     fetchGetRequest(`${GET_RULE_ROUTE}/${ruleId}`, callback);
 }
-
-// function getTheOracleRuleByFilename(filename, callback=printRulesTable) {
-//     // noinspection JSIgnoredPromiseFromCall
-//     fetchGetRequest(`${GET_THEORACLE_RULE_ROUTE}/${filename}`, callback);
-// }
 
 function getTheOracleRuleByFilename(filename, callback=printRulesTable) {
     // noinspection JSIgnoredPromiseFromCall
@@ -853,7 +820,6 @@ function printRulesTable(rulesJson, defaultCheckedRadio = TABLE_FILTER_CHECKED_R
         `    ${table}\n` +
         `</div>\n`;
     bodyMiddle += tableContainer;
-    // console.log(body);
 
     let modal = modals.popupModal(modals.RESPONSE_MODAL, header, bodyTop, bodyMiddle, null, footer, levels.INFO);
 
@@ -922,14 +888,7 @@ function loadRuleDialog() {
 }
 
 function loadObservablesDialog() {
-    // if (window.currentlyLoadedRule) {
     getRulesDB(loadObservablesHandler);
-    // }
-    // else {
-    //     modals.popupErrorModal("Attempted to import observables without an Rule loaded!",
-    //         "You need to load a Rule before you can import additional observables." +
-    //         "<br><br> You can load a Rule using the 'Open Rule' button")
-    // }
 }
 
 function setTitle(title, id, description=null) {
