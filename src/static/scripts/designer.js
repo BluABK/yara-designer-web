@@ -115,7 +115,7 @@ document.querySelector('#show-help-button').addEventListener('click', modals.pop
 document.querySelector('#add-numeric-element-button').addEventListener('click', function(){ popupAddNumericElementDialog() });
 document.querySelector('#clear-rule-button').addEventListener('click', clearRule);
 document.querySelector('#submit-rule-button').addEventListener('click', function(){ postRule() });
-document.querySelector('#yara-rule-designer-tags-add-button').addEventListener('click', function(){ popupAddTagDialog() });
+document.querySelector('#add-tags-button').addEventListener('click', function(){ popupAddTagDialog() });
 
 // -- Draggables:
 // -- -- Operators

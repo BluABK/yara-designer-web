@@ -52,6 +52,10 @@
     --button-add-numeric-element-background: #ff7800;
     --button-add-numeric-element-color-hover: white;
     --button-add-numeric-element-background-hover: #af5800;
+    --button-add-tags-color: white;
+    --button-add-tags-background: #c12f5b;
+    --button-add-tags-color-hover: white;
+    --button-add-tags-background-hover: #8f2547;
 
     --button-collapsible-tags-color: white;
     --button-collapsible-tags-background: #c12f5b;
@@ -289,6 +293,16 @@ tr:nth-child(even):hover td {
 #show-help-button:hover {
   background: var(--button-help-background-hover);
   color: var(--button-help-color-hover);
+}
+
+#add-tags-button {
+    background: var(--button-add-tags-background);
+    color: var(--button-add-tags-color);
+}
+
+#add-tags-button:hover {
+  background: var(--button-add-tags-background-hover);
+  color: var(--button-add-tags-color-hover);
 }
 
 #yara-rule-designer-tags {
