@@ -1249,20 +1249,6 @@ function createElementAndSetAttributes(tagName, attrJSON) {
     return HTMLDomElement;
 }
 
-function generalSettingsFormCallback(modal) {
-    let metaArray = window.currentlyLoadedRule["meta"];
-
-    // // Iterate rows that correspond with metaArray.
-    // for (let i = 0; i < metaArray.length; i++) {
-    //     // Set the currently selected value type item.
-    //     modal.getElementsByClassName("custom-select")[i].value = metaArray[i]["value_type"];
-    //
-    //     // Add event listeners to the row deletion button.
-    //     addMetaFormDeleteCurrentRowButtonEventListeners(
-    //         `#${SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX}-${i}`);
-    // }
-}
-
 /**
  * Generates a form element for editing, adding and removing metadata to include in the rule.
  *
@@ -1742,9 +1728,6 @@ function settingsModal() {
 
     // Generate the General form container.
     let generalFormContainer = settingsGenerateGeneralFormContainer();
-
-    // Add necessary form callback to callbacks list.
-    modalCallbacks.push(generalSettingsFormCallback);
 
     // Generate the Metadata form container.
     let metaFormContainer = settingsGenerateMetaFormContainer();
