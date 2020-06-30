@@ -70,6 +70,10 @@ tr {
     padding-bottom: 0;
     padding-left: 0;
     border-bottom:1px solid;
+    /*height: 10.0vh;*/
+    /*min-height: 10.0vh;*/
+    height: 100px;
+    width: 100.0vw;
 }
 
 #yara-rule-designer-header-content {
@@ -123,18 +127,30 @@ tr {
        needs their own (transparent) border to stay in-bounds. */
     border-right:1px solid;
     border-bottom: 1px solid;
-    max-height: 90.75vh; /* Don't expand past viewport height (using exact number for screen edge) */
+    min-width: 100px;
+    /*max-width: 30vh;*/
+    width: 30.0vw;
+    /*max-height: 90.75vh; !* Don't expand past viewport height (using exact number for screen edge) *!*/
     overflow-x: hidden; /* Fixes issue with bootstrap elements bleeding out of bounds a bit */
     overflow-y: hidden; /* Overflow is passed off to bottom container */
 }
 
-/*#yara-rule-designer-leftpane-container-top {*/
-/*    !*min-height: 10vh;*!*/
-/*}*/
+#yara-rule-designer-leftpane-container-top {
+    padding-left: 15px;
+    /*max-height: 20.0vh; !* Don't expand past viewport height (using exact number for screen edge) *!*/
+    /*width: 34.0vh; !* Don't expand past viewport height (using exact number for screen edge) *!*/
+    overflow-x: hidden; /* Fixes issue with bootstrap elements bleeding out of bounds a bit */
+    overflow-y: hidden; /* Overflow is passed off to bottom container */
+}
 
 #yara-rule-designer-leftpane-container-bottom {
-    max-height: 78vh; /* 80-2 to not bleed items out of bounds */
+    padding-left: 15px;
+    /*max-height: 70.0vh; !* Don't expand past viewport height (using exact number for screen edge) *!*/
+    height: 70.0vh;
+    /*width: 34.0vh; !* Don't expand past viewport height (using exact number for screen edge) *!*/
+    overflow-x: hidden; /* Fixes issue with bootstrap elements bleeding out of bounds a bit */
     overflow-y: auto;
+    /*overflow-y: auto;*/
 }
 
 #yara-rule-designer-buttons {
@@ -142,11 +158,45 @@ tr {
     border-right:1px solid transparent;
     border-bottom: none; /* was: 1px solid; */
     padding: 0;
+    overflow: auto;
+}
+
+#yara-rule-designer-buttons p {
+    /* Bootstrap: If you actually remove this border, the contents flee out of bounds. */
+    border-right:1px solid transparent;
+    border-bottom: none; /* was: 1px solid; */
+    padding: 0;
+    overflow: auto;
+}
+
+.add-element-buttons {
+    padding: 10px 5px 10px 5px;
+    font-size: 14px;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+}
+
+#add-yara-string-button {
+    border: none;
+    /*padding: 16px 32px;*/
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+#add-numeric-element-button {
+    border: none;
+    /*padding: 16px 32px;*/
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
 }
 
 #submit-rule-button {
     border: none;
-    padding: 16px 32px;
+    /*padding: 16px 32px;*/
+    padding: 5px 5px 5px 5px;
     text-align: center;
     text-decoration: none;
     font-size: 14px;
@@ -168,27 +218,27 @@ tr {
 }
 
 .yara-rule-designer-leftpane-buttons {
-    padding: 10px 10px 0px 10px;
+    padding: 10px 10px 0 10px;
     font-size: 14px;
     border: none;
     text-align: center;
     text-decoration: none;
 }
 
-.yara-rule-designer-leftpane-buttons i {
-    /*position:absolute;*/
-    /*float: top;*/
-    /*top:15px;*/
-    /*left:50%;*/
-    /*right:0;*/
-}
+/*.yara-rule-designer-leftpane-buttons i {*/
+/*    !*position:absolute;*!*/
+/*    float: top;*/
+/*    top:15px;*/
+/*    left:50%;*/
+/*    right:0;*/
+/*}*/
 
-.yara-rule-designer-leftpane-buttons p {
-    /*position:relative;*/
-    /*float: bottom;*/
-    /*bottom:15px;*/
-    /*left:50%;*/
-}
+/*.yara-rule-designer-leftpane-buttons p {*/
+/*    !*position:relative;*!*/
+/*    float: bottom;*/
+/*    bottom:15px;*/
+/*    left:50%;*/
+/*}*/
 
 .button-collapsible-tags {
     cursor: pointer;
@@ -204,6 +254,10 @@ tr {
     margin-left: 10px;
     margin-top: 10px;
     background: transparent;
+}
+
+.left-navbar-collapsibles-content {
+    max-width: 32.0vh; /* Don't expand past viewport height (using exact number for screen edge) */
 }
 
 .button-collapsible-operators {
@@ -261,6 +315,11 @@ tr {
     /*border-bottom:1px solid transparent;*/
     border-bottom: none;
     background: transparent;
+}
+
+#yara-rule-designer-editor-container {
+    width: 70.0vw;
+    min-width: 70.0vw;
 }
 
 #yara-rule-designer-editor {

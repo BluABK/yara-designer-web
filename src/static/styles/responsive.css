@@ -1,0 +1,22 @@
+/* Improve responsive design by reacting to certain media viewport sizes */
+
+@media (max-width: 768px) {
+    #yara-rule-designer-leftpane-container-bottom {
+        overflow-x: scroll;
+    }
+}
+
+@media (max-height: 500px) or (max-width: 699px) {
+    #yara-rule-designer-buttons p {
+       display: none;
+    }
+    #add-yara-string-button-i-text {
+        display: none;
+    }
+    #add-numeric-element-button-i-text {
+        display: none;
+    }
+    #submit-rule-button-i-text {
+        display: none;
+    }
+}

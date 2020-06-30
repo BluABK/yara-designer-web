@@ -21,6 +21,7 @@
 
         <!-- 1st party stylesheets (load last to ensure inherited properties from above exist.) -->
         <link rel="stylesheet" type="text/css" href="/static/styles/yara_rule_designer.css">
+        <link rel="stylesheet" type="text/css" href="/static/styles/responsive.css">
         <link rel="stylesheet" type="text/css" href="/static/styles/theme.css">
         <link rel="stylesheet" type="text/css" href="/static/styles/context_menu.css">
     </head>
@@ -50,7 +51,7 @@
                 <div id="yara-rule-designer-leftpane-container" class="col-2 yara-rule-designer">
                     <div class="row">
                         <div id="yara-rule-designer-leftpane-container-top">
-                            <div class="row m-row yara-rule-designer" id="yara-rule-designer-buttons">
+                            <div class="row m-row" id="yara-rule-designer-buttons">
                                 <button id="load-rule-button" class="col yara-rule-designer-leftpane-buttons" title="Open YARA rule...">
                                     <i class="fas fa-folder-open fa-lg"></i><br><p>Open Rule</p>
                                 </button>
@@ -64,94 +65,95 @@
                                     <i class="fas fa-question fa-lg"></i><br><p>Display Help</p>
                                 </button>
                                 <div class="w-100"></div>
-                                <button id="add-yara-string-button" class="col yara-rule-designer-leftpane-buttons" title="Add custom YARA String...">
-                                    <i class="fas fa-plus fa-lg"></i><br><p>String</p>
+                                <button id="add-yara-string-button" class="col add-element-buttons" title="Add custom YARA String...">
+                                    <i id="add-yara-string-button-i" class="fas fa-plus fa-lg"><span id="add-yara-string-button-i-text">&nbsp;&nbsp;String</span></i>
                                 </button>
-                                <button id="add-numeric-element-button" class="col yara-rule-designer-leftpane-buttons" title="Add number...">
-                                    <i class="fas fa-plus fa-lg"> 0-9</i><br><p>Number</p>
+                                <button id="add-numeric-element-button" class="col add-element-buttons" title="Add number...">
+                                    <i class="fas fa-plus fa-lg"><span id="add-numeric-element-button-i-text">&nbsp;0-9</span></i>
                                 </button>
                                 <div class="w-100"></div>
                                 <button id="submit-rule-button" class="col" title="Submit">
-                                    <h4>Submit&nbsp;<i class="fas fa-arrow-right"></i></h4>
+                                    <h4><span id="submit-rule-button-i-text">Submit&nbsp;</span><i class="fas fa-arrow-right"></i></h4>
                                 </button>
                             </div>
                         </div>
 
                         <div id="yara-rule-designer-leftpane-container-bottom">
-                            <div class="w-100"></div>
-                            <button type="button" class="button-collapsible-tags" data-toggle="collapse"
-                                    data-target="#yara-rule-designer-tags-collapsible" aria-expanded="true"
-                                    aria-controls="yara-rule-designer-tags-collapsible">
-                                Tags
-                            </button>
-                            <div class="collapse show" id="yara-rule-designer-tags-collapsible">
-                                <div id="yara-rule-designer-tags" class="yara-rule-designer"></div>
-                                <button id="add-tags-button" class="yara-rule-designer yara-rule-designer-leftpane-buttons">
-                                    <i class="fas fa-plus fa-sm"> Add Tag</i>
+                            <div class="row m-row" id="yara-rule-designer-collapsibles">
+                                <button type="button" class="button-collapsible-tags" data-toggle="collapse"
+                                        data-target="#yara-rule-designer-tags-collapsible" aria-expanded="true"
+                                        aria-controls="yara-rule-designer-tags-collapsible">
+                                    Tags
                                 </button>
-                            </div>
-
-                            <div class="w-100"></div>
-                            <button type="button" class="button-collapsible-operators" data-toggle="collapse"
-                                    data-target="#yara-rule-designer-operators-collapsible" aria-expanded="true"
-                                    aria-controls="yara-rule-designer-operators-collapsible">
-                                Conditional Operators
-                            </button>
-                            <div class="collapse show" id="yara-rule-designer-operators-collapsible">
-                                <div class="yara-rule-designer" id="yara-rule-designer-operators">
-                                    <!--    Add conditional keywords-->
-                                    <!--    Boolean-->
-                                    <span id="condition-keyword-and" class="condition-keyword">AND</span>
-                                    <span id="condition-keyword-or" class="condition-keyword">OR</span>
-                                    <span id="condition-keyword-not" class="condition-keyword">NOT</span>
-                                    <!--    Arithmetic-->
-                                    <span id="condition-keyword-equal" class="condition-keyword">==</span>
-                                    <span id="condition-keyword-lt" class="condition-keyword"><</span>
-                                    <span id="condition-keyword-gt" class="condition-keyword">></span>
-                                    <span id="condition-keyword-leq" class="condition-keyword"><=</span>
-                                    <span id="condition-keyword-geq" class="condition-keyword">>=</span>
-                                    <span id="condition-keyword-neq" class="condition-keyword">!=</span>
-                                    <span id="condition-keyword-count" class="condition-keyword">#</span>
-                                    <!--    Relational-->
-                                    <span id="condition-keyword-add" class="condition-keyword">+</span>
-                                    <span id="condition-keyword-sub" class="condition-keyword">-</span>
-                                    <span id="condition-keyword-mul" class="condition-keyword">*</span>
-                                    <span id="condition-keyword-div" class="condition-keyword">/</span>
-                                    <span id="condition-keyword-pct" class="condition-keyword">%</span>
-                                    <span id="condition-keyword-setminus" class="condition-keyword">\</span>
-                                    <!--    Bitwise-->
-                                    <span id="condition-keyword-bitwise-and" class="condition-keyword">&</span>
-                                    <span id="condition-keyword-bitwise-or" class="condition-keyword">|</span>
-                                    <span id="condition-keyword-bitwise-not" class="condition-keyword">~</span>
-                                    <span id="condition-keyword-bitwise-xor" class="condition-keyword">^</span>
-                                    <span id="condition-keyword-bitwise-lshift" class="condition-keyword"><<</span>
-                                    <span id="condition-keyword-bitwise-rshift" class="condition-keyword">>></span>
-                                    <!-- Parenthesis and wrappers -->
-                                    <span id="condition-keyword-lparen" class="condition-keyword">(</span>
-                                    <span id="condition-keyword-rparen" class="condition-keyword">)</span>
+                                <div class="collapse show" id="yara-rule-designer-tags-collapsible">
+                                    <div id="yara-rule-designer-tags" class="yara-rule-designer left-navbar-collapsibles-content"></div>
+                                    <button id="add-tags-button" class="yara-rule-designer yara-rule-designer-leftpane-buttons">
+                                        <i class="fas fa-plus fa-sm"> Add Tag</i>
+                                    </button>
                                 </div>
-                            </div>
 
-                            <div class="w-100"></div>
+                                <div class="w-100"></div>
+                                <button type="button" class="button-collapsible-operators" data-toggle="collapse"
+                                        data-target="#yara-rule-designer-operators-collapsible" aria-expanded="true"
+                                        aria-controls="yara-rule-designer-operators-collapsible">
+                                    Conditional Operators
+                                </button>
+                                <div class="collapse show" id="yara-rule-designer-operators-collapsible">
+                                    <div class="yara-rule-designer left-navbar-collapsibles-content" id="yara-rule-designer-operators">
+                                        <!--    Add conditional keywords-->
+                                        <!--    Boolean-->
+                                        <span id="condition-keyword-and" class="condition-keyword">AND</span>
+                                        <span id="condition-keyword-or" class="condition-keyword">OR</span>
+                                        <span id="condition-keyword-not" class="condition-keyword">NOT</span>
+                                        <!--    Arithmetic-->
+                                        <span id="condition-keyword-equal" class="condition-keyword">==</span>
+                                        <span id="condition-keyword-lt" class="condition-keyword"><</span>
+                                        <span id="condition-keyword-gt" class="condition-keyword">></span>
+                                        <span id="condition-keyword-leq" class="condition-keyword"><=</span>
+                                        <span id="condition-keyword-geq" class="condition-keyword">>=</span>
+                                        <span id="condition-keyword-neq" class="condition-keyword">!=</span>
+                                        <span id="condition-keyword-count" class="condition-keyword">#</span>
+                                        <!--    Relational-->
+                                        <span id="condition-keyword-add" class="condition-keyword">+</span>
+                                        <span id="condition-keyword-sub" class="condition-keyword">-</span>
+                                        <span id="condition-keyword-mul" class="condition-keyword">*</span>
+                                        <span id="condition-keyword-div" class="condition-keyword">/</span>
+                                        <span id="condition-keyword-pct" class="condition-keyword">%</span>
+                                        <span id="condition-keyword-setminus" class="condition-keyword">\</span>
+                                        <!--    Bitwise-->
+                                        <span id="condition-keyword-bitwise-and" class="condition-keyword">&</span>
+                                        <span id="condition-keyword-bitwise-or" class="condition-keyword">|</span>
+                                        <span id="condition-keyword-bitwise-not" class="condition-keyword">~</span>
+                                        <span id="condition-keyword-bitwise-xor" class="condition-keyword">^</span>
+                                        <span id="condition-keyword-bitwise-lshift" class="condition-keyword"><<</span>
+                                        <span id="condition-keyword-bitwise-rshift" class="condition-keyword">>></span>
+                                        <!-- Parenthesis and wrappers -->
+                                        <span id="condition-keyword-lparen" class="condition-keyword">(</span>
+                                        <span id="condition-keyword-rparen" class="condition-keyword">)</span>
+                                    </div>
+                                </div>
 
-                            <button type="button" class="button-collapsible-custom-yara-string-editor-elements" data-toggle="collapse"
-                                    data-target="#yara-rule-designer-custom-yara-string-editor-elements-collapsible" aria-expanded="true"
-                                    aria-controls="yara-rule-designer-custom-yara-string-editor-elements-collapsible">
-                                User-defined YARA Strings
-                            </button>
-                            <div class="collapse show" id="yara-rule-designer-custom-yara-string-editor-elements-collapsible">
-                                <div class="yara-rule-designer" id="yara-rule-designer-custom-yara-string-editor-elements"></div>
-                            </div>
+                                <div class="w-100"></div>
 
-                            <div class="w-100"></div>
+                                <button type="button" class="button-collapsible-custom-yara-string-editor-elements" data-toggle="collapse"
+                                        data-target="#yara-rule-designer-custom-yara-string-editor-elements-collapsible" aria-expanded="true"
+                                        aria-controls="yara-rule-designer-custom-yara-string-editor-elements-collapsible">
+                                    User-defined YARA Strings
+                                </button>
+                                <div class="collapse show" id="yara-rule-designer-custom-yara-string-editor-elements-collapsible">
+                                    <div class="yara-rule-designer left-navbar-collapsibles-content" id="yara-rule-designer-custom-yara-string-editor-elements"></div>
+                                </div>
 
-                            <button type="button" class="button-collapsible-yara-string-editor-element" data-toggle="collapse"
-                                    data-target="#yara-rule-designer-yara-string-editor-element-collapsible" aria-expanded="true"
-                                    aria-controls="yara-rule-designer-yara-string-editor-element-collapsible">
-                                YARA Strings
-                            </button>
-                            <div class="collapse show" id="yara-rule-designer-yara-string-editor-element-collapsible">
-                                <div class="yara-rule-designer" id="yara-rule-designer-yara-string-editor-element"></div>
+                                <div class="w-100"></div>
+
+                                <button type="button" class="button-collapsible-yara-string-editor-element" data-toggle="collapse"
+                                        data-target="#yara-rule-designer-yara-string-editor-element-collapsible" aria-expanded="true"
+                                        aria-controls="yara-rule-designer-yara-string-editor-element-collapsible">
+                                    YARA Strings
+                                </button>
+                                <div class="collapse show" id="yara-rule-designer-yara-string-editor-element-collapsible">
+                                    <div class="yara-rule-designer left-navbar-collapsibles-content" id="yara-rule-designer-yara-string-editor-element"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
