@@ -49,6 +49,7 @@ const CUSTOM_YARA_STRING_EDITOR_ELEMENT = `custom-yara-string-editor-element`;
 const CUSTOM_YARA_STRING_EDITOR_ELEMENT_CLASS = `condition-custom-yara-string-editor-element`;
 const CUSTOM_YARA_STRING_EDITOR_ELEMENT_CONTAINER = `${ROOT_CLASS}-custom-yara-string-editor-elements`;
 const LEFTPANE_DRAGGABLES = [OPERATOR_CONTAINER, CUSTOM_YARA_STRING_EDITOR_ELEMENT_CONTAINER, YARA_STRING_EDITOR_ELEMENT_CONTAINER];
+const LEFTPANE_YARA_STRING_ELEMENT_CONTAINERS = [CUSTOM_YARA_STRING_EDITOR_ELEMENT_CONTAINER, YARA_STRING_EDITOR_ELEMENT_CONTAINER];
 const YARA_STRING_ELEMENT_JSON_DATA_ATTR = "data-yara-string-json";
 const YARA_STRING_TYPE_CLASS_TEXT = "yara-string-type-text";
 const YARA_STRING_TYPE_CLASS_HEX = "yara-string-type-hex";
@@ -93,6 +94,7 @@ const SETTINGS_MODAL_META_FORM_COLUMN_DELETE_ROW_CLASS = "col-md-1 mb-3";
 
 // Customised modals - Add Custom YARA String to editor Modal:
 const ADD_CUSTOM_YARA_STRING_MODAL_ADD_BUTTON = "add-custom-yara-string-modal-add-button";
+const ADD_CUSTOM_YARA_STRING_MODAL_SAVE_BUTTON = "add-custom-yara-string-modal-save-button";
 const ADD_CUSTOM_YARA_STRING_MODAL_FORM = "add-custom-yara-string-modal-form";
 const ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM}-row`;
 const ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN = `${ADD_CUSTOM_YARA_STRING_MODAL_FORM}-column`;
@@ -120,34 +122,34 @@ document.querySelector('#add-tags-button').addEventListener('click', function(){
 // -- Draggables:
 // -- -- Operators
 // -- -- -- Boolean:
-document.querySelector('#condition-keyword-and').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-or').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-not').addEventListener('click', function(){ addToEditor(event) });
+document.querySelector('#condition-keyword-and').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-or').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-not').addEventListener('click', function(){ clickDraggableOperator(event) });
 // -- -- -- Arithmetic:
-document.querySelector('#condition-keyword-equal').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-lt').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-gt').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-leq').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-geq').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-neq').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector(`#${VAR_COUNT_KEYWORD}`).addEventListener('click', function(){ addToEditor(event) });
+document.querySelector('#condition-keyword-equal').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-lt').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-gt').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-leq').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-geq').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-neq').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector(`#${VAR_COUNT_KEYWORD}`).addEventListener('click', function(){ clickDraggableOperator(event) });
 // -- -- -- Relational:
-document.querySelector('#condition-keyword-add').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-sub').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-mul').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-div').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-pct').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-setminus').addEventListener('click', function(){ addToEditor(event) });
+document.querySelector('#condition-keyword-add').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-sub').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-mul').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-div').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-pct').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-setminus').addEventListener('click', function(){ clickDraggableOperator(event) });
 // -- -- -- Bitwise:
-document.querySelector('#condition-keyword-bitwise-and').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-bitwise-or').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-bitwise-not').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-bitwise-xor').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-bitwise-lshift').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-bitwise-rshift').addEventListener('click', function(){ addToEditor(event) });
+document.querySelector('#condition-keyword-bitwise-and').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-bitwise-or').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-bitwise-not').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-bitwise-xor').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-bitwise-lshift').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-bitwise-rshift').addEventListener('click', function(){ clickDraggableOperator(event) });
 // -- -- -- Parenthesis and wrappers:
-document.querySelector('#condition-keyword-lparen').addEventListener('click', function(){ addToEditor(event) });
-document.querySelector('#condition-keyword-rparen').addEventListener('click', function(){ addToEditor(event) });
+document.querySelector('#condition-keyword-lparen').addEventListener('click', function(){ clickDraggableOperator(event) });
+document.querySelector('#condition-keyword-rparen').addEventListener('click', function(){ clickDraggableOperator(event) });
 
 /**
  * Add a replace-at-index feature for String objects.
@@ -203,7 +205,11 @@ document.getElementById(DESIGNER_EDITOR).addEventListener("auxclick", function(e
   onAuxClick(ev);
 });
 
-function addToEditor(clickEvent) {
+/**
+ * onclick handler for conditional operator draggable elements.
+ * @param clickEvent
+ */
+function clickDraggableOperator(clickEvent) {
     let editorDiv = document.getElementById(DESIGNER_EDITOR);
 
     // If target is already in the editor, ignore the click event.
@@ -215,6 +221,41 @@ function addToEditor(clickEvent) {
 
     console.log('addToEditor', clickEvent.target);
     editorDiv.appendChild(makeClone(clickEvent.target));
+}
+
+/**
+ * onclick handler for observable (YARA String) draggable elements.
+ * @param clickEvent
+ */
+function clickDraggableYARAString(clickEvent) {
+    console.log("clickDraggableYARAString", clickEvent);
+    let targetParentID = clickEvent.target.parentNode.getAttribute("id");
+    let editorDiv = document.getElementById(DESIGNER_EDITOR);
+
+    if (targetParentID === DESIGNER_EDITOR) {
+        // If target is in the editor.
+
+        console.log("Hi!");
+        editYARAStringModal(clickEvent.target);
+
+
+    } else if (LEFTPANE_DRAGGABLES.includes(targetParentID)) {
+        // If target is in a leftnavbar draggable container.
+        console.log('addToEditor', clickEvent.target);
+
+        // Clone target separately in order to perform some post-actions on it.
+        let clone = makeClone(clickEvent.target);
+
+        // Make observable element clickable again (ev listeners are lost when cloning).
+        clone.addEventListener('click', function(){ clickDraggableYARAString(event) });
+
+        // Add cloned target to editor.
+        editorDiv.appendChild(clone);
+    } else {
+        console.warn("Ignored click event (target is neither child of editor or draggables containers)",
+            clickEvent);
+    }
+
 }
 
 function removeFromEditor(clickEvent) {
@@ -953,6 +994,7 @@ function addNumericElementToEditor(number) {
 function addYARAStrings(strings, idPrefix, classBaseName, destinationContainer,
                         defaultStringType = yara.YARA_TYPE_TEXT,
                         forceDefaultStringType = false) {
+    let generatedStrings = [];
     for (let yaraString of strings) {
         let yaraStringDOMElement = document.createElement("span") ;
 
@@ -1013,15 +1055,19 @@ function addYARAStrings(strings, idPrefix, classBaseName, destinationContainer,
             yaraStringDOMElement.setAttribute(YARA_STRING_ELEMENT_JSON_DATA_ATTR, JSON.stringify(yaraString));
 
             // Make observable element clickable.
-            yaraStringDOMElement.addEventListener('click', function(){ addToEditor(event) });
+            yaraStringDOMElement.addEventListener('click', function(){ clickDraggableYARAString(event) });
 
             // Append observable (DOM Element) to strings container (DOM element).
             document.getElementById(destinationContainer).appendChild(yaraStringDOMElement);
+
+            generatedStrings.push(yaraStringDOMElement);
         } catch (e) {
             console.exception(
                 `Caught exception while attempting to create YARA String from '${value}', skipping!`, e);
         }
     }
+
+    return generatedStrings;
 }
 
 /**
@@ -1799,8 +1845,9 @@ function generateYARAStringModifierFormRowHeading() {
     return fakeFormRow;
 }
 
-function generateYARAStringModifierFormRows(modifiersCheckboxColumnValue=null, modifiersDataColumnValue=null) {
+function generateYARAStringModifierFormRows() {
     let formModifierRows = [];
+    let dataInputValue = "";
 
     for (let modifier of yara.YARA_MODIFIERS) {
         // for row
@@ -1845,12 +1892,6 @@ function generateYARAStringModifierFormRows(modifiersCheckboxColumnValue=null, m
             "id": checkboxId,
         });
 
-
-        // Mark checkbox as checked if modifier is in the enabled modifiers list.
-        if (modifiersCheckboxColumnValue.includes(modifier)) {
-            checkbox.checked = true;
-        }
-
         checkboxContainer.appendChild(checkbox);
         checkboxContainer.appendChild(label);
 
@@ -1876,7 +1917,7 @@ function generateYARAStringModifierFormRows(modifiersCheckboxColumnValue=null, m
 
         let dataInput = createElementAndSetAttributes("input", {
             "class": "form-control",
-            "value": "",
+            "value": dataInputValue,
             "id": dataInputId,
         });
 
@@ -1901,30 +1942,7 @@ function generateYARAStringModifierFormRows(modifiersCheckboxColumnValue=null, m
     return formModifierRows;
 }
 
-function generateCustomYARAStringBuilderForm(
-    identifierColumnValue=null, valueColumnValue=null, valueTypeColumnValue=null, stringTypeColumnValue=null,
-    modifiersCheckboxColumnValue=null, modifiersDataColumnValue=null) {
-
-    // Set defaults for any unset (optional) params.
-    if (identifierColumnValue == null) {
-        identifierColumnValue = ""
-    }
-    if (valueColumnValue == null) {
-        valueColumnValue = ""
-    }
-    if (valueTypeColumnValue == null) {
-        valueTypeColumnValue = yara.YARA_VALUE_TYPE_STR;
-    }
-    if (stringTypeColumnValue == null) {
-        stringTypeColumnValue = yara.YARA_TYPE_TEXT;
-    }
-    if (modifiersCheckboxColumnValue == null) {
-        modifiersCheckboxColumnValue = [];
-    }
-    if (modifiersDataColumnValue == null) {
-        modifiersCheckboxColumnValue = [];
-    }
-
+function generateCustomYARAStringBuilderForm() {
     // Define the form element to hold rows..
     let form = createElementAndSetAttributes("form", {
         "id": ADD_CUSTOM_YARA_STRING_MODAL_FORM,
@@ -1948,7 +1966,6 @@ function generateCustomYARAStringBuilderForm(
     let identifierColumnInput = createElementAndSetAttributes("input", {
         "class": "form-control",
         "id": identifierColumnInputId,
-        "value": identifierColumnValue
     });
 
     // Add label and input element to column and finally column to row.
@@ -1969,7 +1986,6 @@ function generateCustomYARAStringBuilderForm(
     let valueColumnInput = createElementAndSetAttributes("input", {
         "class": "form-control",
         "id": valueColumnInputId,
-        "value": valueColumnValue
     });
 
     // Add label and input element to column and finally column to row.
@@ -1998,10 +2014,6 @@ function generateCustomYARAStringBuilderForm(
 
         option.value = validValueType;
         option.innerText = validValueType;
-
-       if (validValueType === valueTypeColumnValue) {
-           option.selected = true;
-       }
 
        // Add Value type option to select element.
         valueTypeColumnSelect.appendChild(option);
@@ -2034,10 +2046,6 @@ function generateCustomYARAStringBuilderForm(
         option.value = validStringType;
         option.innerText = validStringType;
 
-       if (validStringType === stringTypeColumnValue) {
-           option.selected = true;
-       }
-
        // Add Value type option to select element.
         stringTypeColumnSelect.appendChild(option);
     }
@@ -2067,7 +2075,7 @@ function generateCustomYARAStringBuilderForm(
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // -- ROWs: Modifiers.
-    let formModifierRows = generateYARAStringModifierFormRows(modifiersCheckboxColumnValue, modifiersDataColumnValue);
+    let formModifierRows = generateYARAStringModifierFormRows();
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2093,14 +2101,8 @@ function containsNonSeparatorChar(s) {
     return false;
 }
 
-function addYARAStringToEditorCallback() {
-    document.querySelector(`#${ADD_CUSTOM_YARA_STRING_MODAL_ADD_BUTTON}`).addEventListener(
-    'click', function () {
-
-        // For some reason the button causes the page to redirect to itself, so let's not.
-        event.preventDefault();
-
-        // Gather data from columns.
+function getYARAStringJSONFromStringEditorModal() {
+            // Gather data from columns.
         let identifierValue = document.getElementById(`${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-identifier`).value;
         let valueValue = document.getElementById(`${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-value`).value;
         let valueTypeValue = document.getElementById(`${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-value-type`).value;
@@ -2146,8 +2148,8 @@ function addYARAStringToEditorCallback() {
             spacing = ' ';
         }
 
-        // Create YARA String object.
-        let yaraString = {
+        // Return YARA String object.
+        return {
             "identifier": identifierValue,
             "value": valueValue,
             "value_type": valueTypeValue,
@@ -2157,7 +2159,80 @@ function addYARAStringToEditorCallback() {
             "modifier_str": modifier_str,
             "str": null // FIXME: Generate the proper string.
         };
+}
 
+function editYARAStringModalCallback() {
+    document.querySelector(`#${ADD_CUSTOM_YARA_STRING_MODAL_SAVE_BUTTON}`).addEventListener(
+    'click', function () {
+            // For some reason the button causes the page to redirect to itself, so let's not.
+            event.preventDefault();
+
+            let oldElement = document.getElementById(window.currentlyEditingThisYARAStringID);
+            let oldElementCopy = document.getElementById(window.currentlyEditingThisYARAStringID).cloneNode(true);
+
+            // Clone current items to avoid null ptr headaches later.
+            let editorConditionItems = [];
+            for (let child of document.getElementById(DESIGNER_EDITOR).childNodes) {
+                editorConditionItems.push(child.cloneNode(true));
+            }
+
+            let yaraString = getYARAStringJSONFromStringEditorModal();
+            console.log("Created/Modifier YARA String", yaraString);
+
+            // Delete the old imported observable (to avoid identifier clash in case only modifier state changed
+            // (i.e. no new md5 in identifier)
+
+            // Since we're not sure which container it originated from, we'll loop through them all.
+            for (let containerID of LEFTPANE_YARA_STRING_ELEMENT_CONTAINERS) {
+                for (let child of document.getElementById(containerID).children) {
+                    if (child.id === window.currentlyEditingThisYARAStringID) {
+                        console.log("Remove child from", document.getElementById(containerID));
+                        document.getElementById(containerID).removeChild(oldElement);
+                    }
+                }
+            }
+
+            // Add the (new) modified object to available User-defined YARA Strings/Observables.
+            let generatedYARAStringElements = addYARAStrings(
+                [yaraString], YARA_STRING_EDITOR_ELEMENT, CUSTOM_YARA_STRING_EDITOR_ELEMENT_CLASS,
+                CUSTOM_YARA_STRING_EDITOR_ELEMENT_CONTAINER);
+
+            // Clear editor.
+            clearEditorDivContents();
+
+            // Rebuild editor condition (to reflect any modified items).
+            for (let item of editorConditionItems) {
+                // Locate item in source container in order to clone the latest version (if edited etc).
+                console.log("item", item);
+
+                if (item.id === oldElementCopy.id) {
+                    // If this is the edited element, replace with the new version.
+                    document.getElementById(DESIGNER_EDITOR).appendChild(
+                        makeClone(document.getElementById(generatedYARAStringElements[0].id)));
+                } else if (Array(item.classList).includes(NUMERIC_CLASS)) {
+                    // If string is numeric (as these do not exist in the leftpane).
+                    addNumericElementToEditor(parseInt(item.textContent));
+                } else {
+                    // Else pick by id which should always return the corresponding source element.
+                    document.getElementById(DESIGNER_EDITOR).appendChild(makeClone(document.getElementById(item.id)));
+                }
+            }
+
+            window.currentlyEditingThisYARAStringID = null;
+
+            closeModals();
+    });
+
+    // FIXME: Add modifiers checkbox restriction ev listener logic.
+}
+
+function addYARAStringToEditorCallback() {
+    document.querySelector(`#${ADD_CUSTOM_YARA_STRING_MODAL_ADD_BUTTON}`).addEventListener(
+    'click', function () {
+        // For some reason the button causes the page to redirect to itself, so let's not.
+        event.preventDefault();
+
+        let yaraString = getYARAStringJSONFromStringEditorModal();
         console.log("Created/Modifier YARA String", yaraString);
 
         // Add object to available YARA Strings/Observables
@@ -2172,6 +2247,66 @@ function addYARAStringToEditorCallback() {
 }
 
 /**
+ * Populates values for the YARA String Editor modal form.
+ *
+ * (NB: must be called after modal has already been spawned)
+ *
+ * @param identifierColumnValue
+ * @param valueColumnValue
+ * @param valueTypeColumnValue
+ * @param stringTypeColumnValue
+ * @param modifiers
+ */
+function setYARAStringFormValues(identifierColumnValue=null, valueColumnValue=null, valueTypeColumnValue=null,
+                                 stringTypeColumnValue=null, modifiers=null) {
+    console.log("setYARAStringFormValues(identifierColumnValue=null, valueColumnValue=null, valueTypeColumnValue=null, " +
+        "stringTypeColumnValue=null, modifiers=null)",
+        identifierColumnValue, valueColumnValue, valueTypeColumnValue, stringTypeColumnValue, modifiers);
+
+    // Set defaults for any unset (optional) params.
+    if (identifierColumnValue == null) {
+        identifierColumnValue = ""
+    }
+    if (valueColumnValue == null) {
+        valueColumnValue = ""
+    }
+    if (valueTypeColumnValue == null) {
+        valueTypeColumnValue = yara.YARA_VALUE_TYPE_STR;
+    }
+    if (stringTypeColumnValue == null) {
+        stringTypeColumnValue = yara.YARA_TYPE_TEXT;
+    }
+    if (modifiers == null) {
+        modifiers = [];
+    }
+
+    // Set data for columns.
+    document.getElementById(
+        `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-identifier`).value = identifierColumnValue;
+    document.getElementById(
+        `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-value`).value = valueColumnValue;
+    document.getElementById(
+        `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-value-type`).value = valueTypeColumnValue;
+    document.getElementById(
+        `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-string-type`).value = stringTypeColumnValue;
+
+    // Set enabled modifiers (and possible payload data).
+    for (let modifier of modifiers) {
+        // Check that checkbox!
+        document.getElementById(
+            `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_CLASS}-
+            checkbox-${modifier.keyword}`).checked = true;
+
+        // Set payload data if applicable.
+        if (yara.YARA_MODIFIERS_WITH_PAYLOAD.includes(modifier)) {
+            document.getElementById(
+                `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_CLASS}-
+                data-input-${modifier.keyword}`).value = modifier.data;
+        }
+    }
+}
+
+/**
  * Pops up a modal where you configure a custom YARA String and then adds it to editor element.
  */
 function addYARAStringToEditorModal() {
@@ -2180,9 +2315,6 @@ function addYARAStringToEditorModal() {
 
      // Generate the YARA String builder form.
     let form = generateCustomYARAStringBuilderForm();
-
-    // Add necessary form callback to callbacks list.
-    // modalCallbacks.push(metaSettingsFormCallback, metaSettingsFormAddRowCallback);
 
     let header = `<h2><i class="fa fa-plus"></i> Define and Add Custom YARA String to Editor</h2>`;
 
@@ -2206,6 +2338,50 @@ function addYARAStringToEditorModal() {
     modals.popupModal(
         modals.RESPONSE_MODAL, header, null, bodyMiddle, null, footer,
         levels.INFO, modalCallbacks);
+}
+
+/**
+ * Pops up a modal where you configure an existing YARA String.
+ */
+function editYARAStringModal(YARAStringDOMElement) {
+    // Store a reference to the string in global scope for use in callback.
+    window.currentlyEditingThisYARAStringID = YARAStringDOMElement.getAttribute("id");
+
+    let jsonData = JSON.parse(YARAStringDOMElement.getAttribute(YARA_STRING_ELEMENT_JSON_DATA_ATTR));
+    let modalCallbacks = [];
+    let saveButtonTitle = "Save Changes";
+
+    console.log(jsonData);
+
+     // Generate the YARA String builder form.
+    let form = generateCustomYARAStringBuilderForm();
+
+    let header = `<h2><i class="fa fa-plus"></i>&nbsp;Edit YARA String</h2>`;
+
+    let bodyMiddle =`${form.outerHTML}`;
+
+    let saveYARAStringChangesButton = createElementAndSetAttributes("button", {
+        "id": ADD_CUSTOM_YARA_STRING_MODAL_SAVE_BUTTON,
+        "class": "btn btn-primary btn-large btn-success btn-block",
+        "title": saveButtonTitle,
+        "value": saveButtonTitle
+    });
+
+    saveYARAStringChangesButton.innerText = saveButtonTitle;
+
+    // Put the 'add' button in the footer.
+    let footer = saveYARAStringChangesButton.outerHTML;
+
+    // Callback for assigning an event listener to the 'add' button.
+    modalCallbacks.push(editYARAStringModalCallback);
+
+    modals.popupModal(
+        modals.RESPONSE_MODAL, header, null, bodyMiddle, null, footer,
+        levels.INFO, modalCallbacks);
+
+    // Set values.
+    setYARAStringFormValues(jsonData["identifier"], jsonData["value"], jsonData["value_type"], jsonData["string_type"],
+        jsonData["modifiers"]);
 }
 
 /**
