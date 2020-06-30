@@ -114,6 +114,10 @@
     --modal-collapsible-content-details-color: black;
     --modal-collapsible-content-details-background: #f1f1f1;
 
+    /* Bootstrap (using default values gathered from inspecting elements) */
+    --disabled-input-background: rgb(233, 236, 239);
+    --disabled-input-color: rgb(255, 255, 255);
+
     /* Numbered lines. */
     --numbered-lines-color: black;
     --numbered-lines-background: white;
@@ -174,6 +178,29 @@ tr:nth-child(even):hover td {
 .yara-rule-designer {
     background: var(--yara-rule-designer-background);
 }
+
+/* Bootstrap overrides: */
+.form-control, .custom-select {
+    /* Colour form controls after the modal background for best dynamic theme behaviour.*/
+    background-color: var(--modal-background);
+    color: var(--modal-color);
+}
+
+/* Bootstrap overrides: */
+.form-control:focus, .custom-select:focus {
+    /* Colour form controls after the modal background for best dynamic theme behaviour.*/
+    background-color: var(--modal-background);
+    color: var(--modal-color);
+    /*border-bottom-color: ;*/
+}
+
+.form-control:disabled, .custom-select:disabled {
+    /* Colour form controls after the modal background for best dynamic theme behaviour.*/
+    background-color: var(--disabled-input-background);
+    color: var(--disabled-input-color);
+}
+
+/* Rule designer*/
 
 .yara-rule-designer > span {
     color: var(--yara-rule-designer-color);

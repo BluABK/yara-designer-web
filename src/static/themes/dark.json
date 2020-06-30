@@ -45,6 +45,9 @@
     "--mark-green-text-color": "#78c46a",
     "--mark-red-text-color": "#bf3535",
 
+    "--disabled-input-background": "#2C2C30",
+    "--disabled-input-color": "darkgray",
+
     "--table-header-color": "#9a9a9b",
     "--table-header-background": "#1b1b1d",
     "--table-row-background": "#2a2a2e",
