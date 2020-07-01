@@ -71,7 +71,7 @@ const YARA_VARIABLE_DENOMINATOR = "$";
 const MOUSE_CLICK_LEFT = 0;
 const MOUSE_CLICK_MIDDLE = 1;
 const MOUSE_CLICK_RIGHT = 2;
-const OBSERVABLE_CLASSES = ["condition-yara-string-editor-element", "condition-custom-yara-string-editor-element"];
+const OBSERVABLE_CLASSES = [YARA_STRING_EDITOR_ELEMENT_CLASS, CUSTOM_YARA_STRING_EDITOR_ELEMENT_CLASS];
 const KEYWORD_CLASS = "condition-keyword";
 const KEYWORD_CLASSES = ["condition-keyword"];
 const VAR_COUNT_KEYWORD = "condition-keyword-count";
@@ -234,13 +234,9 @@ function clickDraggableYARAString(clickEvent) {
 
     if (targetParentID === DESIGNER_EDITOR) {
         // If target is in the editor.
-
-        console.log("Hi!");
         editYARAStringModal(clickEvent.target);
-
-
     } else if (LEFTPANE_DRAGGABLES.includes(targetParentID)) {
-        // If target is in a leftnavbar draggable container.
+        // If target is in a left navbar draggable container.
         console.log('addToEditor', clickEvent.target);
 
         // Clone target separately in order to perform some post-actions on it.
@@ -1083,6 +1079,53 @@ function setYARAStrings(strings) {
     addYARAStrings(strings, YARA_STRING_EDITOR_ELEMENT, YARA_STRING_EDITOR_ELEMENT_CLASS, YARA_STRING_EDITOR_ELEMENT_CONTAINER)
 }
 
+/**
+ * Helper function for adding a generic element to editor.
+ *
+ * @param element
+ * @returns {*}
+ */
+function addElementToEditor(element) {
+    console.log('Add element to editor', element);
+    // Store element's classList contents as an Array, for later use.
+    let classList = Array(...element.classList);
+
+    // Clone element.
+    let clone = makeClone(element);
+
+    // Make element clickable again (ev listeners are lost when cloning).
+    if (classList.includes(YARA_STRING_EDITOR_ELEMENT_CLASS) ||
+        classList.includes(CUSTOM_YARA_STRING_EDITOR_ELEMENT_CLASS)
+    ) {
+        clone.addEventListener('click', function(){ clickDraggableYARAString(event) });
+    } else if (classList.includes(KEYWORD_CLASS)) {
+        clone.addEventListener('click', function(){ clickDraggableOperator(event) });
+    } else if (classList.includes(NUMERIC_CLASS)) {
+        console.warn("FIXME: Implement onclick for numeric elements!")
+    }
+
+    // Add element to editor.
+    document.getElementById(DESIGNER_EDITOR).appendChild(clone);
+
+    // Return added element.
+    return clone;
+}
+
+/**
+ * Helper function for adding a generic element to editor by ID.
+ *
+ * @param elementId
+ * @returns {*}
+ */
+function addElementToEditorById(elementId) {
+    return addElementToEditor(document.getElementById(elementId));
+}
+
+/**
+ * Set the editor condition to the following list of items.
+ *
+ * @param items
+ */
 function setEditorElementsByCondition(items) {
     let editorDiv = document.getElementById(DESIGNER_EDITOR);
     console.log("setEditorElementsByCondition", items);
@@ -1130,8 +1173,7 @@ function setEditorElementsByCondition(items) {
 
         // If target was valid and got set, add it to editor div.
         if (target != null) {
-            console.log('addToEditor', target);
-            editorDiv.appendChild(makeClone(target));
+            addElementToEditor(target);
         }
     }
 }
@@ -1796,7 +1838,7 @@ function settingsModal() {
         "value": "Save all settings"
     });
 
-    saveAllSettingsButton.innerText = "Save changes";
+    saveAllSettingsButton.innerText = "Save Changes";
 
     let footer = saveAllSettingsButton.outerHTML;
 
@@ -2207,14 +2249,13 @@ function editYARAStringModalCallback() {
 
                 if (item.id === oldElementCopy.id) {
                     // If this is the edited element, replace with the new version.
-                    document.getElementById(DESIGNER_EDITOR).appendChild(
-                        makeClone(document.getElementById(generatedYARAStringElements[0].id)));
-                } else if (Array(item.classList).includes(NUMERIC_CLASS)) {
+                    addElementToEditorById(generatedYARAStringElements[0].id);
+                } else if (Array(...item.classList).includes(NUMERIC_CLASS)) {
                     // If string is numeric (as these do not exist in the leftpane).
                     addNumericElementToEditor(parseInt(item.textContent));
                 } else {
                     // Else pick by id which should always return the corresponding source element.
-                    document.getElementById(DESIGNER_EDITOR).appendChild(makeClone(document.getElementById(item.id)));
+                    addElementToEditorById(item.id);
                 }
             }
 
@@ -2259,10 +2300,6 @@ function addYARAStringToEditorCallback() {
  */
 function setYARAStringFormValues(identifierColumnValue=null, valueColumnValue=null, valueTypeColumnValue=null,
                                  stringTypeColumnValue=null, modifiers=null) {
-    console.log("setYARAStringFormValues(identifierColumnValue=null, valueColumnValue=null, valueTypeColumnValue=null, " +
-        "stringTypeColumnValue=null, modifiers=null)",
-        identifierColumnValue, valueColumnValue, valueTypeColumnValue, stringTypeColumnValue, modifiers);
-
     // Set defaults for any unset (optional) params.
     if (identifierColumnValue == null) {
         identifierColumnValue = ""
@@ -2294,14 +2331,12 @@ function setYARAStringFormValues(identifierColumnValue=null, valueColumnValue=nu
     for (let modifier of modifiers) {
         // Check that checkbox!
         document.getElementById(
-            `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_CLASS}-
-            checkbox-${modifier.keyword}`).checked = true;
+            `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-modifier-checkbox-${modifier.keyword}`).checked = true;
 
         // Set payload data if applicable.
         if (yara.YARA_MODIFIERS_WITH_PAYLOAD.includes(modifier)) {
             document.getElementById(
-                `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_CLASS}-
-                data-input-${modifier.keyword}`).value = modifier.data;
+                `${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-modifiers-data-input-${modifier.keyword}`).value = modifier.data;
         }
     }
 }
