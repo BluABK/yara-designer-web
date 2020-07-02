@@ -24,13 +24,15 @@ export function makeClone(node) {
 /**
  * Update the address bar URL parameters.
  *
+ * To remove a param from the URL simply supply paramVal as null or undefined.
+ *
  * Function call example:
  *  window.history.replaceState('', '', updateURLParameter(window.location.href, param, paramVal));
  *
  * Based on: https://stackoverflow.com/a/10997390/13519872
  * @param url
  * @param param
- * @param paramVal
+ * @param paramVal      If null or undefined; remove the param from URL.
  * @returns {string}
  */
 export function updateURLParameter(url, param, paramVal) {
@@ -43,7 +45,7 @@ export function updateURLParameter(url, param, paramVal) {
         // If URL has any current parameters:
         let updatedParamArray = [];
 
-        if(anchor) {
+        if(anchor && paramVal) {
             paramsURL = paramsURL.split("#")[0];
             paramVal += "#" + anchor;
         }
@@ -56,8 +58,14 @@ export function updateURLParameter(url, param, paramVal) {
 
             if(curParam === param) {
                 paramAlreadyExists = true;
-                // Append the modified param.
-                updatedParamArray.push(`${param}=${paramVal}`)
+
+                if (paramVal) {
+                    // Append the modified param, else omit it as null paramVal indicates we want it gone.
+                    updatedParamArray.push(`${param}=${paramVal}`)
+                } else {
+                    // Push null to avoid issues with length check not triggering.
+                    updatedParamArray.push(null);
+                }
             } else {
                 // Append the unmodified param.
                 updatedParamArray.push(paramArray[i]);
@@ -65,16 +73,29 @@ export function updateURLParameter(url, param, paramVal) {
         }
 
         if (!paramAlreadyExists) {
-            // If param did not already exist, append it to the array.
-            updatedParamArray.push(`${param}=${paramVal}`)
+            if (paramVal) {
+                // If param did not already exist, append it to the array.
+                updatedParamArray.push(`${param}=${paramVal}`)
+            } else {
+                // Push null to avoid issues with length check not triggering.
+                updatedParamArray.push(null);
+            }
         }
 
         if (updatedParamArray.length > 1) {
             // If there are multiple, return baseURL with params joined by separator.
-            return `${baseURL}?${updatedParamArray.join('&')}`;
+            let updatedParamArrayWithoutNullValues = updatedParamArray.filter(x => x !== null);
+
+            return `${baseURL}?${updatedParamArrayWithoutNullValues.join('&')}`;
         } else {
-            // Else return baseURL with a single param.
-            return `${baseURL}?${updatedParamArray[0]}`;
+            if (paramVal) {
+                // Return baseURL with a single param.
+                return `${baseURL}?${updatedParamArray[0]}`;
+            } else {
+                // If paramVal is null and there is only one param,
+                // there are actually no params, so we'll return baseURL.
+                return baseURL;
+            }
         }
     } else {
         // If URL doesn't have any current parameters:
@@ -82,6 +103,12 @@ export function updateURLParameter(url, param, paramVal) {
             baseURL = params;
         }
 
-        return `${baseURL}?${param}=${paramVal}`;
+        if (paramVal) {
+            // Return baseURL with a single param.
+            return `${baseURL}?${param}=${paramVal}`;
+        } else {
+            // If paramVal is null, return baseURL as we don't want to set any params by mistake.
+            return baseURL;
+        }
     }
 }

@@ -1,7 +1,7 @@
 import {md5} from './third-party/md5.js';
 import * as levels from "./modules/levels.js";
 import {NO_CONTENTS_EXCEPTION, NoContentsException} from "./modules/exceptions.js";
-import {getParameterByName} from "./modules/utils.js";
+import {getParameterByName, updateURLParameter} from "./modules/utils.js";
 import * as modals from "./modules/modals.js";
 import * as yara from "./modules/yara.js";
 
@@ -477,9 +477,9 @@ async function fetchPostRequest(url = '', data = {}, callback) {
 }
 
 function extrapolateMissingRuleInfoFromMeta(rule) {
-    let title = "Untitled Rule.";
-    let caseId = "N/A";
-    let description = "No description";
+    let title = null;
+    let caseId = null;
+    let description = null;
     let modifiedRule = rule;
 
     if (rule.title) {
@@ -1195,8 +1195,24 @@ function loadRuleCallback(rule) {
     // Set the currently loaded rule global variable (used in other functions).
     window.currentlyLoadedRule = rule;
 
+    // Update the address bar URL (if able).
+    if (rule.source_filename) {
+        window.history.replaceState('', '', updateURLParameter(window.location.href, "id", undefined));
+        window.history.replaceState('', '', updateURLParameter(window.location.href, "filename", rule.source_filename));
+    } else if (rule.thehive_case_id) {
+        window.history.replaceState('', '', updateURLParameter(window.location.href, "filename", undefined));
+        window.history.replaceState('', '', updateURLParameter(window.location.href, "id", rule.thehive_case_id));
+    } else {
+        window.history.replaceState('', '', updateURLParameter(window.location.href, "filename", undefined));
+        window.history.replaceState('', '', updateURLParameter(window.location.href, "id", undefined));
+    }
+
     // Set title tag and title div.
-    setTitle(rule.title, rule.thehive_case_id, rule.description);
+    setTitle(
+        rule.title ? rule.title : "Untitled Rule.",
+        rule.thehive_case_id ? rule.thehive_case_id : "N/A",
+        rule.description ? rule.description : "No description"
+    );
 
     // Set tags div.
     setTags(rule.tags);
@@ -1252,10 +1268,10 @@ function loadDBRuleById(ruleId) {
 /**
  * Loads a YARA Rule by calling getRule with a callback.
  *
- * @param ruleId
+ * @param ruleFileName
  */
-function loadTheOracleRuleByFilename(ruleId) {
-    getTheOracleRuleByFilename(ruleId, loadRuleCallback);
+function loadTheOracleRuleByFilename(ruleFileName) {
+    getTheOracleRuleByFilename(ruleFileName, loadRuleCallback);
 }
 
 /**
