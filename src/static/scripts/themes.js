@@ -1,4 +1,4 @@
-import { getParameterByName } from "./modules/utils.js";
+import { getParameterByName, updateURLParameter } from "./modules/utils.js";
 
 // Global code
 let themeParm = getParameterByName('theme');
@@ -26,6 +26,9 @@ function loadTheme(themeName, themePath=DEFAULT_THEME_PATH) {
         }
 
     });
+
+    // Update the address bar URL.
+    window.history.replaceState('', '', updateURLParameter(window.location.href, "theme", themeName));
 }
 
 // Global code
