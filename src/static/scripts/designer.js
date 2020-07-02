@@ -2781,10 +2781,14 @@ function makeClone(node) {
 
 // Global code
 let idParm = getParameterByName("id");
+let filenameParm = getParameterByName("filename");
 
 if (idParm !== null && idParm !== "") {
     console.log("Load rule: " + idParm);
     loadDBRuleById(idParm);
+} else if (filenameParm !== null && filenameParm !== "") {
+    console.log("Load rule: " + filenameParm);
+    loadTheOracleRuleByFilename(filenameParm);
 } else {
     // Load a default blank rule (sets various properties and models so we run into less issues).
     newRule();

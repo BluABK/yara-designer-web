@@ -23,4 +23,5 @@ The following projects must be running and available over network.
 | Parameter | Description                                               |
 |-----------|-----------------------------------------------------------|
 | id        | Loads case with the given case ID                         |
+| filename  | Loads case by the given filename (TheOracle rules dir)    |
 | theme     | Use custom theme (currently only supports `light`/`dark`) |
