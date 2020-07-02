@@ -27,53 +27,61 @@ export function makeClone(node) {
  * Function call example:
  *  window.history.replaceState('', '', updateURLParameter(window.location.href, param, paramVal));
  *
- * Source: https://stackoverflow.com/a/10997390/13519872
+ * Based on: https://stackoverflow.com/a/10997390/13519872
  * @param url
  * @param param
  * @param paramVal
  * @returns {string}
  */
-export function updateURLParameter(url, param, paramVal)
-{
-    let TheAnchor = null;
-    let newAdditionalURL = "";
-    let tempArray = url.split("?");
-    let baseURL = tempArray[0];
-    let additionalURL = tempArray[1];
-    let temp = "";
+export function updateURLParameter(url, param, paramVal) {
+    let baseURL = url.split("?")[0];
+    let paramsURL = url.split("?")[1];
+    let anchor = paramsURL ? paramsURL.split("#")[1]: null;
+    let params = baseURL.split("#")[0];
 
-    if (additionalURL)
-    {
-        let tmpAnchor = additionalURL.split("#");
-        let TheParams = tmpAnchor[0];
-            TheAnchor = tmpAnchor[1];
-        if(TheAnchor)
-            additionalURL = TheParams;
+    if (paramsURL) {
+        // If URL has any current parameters:
+        let updatedParamArray = [];
 
-        tempArray = additionalURL.split("&");
+        if(anchor) {
+            paramsURL = paramsURL.split("#")[0];
+            paramVal += "#" + anchor;
+        }
 
-        for (let i=0; i<tempArray.length; i++)
-        {
-            if(tempArray[i].split('=')[0] !== param)
-            {
-                newAdditionalURL += temp + tempArray[i];
-                temp = "&";
+        // Iterate through the array of parameters, in order to update param in-place.
+        let paramAlreadyExists = false;
+        let paramArray = paramsURL.split("&");
+        for (let i = 0; i < paramArray.length; i++) {
+            let curParam = paramArray[i].split('=')[0];
+
+            if(curParam === param) {
+                paramAlreadyExists = true;
+                // Append the modified param.
+                updatedParamArray.push(`${param}=${paramVal}`)
+            } else {
+                // Append the unmodified param.
+                updatedParamArray.push(paramArray[i]);
             }
         }
+
+        if (!paramAlreadyExists) {
+            // If param did not already exist, append it to the array.
+            updatedParamArray.push(`${param}=${paramVal}`)
+        }
+
+        if (updatedParamArray.length > 1) {
+            // If there are multiple, return baseURL with params joined by separator.
+            return `${baseURL}?${updatedParamArray.join('&')}`;
+        } else {
+            // Else return baseURL with a single param.
+            return `${baseURL}?${updatedParamArray[0]}`;
+        }
+    } else {
+        // If URL doesn't have any current parameters:
+        if(params) {
+            baseURL = params;
+        }
+
+        return `${baseURL}?${param}=${paramVal}`;
     }
-    else
-    {
-        let tmpAnchor = baseURL.split("#");
-        let TheParams = tmpAnchor[0];
-            TheAnchor  = tmpAnchor[1];
-
-        if(TheParams)
-            baseURL = TheParams;
-    }
-
-    if(TheAnchor)
-        paramVal += "#" + TheAnchor;
-
-    let rows_txt = temp + "" + param + "=" + paramVal;
-    return baseURL + "?" + newAdditionalURL + rows_txt;
 }
