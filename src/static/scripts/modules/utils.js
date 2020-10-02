@@ -1,3 +1,5 @@
+import {NUMBERED_TEXTBOX_CLASS, TEXT_COLOR_GREEN_CLASS, TEXT_COLOR_RED_CLASS} from "../constants.js";
+
 export function getParameterByName(name, url) {
     if (!url) url = window.location.href;
     name = name.replace(/[\[\]]/g, '\\$&');
@@ -111,4 +113,166 @@ export function updateURLParameter(url, param, paramVal) {
             return baseURL;
         }
     }
+}
+
+/**
+ * Converts troublesome characters to HTML-compliant symbols.
+ *
+ * @param unsafe        String containing unsafe characters.
+ * @returns {string}    String with unsafe characters converted to HTML-compliant symbols.
+ */
+export function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+}
+
+export function uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        let r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+  });
+}
+
+/**
+ * Sets multiple attributes on a HTMLDomElement.
+ *
+ * @param HTMLDomElement
+ * @param attrJSON
+ */
+export function setAttributes(HTMLDomElement, attrJSON) {
+    for (let key of Object.keys(attrJSON)) {
+        HTMLDomElement.setAttribute(key, attrJSON[key]);
+    }
+}
+
+/**
+ * Combine createElement and setting attributes into one function (significantly lessens code bloat).
+ *
+ * @param tagName
+ * @param attrJSON
+ *
+ * @returns {HTMLElement}
+ */
+export function createElementAndSetAttributes(tagName, attrJSON) {
+    let HTMLDomElement = document.createElement(tagName);
+
+    setAttributes(HTMLDomElement, attrJSON);
+
+    return HTMLDomElement;
+}
+
+export function containsNonSeparatorChar(s) {
+    for (let i = 0; i < s.length; i++) {
+        let c = s[i];
+        if (c !== '\n' && c !== '\t'&& c !== '' && c !== ' ') {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Makes a ISO8601 datetime string more human readable.
+ *
+ * @param isoDateString     "YYYY-MM-DDTHH:MM:SS.f"
+ * @returns {string}        "YYYY-MM-DD HH:MM:SS"
+ */
+export function humanizeISODate(isoDateString) {
+    let date = isoDateString.split('T')[0];
+    let time = isoDateString.split('T')[1].split('.')[0];
+
+    return `${date} ${time}`;
+}
+
+export function isIterable(obj) {
+    // checks for null and undefined
+    if (obj == null) {
+        return false;
+    }
+        return typeof obj[Symbol.iterator] === 'function';
+}
+
+// noinspection JSUnusedLocalSymbols
+/**
+ * Takes a string and returns a boolean of whether it's a HTML comment.
+ *
+ * @param s
+ */
+export function isHtmlComment(s) {
+    return ( s.startsWith("<!--") && s.endsWith("-->") );
+}
+
+export function printGitLogEntry(hexSha, authorUsername, authorEmail, dateString, msg) {
+    return `<span>
+                commit ${hexSha}<br/>
+                Author: ${authorUsername} &lt;<a href="mailto:${authorEmail}">${authorEmail}</a>&gt;<br/>
+                Date: &nbsp;&nbsp; ${dateString}<br/>
+                <br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;${msg}
+            </span>`;
+}
+
+export function printGitDiff(diffString, color=true) {
+    if (diffString === "") {
+        return "<p>There were no differences between this and the previous commit.</p>"
+    }
+
+    let retv = `<pre class='${NUMBERED_TEXTBOX_CLASS}'>`;
+
+    if (color) {
+        for (let line of diffString.split('\n')) {
+            if (line.startsWith("+")) {
+                retv += `<span><mark class='${TEXT_COLOR_GREEN_CLASS}'>${line}</mark>\n</span>`
+            } else if (line.startsWith("-")) {
+                retv += `<span><mark class='${TEXT_COLOR_RED_CLASS}'>${line}</mark>\n</span>`
+            }
+            else {
+                retv += `<span>${line}\n</span>`;
+            }
+        }
+    } else {
+        for (let line of diffString.split('\n')) {
+            retv += `<span>${line}</span>`
+        }
+    }
+        retv += "</pre>";
+
+    return retv;
+}
+
+/**
+ * Clears an element by setting its innerHTML to "".
+ *
+ * @param elementID
+ */
+export function clearElement(elementID) {
+    document.getElementById(elementID).innerHTML = "";
+}
+
+/**
+ * Takes a string and returns a boolean of whether contains a HTML comment.
+ *
+ * @param s
+ */
+export function containsHtmlComment(s) {
+    const regex = /<!--.*-->/g;
+    return s.search(regex) !== -1;
+}
+
+/**
+ * Takes a string and returns the substring in-between the HTML comment delimiters.
+ *
+ * @param s
+ */
+export function getHtmlCommentData(s) {
+    const regex = /<!--(.*)-->/;
+
+    // Return the second item which is the 1st capturing group,
+    // (the first group entry is the complete match).
+    return s.match(regex)[1].toString();
 }

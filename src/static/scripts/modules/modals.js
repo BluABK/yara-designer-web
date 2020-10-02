@@ -1,3 +1,7 @@
+/**
+ * Modal definitions and generic code that can be easily reused.
+ **/
+
 import * as levels from "./levels.js";
 
 // CSS Vars:
@@ -155,6 +159,10 @@ export function popupErrorModal(header, body, footer=null) {
     popupModal(RESPONSE_MODAL, hdr, null, bdy, null, footer, levels.ERROR);
 }
 
+/**
+ * Perform an action given by JSON object.
+ * @param actionObj
+ */
 export function performAction(actionObj) {
     if ( actionObj.hasOwnProperty("action") ) {
         // Apply arguments (if defined).
@@ -174,11 +182,26 @@ export function performAction(actionObj) {
     }
 }
 
+/**
+ * Perform multiple actions given by a list of JSON objects.
+ * @param actionsObj
+ */
+export function performActions(actionsObj) {
+    if ( Array.isArray(actionsObj) ) {
+        // Perform actions.
+        for (let actionObj of actionsObj) {
+            performAction(actionObj);
+        }
+    } else {
+        throw Error(`performActions only takes Array type (got: '${typeof actionsObj}'!`);
+    }
+}
+
 
 /**
 *   Adds Yes/No confirmation buttons to a custom modal and binds actions to them.
 */
-export function popupConfirmationModal(yesAction, noAction=undefined,
+export function popupConfirmationModal(yesActions, noAction=undefined,
                                 body=MODAL_DEFAULT_CONFIRMATION_BODY,
                                 header=MODAL_DEFAULT_CONFIRMATION_HEADER,
                                 footer=MODAL_DEFAULT_CONFIRMATION_FOOTER,
@@ -194,7 +217,7 @@ export function popupConfirmationModal(yesAction, noAction=undefined,
 
     // Add bindings to buttons.
     document.getElementById(CONFIRMATION_MODAL_BUTTON_YES).onclick = function() {
-        yesAction && performAction(yesAction);
+        yesActions && performActions(yesActions);
 
         // Close modal.
         document.getElementById(CONFIRMATION_MODAL).style.display = "none";
@@ -223,4 +246,16 @@ export function popupHelpModal() {
             "<p>Check the checkboxes for which tags you want to include (if any).</p>";
 
     popupModal(RESPONSE_MODAL, header, null, bodyMiddle, null, null, levels.INFO);
+}
+
+/**
+ * Closes any open modals.
+ */
+export function closeModals() {
+    for ( let modalElement of document.getElementsByClassName(MODAL_CLASS) ) {
+        if (modalElement.style.display !== "none") {
+            console.log("Closed open modal: " + modalElement.id);
+            modalElement.style.display = "none";
+        }
+    }
 }
