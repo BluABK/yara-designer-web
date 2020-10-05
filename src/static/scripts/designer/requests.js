@@ -97,9 +97,11 @@ export function fetchGetRequest(url, callback, callbackKwargs=null) {
             callback(data, callbackKwargs)
         }
       }).catch(function(error) {
-        console.log('fetchRequest failed!', error); // FIXME: Replace with error/log handlers, making func generic.
-        modals.popupErrorModal("fetchRequest failed!", // FIXME: Replace with error/log handlers, making func generic.
-            `${error}<br/><br/>Traceback:<br/><p>${error.stack}</p>`);
+        console.log(`GET fetchRequest failed for URL '${url}'`, error); // TODO: Replace with error/log handlers, making func generic.
+        // Append traceback (if any) to error modal.
+        let tbString = error.stack ? `<br/><br/>Traceback:<br/><p>${error.stack}` : "";
+        modals.popupErrorModal("fetchRequest failed!", // TODO: Replace with error/log handlers, making func generic.
+            `${error}<hr/>URL: <a href="${url}">${url}</a>${tbString}</p>`);
       });
 }
 
@@ -133,11 +135,13 @@ export async function fetchPostRequest(url = '', data = {}, callback) { // FIXME
         .then(status)
         .then(json)
         .then(function(data) {
-            console.log(`fetchPostRequest succeeded with JSON response`, data); // FIXME: Replace with error/log handlers, making func generic.
+            console.log(`fetchPostRequest succeeded with JSON response`, data); // TODO: Replace with error/log handlers, making func generic.
             callback(data);
           }).catch(function(error) {
-            console.log('Request failed', error);
-            modals.popupErrorModal("fetchPostRequest failed!",  // FIXME: Replace with error/log handlers, making func generic.
-            `${error}<br/><br/>Traceback:<br/><p>${error.stack}</p>`);
+            console.log(`POST fetchRequest failed for URL '${url}'`, error);
+            // Append traceback (if any) to error modal.
+            let tbString = error.stack ? `<br/><br/>Traceback:<br/><p>${error.stack}` : "";
+            modals.popupErrorModal("fetchPostRequest failed!",  // TODO: Replace with error/log handlers, making func generic.
+            `${error}<hr/>URL: <a href="${url}">${url}</a>${tbString}</p>`);
           });
 }
