@@ -11,18 +11,18 @@
 
         <!-- 3rd party stylesheets.       -->
         <!-- Icon libraries -->
-        <link rel="stylesheet" type="text/css" href="/static/fonts/fontawesome-free-5.13.0-web/css/all.css">
+        <link rel="stylesheet" type="text/css" href="/<%- SUB_PATH %>static/fonts/fontawesome-free-5.13.0-web/css/all.css">
 
         <!-- Dragula - Drag 'n Drop   -->
-        <link rel="stylesheet" type="text/css" href="/static/styles/third-party/dragula-3.7.2.css">
+        <link rel="stylesheet" type="text/css" href="/<%- SUB_PATH %>static/styles/third-party/dragula-3.7.2.css">
 
         <!-- Bootstrap -->
-        <link rel="stylesheet" type="text/css" href="/static/styles/third-party/bootstrap-4.4.1.min.css">
+        <link rel="stylesheet" type="text/css" href="/<%- SUB_PATH %>static/styles/third-party/bootstrap-4.4.1.min.css">
 
         <!-- 1st party stylesheets (load last to ensure inherited properties from above exist.) -->
-        <link rel="stylesheet" type="text/css" href="/static/styles/yara_rule_designer.css">
-        <link rel="stylesheet" type="text/css" href="/static/styles/responsive.css">
-        <link rel="stylesheet" type="text/css" href="/static/styles/theme.css">
+        <link rel="stylesheet" type="text/css" href="/<%- SUB_PATH %>static/styles/yara_rule_designer.css">
+        <link rel="stylesheet" type="text/css" href="/<%- SUB_PATH %>static/styles/responsive.css">
+        <link rel="stylesheet" type="text/css" href="/<%- SUB_PATH %>static/styles/theme.css">
     </head>
 
     <body>
@@ -212,16 +212,16 @@
 
         <!-- 3rd party scripts.-->
         <!-- JQuery ( required for Bootstrap and $() ). -->
-        <script src="/static/scripts/third-party/jquery-3.5.1.min.js"></script>
+        <script src="/<%- SUB_PATH %>static/scripts/third-party/jquery-3.5.1.min.js"></script>
 
         <!-- Popper ( required for Bootstrap ). -->
-        <script src="/static/scripts/third-party/popper-1.14.6.min.js"></script>
+        <script src="/<%- SUB_PATH %>static/scripts/third-party/popper-1.14.6.min.js"></script>
 
         <!-- Bootstrap -->
-        <script src="/static/scripts/third-party/bootstrap-4.4.1.bundle.min.js"></script>
+        <script src="/<%- SUB_PATH %>static/scripts/third-party/bootstrap-4.4.1.bundle.min.js"></script>
 
         <!-- Dragula - Drag 'n Drop   -->
-        <script src="/static/scripts/third-party/dragula-3.7.2.min.js"></script>
+        <script src="/<%- SUB_PATH %>static/scripts/third-party/dragula-3.7.2.min.js"></script>
 
         <!--1st party scripts.        -->
         <!-- JavaScript vars sent in from EJS template engine.       -->
@@ -235,10 +235,10 @@
         </script>
 
         <!-- Theme handler -->
-        <script src="/static/scripts/themes.js" type="module"></script>
+        <script src="/<%- SUB_PATH %>static/scripts/themes.js" type="module"></script>
 
         <!-- Core Designer script block -->
         <!--Finally load the main script which depends on all of the above modules -->
-        <script src="/static/scripts/designer.js" type="module"></script>
+        <script src="/<%- SUB_PATH %>static/scripts/designer.js" type="module"></script>
     </body>
 </html>
