@@ -1,6 +1,11 @@
 import {NO_CONTENTS_EXCEPTION} from "../modules/exceptions.js";
 import * as modals from "../modules/modals.js";
+import * as levels from "../modules/levels.js";
 import {MIMETYPE_JSON} from "../constants.js";
+
+const DEFAULT_STATUS_HEADER = "Processing GET request...";
+const DEFAULT_STATUS_BODY = "Processing...";
+const DEFAULT_STATUS_FOOTER = null;
 
 /**
  * Make a custom POST request for non-form elements like DIV and SPAN.
@@ -73,7 +78,11 @@ export function postRule(json=null, responseHandler=null, ruleJsonGetter=null) {
     }
 }
 
-export function fetchGetRequest(url, callback, callbackKwargs=null) {
+export function fetchGetRequest(url, callback, callbackKwargs=null,
+                                showStatusModal=false,
+                                statusHeader=DEFAULT_STATUS_HEADER,
+                                statusBody=DEFAULT_STATUS_BODY,
+                                statusFooter=DEFAULT_STATUS_FOOTER) {
     function status(response) {
         if (response.status >= 200 && response.status < 300) {
             return Promise.resolve(response)
@@ -86,10 +95,19 @@ export function fetchGetRequest(url, callback, callbackKwargs=null) {
         return response.json()
     }
 
+    if (showStatusModal) {
+        modals.popupStatusModal(statusHeader, statusBody, statusFooter);
+    }
+
     fetch(url)
     .then(status)
     .then(json)
     .then(function(data) {
+        if (showStatusModal) {
+            // Close status modal.
+            modals.closeModals();
+        }
+
         // console.log(`fetchRequest succeeded with JSON response`, data);
         if (callbackKwargs == null) {
             callback(data);

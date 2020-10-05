@@ -106,7 +106,6 @@ export function popupModal(modalId=null, header=null, bodyTop=null, bodyMiddle=n
     let modalHeader = document.getElementById(`${modalId}-${MODAL_HEADER}`);
     let modalHeaderContent = document.getElementById(`${modalId}-${MODAL_HEADER_CONTENT}`);
     // let modalBody = document.getElementById(`${modalId}-${MODAL_BODY}`);
-    console.log("modalBodyTop", `${modalId}-${MODAL_BODY_TOP}`);
     let modalBodyTop = document.getElementById(`${modalId}-${MODAL_BODY_TOP}`);
     let modalBodyMiddle = document.getElementById(`${modalId}-${MODAL_BODY_MIDDLE}`);
     let modalBodyBottom = document.getElementById(`${modalId}-${MODAL_BODY_BOTTOM}`);
@@ -157,6 +156,13 @@ export function popupErrorModal(header, body, footer=null) {
     let bdy = `<h3>${body}</h3>`;
 
     popupModal(RESPONSE_MODAL, hdr, null, bdy, null, footer, levels.ERROR);
+}
+
+export function popupStatusModal(header, body, footer=null) {
+    let hdr = `<h2>${header}</h2>`;
+    let bdy = `<h3>${body}</h3>`;
+
+    popupModal(RESPONSE_MODAL, hdr, null, bdy, null, footer, levels.INFO);
 }
 
 /**

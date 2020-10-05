@@ -105,23 +105,27 @@ export function combineRulesThenPrintRulesTable(additionalRules, existingRules) 
 
 export function getAdditionalRules(rules, callback=combineRulesThenPrintRulesTable) {
     // Carry received rules into the fetch request
-    console.log("DEBUG: getAdditionalRules(callback=combineRulesThenPrintRulesTable)");
-    fetchGetRequest(GET_THEORACLE_RULES_ROUTE, callback, rules);
+    console.log("Getting rules (2/2): YARA rules from TheOracle...");
+    fetchGetRequest(GET_THEORACLE_RULES_ROUTE, callback, rules,
+        true, "Getting rules (2/2): YARA rules from TheOracle...");
 }
 
 export function getRules(callback=getAdditionalRules) {
-    console.log("DEBUG: getRules(callback=getAdditionalRules)");
-    fetchGetRequest(GET_RULES_ROUTE, callback);
+    console.log("Getting rules (1/2): TheHive cases from DB...");
+    fetchGetRequest(GET_RULES_ROUTE, callback, null,
+        true, "Getting rules (1/2): TheHive cases from DB...");
 }
 
 export function getRulesDB(callback=displayRulesTable) {
-    console.log("DEBUG: getRulesDB(callback=displayRulesTable)");
-    fetchGetRequest(GET_RULES_ROUTE, callback);
+    console.log("Getting TheHive cases from DB...");
+    fetchGetRequest(GET_RULES_ROUTE, callback, null,
+        true, "Getting TheHive cases from DB...");
 }
 
 export function getRulesTheOracle(callback=displayRulesTable) {
-    console.log("DEBUG: getRulesTheOracle(callback=displayRulesTable)");
-    fetchGetRequest(GET_THEORACLE_RULES_ROUTE, callback);
+    console.log("Getting YARA rules from TheOracle...");
+    fetchGetRequest(GET_THEORACLE_RULES_ROUTE, callback, null,
+        true, "Getting YARA rules from TheOracle...");
 }
 
 /**
