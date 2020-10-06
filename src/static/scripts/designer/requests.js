@@ -80,7 +80,7 @@ export function fetchGetRequest(url, callback, callbackKwargs=null,
       });
 }
 
-export async function fetchPostRequest(url = '', data = {}, callback) { // FIXME: Unused (should probably replace XHRs)
+export async function fetchPostRequest(url = '', data = {}, callback, callbackKwargs=null) { // FIXME: Unused (should probably replace XHRs)
     function status(response) {
         if (response.status >= 200 && response.status < 300) {
             return Promise.resolve(response)
@@ -111,7 +111,11 @@ export async function fetchPostRequest(url = '', data = {}, callback) { // FIXME
         .then(json)
         .then(function(data) {
             console.log(`fetchPostRequest succeeded with JSON response`, data); // TODO: Replace with error/log handlers, making func generic.
-            callback(data);
+            if (callbackKwargs == null) {
+                callback(data);
+            } else {
+                callback(data, callbackKwargs)
+            }
           }).catch(function(error) {
             console.log(`POST fetchRequest failed for URL '${url}'`, error);
             // Append traceback (if any) to error modal.
