@@ -1,6 +1,4 @@
-import {NO_CONTENTS_EXCEPTION} from "../modules/exceptions.js";
 import * as modals from "../modules/modals.js";
-import * as levels from "../modules/levels.js";
 import {MIMETYPE_JSON} from "../constants.js";
 
 const DEFAULT_STATUS_HEADER = "Processing GET request...";
@@ -35,47 +33,6 @@ export function postCommit(json, responseHandler=null, modalCloser=null) {
 
     // Convert a JavaScript value to a JavaScript Object Notation (JSON) string (Required for POST).
     xhr.send(JSON.stringify(json));
-}
-
-/**
- * Make a custom POST request for non-form elements like DIV and SPAN.
- *
- *  @param json             Optional Rule JSON.
- *  @param responseHandler  Function handle XHR POST response.
- *  @param ruleJsonGetter   Function to get Rule JSON if not supplied.
- */
-export function postRule(json=null, responseHandler=null, ruleJsonGetter=null) {
-    try {
-        if (json == null) {
-            json = ruleJsonGetter();
-        }
-        let xhr = new XMLHttpRequest();  // FIXME: Replace antiquated XHR with fetch.
-
-        console.log("POST URL: " + POST_RULE_ROUTE);
-
-        xhr.open("POST", POST_RULE_ROUTE, true);
-        xhr.setRequestHeader('Content-Type', MIMETYPE_JSON);
-
-        // Add custom handling of the response returned by XHR POST URL.
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                // console.log("postRule XHR", xhr);
-                // console.log("postRule XHR Response text", xhr.responseText);
-                responseHandler(JSON.parse(xhr.responseText));
-            }
-        };
-
-        // Convert a JavaScript value to a JavaScript Object Notation (JSON) string (Required for POST).
-        xhr.send(JSON.stringify(json));
-    } catch (e) {
-        if (e.name === NO_CONTENTS_EXCEPTION) {
-            console.warn(e.message, e.name);
-            modals.popupWarningModal(e.message, "Please add contents to the editor before submitting.");
-        } else {
-            console.error(e.message, e.name);
-            modals.popupErrorModal(e.name, e.message);
-        }
-    }
 }
 
 export function fetchGetRequest(url, callback, callbackKwargs=null,

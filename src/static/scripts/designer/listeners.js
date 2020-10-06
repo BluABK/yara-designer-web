@@ -2,11 +2,13 @@ import {getRules, getRulesDB, loadObservablesHandler, clearRule, getAdditionalRu
 import {addYARAStringToEditorModal, settingsModal, shareStateModal} from "./designer_modals.js";
 import {popupHelpModal} from "../modules/modals.js";
 import {popupAddNumericElementDialog, popupAddTagDialog} from "./designer_dialogs.js";
-import {postRule} from "./requests.js";
+import {fetchPostRequest} from "./requests.js";
 import {getRuleJsonFromElements} from "./editor/common.js";
 import {clickDraggableOperator, onAuxClick} from "./click_events.js";
 import {DESIGNER_EDITOR, VAR_COUNT_KEYWORD} from "../constants.js";
 import {handlePostRuleResponse} from "./handlers.js";
+import {NO_CONTENTS_EXCEPTION} from "../modules/exceptions.js";
+import * as modals from "../modules/modals.js";
 
 export function addAll() {
     // Add event listeners.
@@ -19,7 +21,24 @@ export function addAll() {
     document.querySelector('#share-button').addEventListener('click', shareStateModal);
     document.querySelector('#add-numeric-element-button').addEventListener('click', function(){ popupAddNumericElementDialog() });
     document.querySelector('#clear-rule-button').addEventListener('click', clearRule);
-    document.querySelector('#submit-rule-button').addEventListener('click', function(){ postRule(null, handlePostRuleResponse, getRuleJsonFromElements) });
+    document.querySelector('#submit-rule-button').addEventListener('click', function() {
+        let rule;
+        try {
+            console.log("Parsing designed rule from editor elements...")
+            rule = getRuleJsonFromElements();
+
+            console.log("Submitting parsed rule to backend...", rule);
+            fetchPostRequest(POST_RULE_ROUTE, rule, handlePostRuleResponse, null, true, "Processing...").then()
+        } catch (e) {
+            if (e.name === NO_CONTENTS_EXCEPTION) {
+                console.warn(e.message, e.name);
+                modals.popupWarningModal(e.message, "Please add contents to the editor before submitting.");
+            } else {
+                console.error(e.message, e.name);
+                modals.popupErrorModal(e.name, e.message);
+            }
+        }
+    });
     document.querySelector('#add-tags-button').addEventListener('click', function(){ popupAddTagDialog() });
 
     // -- Draggables:
