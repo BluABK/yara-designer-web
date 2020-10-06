@@ -334,7 +334,7 @@ export function displayRulesTable(rulesJson, defaultCheckedRadio = TABLE_FILTER_
         }
     }
     if (rules.length === 0) {
-        modals.popupErrorModal("displayRulesTable Error!", "displayRulesTable failed to parse any rules!")
+        modals.popupInfoModal("No rules found", "Backend return no rules, does it have any?")
         return;
     }
     console.log("rules", rules);
