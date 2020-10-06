@@ -80,7 +80,11 @@ export function fetchGetRequest(url, callback, callbackKwargs=null,
       });
 }
 
-export async function fetchPostRequest(url = '', data = {}, callback, callbackKwargs=null) { // FIXME: Unused (should probably replace XHRs)
+export async function fetchPostRequest(url = '', data = {}, callback, callbackKwargs=null,
+                                       showStatusModal=false,
+                                       statusHeader=DEFAULT_STATUS_HEADER,
+                                       statusBody=DEFAULT_STATUS_BODY,
+                                       statusFooter=DEFAULT_STATUS_FOOTER) { // FIXME: Unused (should probably replace XHRs)
     function status(response) {
         if (response.status >= 200 && response.status < 300) {
             return Promise.resolve(response)
@@ -91,6 +95,10 @@ export async function fetchPostRequest(url = '', data = {}, callback, callbackKw
 
     function json(response) {
         return response.json()
+    }
+
+    if (showStatusModal) {
+        modals.popupStatusModal(statusHeader, statusBody, statusFooter);
     }
 
     // Default options are marked with *
