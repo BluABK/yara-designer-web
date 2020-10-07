@@ -5,36 +5,6 @@ const DEFAULT_STATUS_HEADER = "Processing GET request...";
 const DEFAULT_STATUS_BODY = "Processing...";
 const DEFAULT_STATUS_FOOTER = null;
 
-/**
- * Make a custom POST request for non-form elements like DIV and SPAN.
- *
- *  @param json
- *  @param responseHandler  Function handle XHR POST response.
- *  @param modalCloser      Function to close open modals.
- */
-export function postCommit(json, responseHandler=null, modalCloser=null) {
-    let xhr = new XMLHttpRequest();  // FIXME: Replace antiquated XHR with fetch.
-
-    console.log("POST URL: " + POST_COMMIT_ROUTE);
-
-    xhr.open("POST", POST_COMMIT_ROUTE, true);
-    xhr.setRequestHeader('Content-Type', MIMETYPE_JSON);
-
-    // Add custom handling of the response returned by XHR POST URL.
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            // Make sure to close any open modals.
-            modalCloser();
-
-            // Handle response.
-            responseHandler(JSON.parse(xhr.responseText));
-        }
-    };
-
-    // Convert a JavaScript value to a JavaScript Object Notation (JSON) string (Required for POST).
-    xhr.send(JSON.stringify(json));
-}
-
 export function fetchGetRequest(url, callback, callbackKwargs=null,
                                 showStatusModal=false,
                                 statusHeader=DEFAULT_STATUS_HEADER,

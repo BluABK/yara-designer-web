@@ -16,7 +16,7 @@ import {
     RESPONSE_MODAL_BUTTON_COMMIT_DISABLED_CLASS
 } from "../modules/modals.js";
 import {makeCollapsibleJSONDetails} from "./designer_modals.js";
-import {postCommit} from "./requests.js";
+import {fetchPostRequest} from "./requests.js";
 import * as levels from "../modules/levels.js";
 
 /**
@@ -146,8 +146,9 @@ export function handlePostRuleResponse(json) {
             "thehive_case_id": window.currentlyLoadedRule["thehive_case_id"]
         };
 
-        console.log("postCommit(jsonToCommit)", jsonToCommit);
-        postCommit(jsonToCommit, handlePostCommitResponse, closeModals);
+        console.log("Committing generated YARA rule to TheOracle Git...", jsonToCommit);
+        fetchPostRequest(POST_COMMIT_ROUTE, jsonToCommit, handlePostCommitResponse, null, true,
+            "Commit generated YARA rule", "Committing generated YARA rule and pushing to TheOracle Git..").then();
 
         // Close modal after handling button action.
         document.getElementById(CONFIRMATION_MODAL).style.display = "none";
@@ -155,6 +156,9 @@ export function handlePostRuleResponse(json) {
 }
 
 export function handlePostCommitResponse(json) {
+    // Make sure to close any open modals.
+    closeModals();
+
     let errorType = "";
     let errorMessage = "";
     let level = levels.SUCCESS;
