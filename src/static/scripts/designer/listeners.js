@@ -29,7 +29,7 @@ export function addAll() {
 
             console.log("Submitting parsed rule to backend...", rule);
             fetchPostRequest(POST_RULE_ROUTE, rule, handlePostRuleResponse, null, true,
-                "Submit designed rule", "Processing...").then()
+                "Submit designed rule", "Processing...").then();
         } catch (e) {
             if (e.name === NO_CONTENTS_EXCEPTION) {
                 console.warn(e.message, e.name);
