@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- Ignore certain (mostly) false-positive checks -->
-<!--suppress JSDeprecatedSymbols, HtmlUnknownTarget -->
+<!--suppress JSDeprecatedSymbols, HtmlUnknownTarget, HtmlUnknownTag -->
 <html lang="en">
     <head>
         <meta charset="utf-8" name="charset" content="UTF-8">
@@ -227,6 +227,7 @@
 
         <!--1st party scripts.        -->
         <!-- JavaScript vars sent in from EJS template engine.       -->
+        <!--suppress JSUnusedAssignment, BadExpressionStatementJS -->
         <script>
             const POST_RULE_ROUTE = <%- POST_RULE_ROUTE %>;
             const POST_COMMIT_ROUTE = <%- POST_COMMIT_ROUTE %>;
