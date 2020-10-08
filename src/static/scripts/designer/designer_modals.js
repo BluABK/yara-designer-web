@@ -8,18 +8,23 @@ import {NO_CONTENTS_EXCEPTION} from "../modules/exceptions.js";
 import * as yara from "../modules/yara.js";
 import {md5} from "../third-party/md5.js";
 import {
-    ADD_CUSTOM_YARA_STRING_MODAL_ADD_BUTTON, ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN,
-    ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_CLASS, ADD_CUSTOM_YARA_STRING_MODAL_SAVE_BUTTON,
     CUSTOM_YARA_STRING_EDITOR_ELEMENT_CLASS, CUSTOM_YARA_STRING_EDITOR_ELEMENT_CONTAINER,
-    DESIGNER_EDITOR, LEFTPANE_YARA_STRING_ELEMENT_CONTAINERS, NUMERIC_CLASS, SETTINGS_MODAL_META_FORM,
-    SETTINGS_MODAL_SAVE_ALL_BUTTON, YARA_STRING_EDITOR_ELEMENT, YARA_STRING_ELEMENT_JSON_DATA_ATTR,
+    DESIGNER_EDITOR, LEFTPANE_YARA_STRING_ELEMENT_CONTAINERS, NUMERIC_CLASS, YARA_STRING_EDITOR_ELEMENT, YARA_STRING_ELEMENT_JSON_DATA_ATTR,
     addElementById, addNumericElementToEditor, addYARAStrings, clearEditorDivContents, getRuleJsonFromElements
 } from "./editor/common.js";
 import {
+    ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN, ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_CLASS,
+    SETTINGS_MODAL_META_FORM, SETTINGS_MODAL_SAVE_ALL_BUTTON,
     generateCustomYARAStringBuilderForm, setYARAStringFormValues, saveGeneralSettings,
     settingsGenerateGeneralFormContainer, settingsGenerateMetaFormContainer, metaSettingsFormCallback,
     metaSettingsFormAddRowCallback
 } from "./designer_forms.js";
+
+
+
+// Customised modals - Add Custom YARA String to editor Modal:
+const ADD_CUSTOM_YARA_STRING_MODAL_ADD_BUTTON = "add-custom-yara-string-modal-add-button";
+const ADD_CUSTOM_YARA_STRING_MODAL_SAVE_BUTTON = "add-custom-yara-string-modal-save-button";
 
 export function makeCollapsibleJSONDetails(json, id) {
     return `<button type="button" class="${modals.RESPONSE_MODAL_BUTTON_JSON_COLLAPSIBLE_CLASS}"\n` +

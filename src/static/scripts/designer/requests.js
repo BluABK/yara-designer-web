@@ -1,9 +1,12 @@
 import * as modals from "../modules/modals.js";
-import {MIMETYPE_JSON} from "./editor/common.js";
 
+// MIME Types.
+const MIMETYPE_JSON = 'application/json';
+// Default placeholders.
 const DEFAULT_STATUS_HEADER = "Processing GET request...";
 const DEFAULT_STATUS_BODY = "Processing...";
 const DEFAULT_STATUS_FOOTER = null;
+
 
 export function fetchGetRequest(url, callback, callbackKwargs=null,
                                 showStatusModal=false,

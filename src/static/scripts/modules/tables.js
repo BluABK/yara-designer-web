@@ -1,5 +1,12 @@
-import {CUSTOM_TABLE_CLASS} from "../designer/editor/common.js";
 import {containsHtmlComment, getHtmlCommentData} from "./utils.js";
+
+export const CUSTOM_TABLE_CLASS = "custom-table";
+export const CUSTOM_TABLE_CONTAINER = `${CUSTOM_TABLE_CLASS}-container`;
+export const TABLE_FILTER_INPUT_SUFFIX = "input-filter";
+export const TABLE_FILTER_RADIO_CLASS_SUFFIX = `${TABLE_FILTER_INPUT_SUFFIX}-radios`;
+export const TABLE_FILTER_COUNT = "filter-count";
+export const TABLE_FILTER_CHECKED_RADIO = "Title";
+export const TABLE_FILTER_HIDDEN_RADIOS = ["Pending"];
 
 /**
  * Generates a (nicely formatted/indented) HTML <TABLE> based on a list of header:column maps.

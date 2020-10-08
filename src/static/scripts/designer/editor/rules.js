@@ -6,22 +6,28 @@ import {
 import * as modals from "../../modules/modals.js";
 import * as levels from "../../modules/levels.js";
 import {
-    CUSTOM_TABLE_CONTAINER,
-    RULE_KIND_DB,
-    RULE_KIND_THEORACLE,
-    RULES_TABLE,
-    SIZE_FULLWIDTH_CLASS,
-    TABLE_FILTER_CHECKED_RADIO,
-    TABLE_FILTER_COUNT,
-    TABLE_FILTER_HIDDEN_RADIOS,
-    TABLE_FILTER_INPUT_SUFFIX,
-    TABLE_FILTER_RADIO_CLASS_SUFFIX,
     setTitle, setTags, clearEditorDivContents,
     setYARAStrings, setEditorElementsByCondition,
     addStringsFromRule, getEditorContents
 } from "./common.js";
 import {popupConfirmationModal} from "../../modules/modals.js";
-import {makeTable, comparer} from "../../modules/tables.js";
+import {
+    CUSTOM_TABLE_CONTAINER,
+    TABLE_FILTER_CHECKED_RADIO,
+    TABLE_FILTER_COUNT,
+    TABLE_FILTER_HIDDEN_RADIOS,
+    TABLE_FILTER_INPUT_SUFFIX,
+    TABLE_FILTER_RADIO_CLASS_SUFFIX,
+    makeTable, comparer
+} from "../../modules/tables.js";
+
+const RULE_KIND_DB = "database";
+const RULE_KIND_THEORACLE = "theoracle";
+// Modifying classes
+const SIZE_WIDE_CLASS = "size-wide";
+const SIZE_FULLWIDTH_CLASS = "size-fullwidth";
+// Table: -- Fetched Rules
+const RULES_TABLE = "fetched-rules";
 
 export function clearRule() {
     // Define body

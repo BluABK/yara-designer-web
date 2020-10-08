@@ -1,9 +1,11 @@
-import {DESIGNER_EDITOR, LEFTPANE_DRAGGABLES, MOUSE_CLICK_MIDDLE, MOUSE_CLICK_RIGHT} from "./editor/common.js";
+import {DESIGNER_EDITOR, LEFTPANE_DRAGGABLES} from "./editor/common.js";
 import {editYARAStringModal} from "./designer_modals.js";
 import {makeClone} from "../modules/utils.js";
 import {addElement, removeElement} from "./editor/common.js";
 
-
+const MOUSE_CLICK_LEFT = 0;
+const MOUSE_CLICK_MIDDLE = 1;
+const MOUSE_CLICK_RIGHT = 2;
 
 /**
  * onclick handler for conditional operator draggable elements.
