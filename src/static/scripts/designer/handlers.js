@@ -1,11 +1,7 @@
 import {
-    BGCOLOR_RED_CLASS,
-    BGCOLOR_YELLOW_CLASS,
-    FAILED_ICON,
-    NUMBERED_TEXTBOX_CLASS,
-    SUCCESS_ICON,
-    SYNTAX_ERROR
-} from "../constants.js";
+    BGCOLOR_RED_CLASS, BGCOLOR_YELLOW_CLASS, FAILED_ICON,
+    NUMBERED_TEXTBOX_CLASS, SUCCESS_ICON, SYNTAX_ERROR
+} from "./editor/common.js";
 import {escapeHtml, printGitDiff, printGitLogEntry} from "../modules/utils.js";
 import {
     closeModals, CONFIRMATION_MODAL,

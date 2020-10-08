@@ -1,4 +1,4 @@
-import {CUSTOM_TABLE_CLASS} from "../constants.js";
+import {CUSTOM_TABLE_CLASS} from "../designer/editor/common.js";
 import {containsHtmlComment, getHtmlCommentData} from "./utils.js";
 
 /**

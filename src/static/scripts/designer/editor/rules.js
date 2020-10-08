@@ -1,18 +1,24 @@
 import {fetchGetRequest} from "../requests.js";
-import {humanizeISODate, isIterable, updateURLParameter, containsHtmlComment, getHtmlCommentData} from "../../modules/utils.js";
-import * as modals from "../../modules/modals.js";
 import {
-    CUSTOM_TABLE_CONTAINER, RULE_KIND_DB, RULE_KIND_THEORACLE,
-    RULES_TABLE, SIZE_FULLWIDTH_CLASS,
-    TABLE_FILTER_CHECKED_RADIO,
-    TABLE_FILTER_COUNT,
-    TABLE_FILTER_HIDDEN_RADIOS, TABLE_FILTER_INPUT_SUFFIX,
-    TABLE_FILTER_RADIO_CLASS_SUFFIX
-} from "../../constants.js";
+    humanizeISODate, isIterable, updateURLParameter,
+    containsHtmlComment, getHtmlCommentData
+} from "../../modules/utils.js";
+import * as modals from "../../modules/modals.js";
 import * as levels from "../../modules/levels.js";
 import {
-    setTitle, setTags, clearEditorDivContents, setYARAStrings, setEditorElementsByCondition, addStringsFromRule,
-    getEditorContents
+    CUSTOM_TABLE_CONTAINER,
+    RULE_KIND_DB,
+    RULE_KIND_THEORACLE,
+    RULES_TABLE,
+    SIZE_FULLWIDTH_CLASS,
+    TABLE_FILTER_CHECKED_RADIO,
+    TABLE_FILTER_COUNT,
+    TABLE_FILTER_HIDDEN_RADIOS,
+    TABLE_FILTER_INPUT_SUFFIX,
+    TABLE_FILTER_RADIO_CLASS_SUFFIX,
+    setTitle, setTags, clearEditorDivContents,
+    setYARAStrings, setEditorElementsByCondition,
+    addStringsFromRule, getEditorContents
 } from "./common.js";
 import {popupConfirmationModal} from "../../modules/modals.js";
 import {makeTable, comparer} from "../../modules/tables.js";
@@ -334,7 +340,7 @@ export function displayRulesTable(rulesJson, defaultCheckedRadio = TABLE_FILTER_
         }
     }
     if (rules.length === 0) {
-        modals.popupInfoModal("No rules found", "Backend return no rules, does it have any?")
+        modals.popupInfoModal("No rules found", "Backend returned no rules, does it have any?")
         return;
     }
     console.log("rules", rules);

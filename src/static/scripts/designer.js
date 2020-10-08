@@ -4,7 +4,7 @@ import {loadTheOracleRuleByFilename, loadDBRuleById, newRule} from "./designer/e
 import {
     OPERATOR_CONTAINER, YARA_STRING_EDITOR_ELEMENT_CONTAINER, CUSTOM_YARA_STRING_EDITOR_ELEMENT_CONTAINER,
     LEFTPANE_DRAGGABLES, DESIGNER_EDITOR
-} from './constants.js';
+} from './designer/editor/common.js';
 import * as listeners from "./designer/listeners.js";
 // Runs code in file which defines custom prototype functions and properties.
 import "./designer/prototypes.js";

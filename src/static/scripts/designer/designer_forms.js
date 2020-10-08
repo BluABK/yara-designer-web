@@ -1,4 +1,5 @@
 import {createElementAndSetAttributes, uuidv4} from "../modules/utils.js";
+import * as yara from "../modules/yara.js";
 import {
     ADD_CUSTOM_YARA_STRING_MODAL_FORM,
     ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN,
@@ -13,13 +14,14 @@ import {
     SETTINGS_MODAL_GENERAL_FORM,
     SETTINGS_MODAL_GENERAL_FORM_COLUMN_TITLE_INPUT,
     SETTINGS_MODAL_META_FORM,
-    SETTINGS_MODAL_META_FORM_ADD_ROW_BUTTON, SETTINGS_MODAL_META_FORM_COLUMN_DELETE_ROW_CLASS,
+    SETTINGS_MODAL_META_FORM_ADD_ROW_BUTTON,
+    SETTINGS_MODAL_META_FORM_COLUMN_DELETE_ROW_CLASS,
     SETTINGS_MODAL_META_FORM_COLUMN_IDENTIFIER_CLASS,
-    SETTINGS_MODAL_META_FORM_COLUMN_VALUE_CLASS, SETTINGS_MODAL_META_FORM_COLUMN_VALUE_TYPE_CLASS,
-    SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX
-} from "../constants.js";
-import * as yara from "../modules/yara.js";
-import {setTitle} from "./editor/common.js";
+    SETTINGS_MODAL_META_FORM_COLUMN_VALUE_CLASS,
+    SETTINGS_MODAL_META_FORM_COLUMN_VALUE_TYPE_CLASS,
+    SETTINGS_MODAL_META_FORM_DELETE_ROW_BUTTON_PREFIX,
+    setTitle
+} from "./editor/common.js";
 
 /**
  * Generates a "fake" row with label headings (in order to avoid reprinting labels for every single row)

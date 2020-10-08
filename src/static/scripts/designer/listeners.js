@@ -3,9 +3,8 @@ import {addYARAStringToEditorModal, settingsModal, shareStateModal} from "./desi
 import {popupHelpModal} from "../modules/modals.js";
 import {popupAddNumericElementDialog, popupAddTagDialog} from "./designer_dialogs.js";
 import {fetchPostRequest} from "./requests.js";
-import {getRuleJsonFromElements} from "./editor/common.js";
+import {DESIGNER_EDITOR, VAR_COUNT_KEYWORD, getRuleJsonFromElements} from "./editor/common.js";
 import {clickDraggableOperator, onAuxClick} from "./click_events.js";
-import {DESIGNER_EDITOR, VAR_COUNT_KEYWORD} from "../constants.js";
 import {handlePostRuleResponse} from "./handlers.js";
 import {NO_CONTENTS_EXCEPTION} from "../modules/exceptions.js";
 import * as modals from "../modules/modals.js";

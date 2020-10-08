@@ -1,26 +1,18 @@
 /**
  * Modal implementations and non-generic code specific to the designer.
  **/
-
 import {containsNonSeparatorChar, createElementAndSetAttributes, escapeHtml} from "../modules/utils.js";
-import {
-    ADD_CUSTOM_YARA_STRING_MODAL_ADD_BUTTON,
-    ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN,
-    ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_CLASS,
-    ADD_CUSTOM_YARA_STRING_MODAL_SAVE_BUTTON,
-    CUSTOM_YARA_STRING_EDITOR_ELEMENT_CLASS,
-    CUSTOM_YARA_STRING_EDITOR_ELEMENT_CONTAINER,
-    DESIGNER_EDITOR,
-    LEFTPANE_YARA_STRING_ELEMENT_CONTAINERS, NUMERIC_CLASS, SETTINGS_MODAL_META_FORM, SETTINGS_MODAL_SAVE_ALL_BUTTON,
-    YARA_STRING_EDITOR_ELEMENT,
-    YARA_STRING_ELEMENT_JSON_DATA_ATTR
-} from "../constants.js";
 import * as modals from "../modules/modals.js";
 import * as levels from "../modules/levels.js";
 import {NO_CONTENTS_EXCEPTION} from "../modules/exceptions.js";
 import * as yara from "../modules/yara.js";
 import {md5} from "../third-party/md5.js";
 import {
+    ADD_CUSTOM_YARA_STRING_MODAL_ADD_BUTTON, ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN,
+    ADD_CUSTOM_YARA_STRING_MODAL_FORM_ROW_MODIFIERS_CLASS, ADD_CUSTOM_YARA_STRING_MODAL_SAVE_BUTTON,
+    CUSTOM_YARA_STRING_EDITOR_ELEMENT_CLASS, CUSTOM_YARA_STRING_EDITOR_ELEMENT_CONTAINER,
+    DESIGNER_EDITOR, LEFTPANE_YARA_STRING_ELEMENT_CONTAINERS, NUMERIC_CLASS, SETTINGS_MODAL_META_FORM,
+    SETTINGS_MODAL_SAVE_ALL_BUTTON, YARA_STRING_EDITOR_ELEMENT, YARA_STRING_ELEMENT_JSON_DATA_ATTR,
     addElementById, addNumericElementToEditor, addYARAStrings, clearEditorDivContents, getRuleJsonFromElements
 } from "./editor/common.js";
 import {

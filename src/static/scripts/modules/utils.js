@@ -1,4 +1,4 @@
-import {NUMBERED_TEXTBOX_CLASS, TEXT_COLOR_GREEN_CLASS, TEXT_COLOR_RED_CLASS} from "../constants.js";
+import {NUMBERED_TEXTBOX_CLASS, TEXT_COLOR_GREEN_CLASS, TEXT_COLOR_RED_CLASS} from "../designer/editor/common.js";
 
 export function getParameterByName(name, url) {
     if (!url) url = window.location.href;
