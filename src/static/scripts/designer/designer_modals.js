@@ -42,7 +42,7 @@ export function makeCollapsibleJSONDetails(json, id) {
 }
 
 export function getYARAStringJSONFromStringEditorModal() {
-            // Gather data from columns.
+        // Gather data from columns.
         let identifierValue = document.getElementById(`${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-identifier`).value;
         let valueValue = document.getElementById(`${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-value`).value;
         let valueTypeValue = document.getElementById(`${ADD_CUSTOM_YARA_STRING_MODAL_FORM_COLUMN}-value-type`).value;
@@ -117,7 +117,7 @@ export function editYARAStringModalCallback() {
             }
 
             let yaraString = getYARAStringJSONFromStringEditorModal();
-            console.log("Created/Modifier YARA String", yaraString);
+            console.log("Modified YARA String", yaraString);
 
             // Delete the old imported observable (to avoid identifier clash in case only modifier state changed
             // (i.e. no new md5 in identifier)
@@ -172,7 +172,7 @@ export function addYARAStringToEditorCallback() {
         event.preventDefault();
 
         let yaraString = getYARAStringJSONFromStringEditorModal();
-        console.log("Created/Modifier YARA String", yaraString);
+        console.log("Added YARA String", yaraString);
 
         // Add object to available YARA Strings/Observables
         addYARAStrings([yaraString], YARA_STRING_EDITOR_ELEMENT, CUSTOM_YARA_STRING_EDITOR_ELEMENT_CLASS, CUSTOM_YARA_STRING_EDITOR_ELEMENT_CONTAINER);
