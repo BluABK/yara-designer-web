@@ -1,5 +1,10 @@
 # YARA-Designer GUI (Web Frontend)
 
+## Preview
+Light theme                                                    | Dark theme
+---------------------------------------------------------------|--------------------------------------------------------
+![app_preview_light](markdown_assets/hello_world_light.png) | ![app_preview_dark](markdown_assets/hello_world_dark.png)
+
 ## Dependencies
 ### Git repository
 The following Git repository must be set up and available.
